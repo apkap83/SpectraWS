@@ -100,7 +100,75 @@ public class WebSpectra// implements WebSpectraInterface
 		{
 			throw new InvalidInputException("Invalid Input", "There is no Level 7 for FTTX type");
 		}
+		else if (Type.equals("LLU") && ( Level1 == null || Level1.equals("") || Level1.equals("?") ))
+		{
+			// Return Voice & Data Lists concatenated (LLU_Voice_Element_Name & LLU_Data_Element_Name
+			
+			List<String> voiceElementsList = new ArrayList<String>();
+			List<String> dataElementsList = new ArrayList<String>();
+		
+			voiceElementsList = dbs.GetOneColumnUniqueResultSet("LLU_Voice_NetworkElementHierarchy", "LLU_Voice_Element_Name", "1 = 1");
+			dataElementsList  = dbs.GetOneColumnUniqueResultSet("LLU_Data_NetworkElementHierarchy", "LLU_Data_Element_Name", "1 = 1");
+			
+			List<String> voiceAndDataElementsList = new ArrayList<String>(voiceElementsList);
+			voiceAndDataElementsList.addAll(dataElementsList);
+			
+			Product pr = new Product("LLU_Voice_And_Data_Element_Names", voiceAndDataElementsList);
+			prodElementsList.add(pr);
+			
+		}
+		else if (Type.equals("LLU") && ( Level2 == null || Level2.equals("") || Level2.equals("?") ))
+		{
+			// Check if the chose element is Voice, Data or Both
+			boolean foundInVoice = false;
+			boolean foundInData = false;
 
+			try {
+				foundInVoice = dbs.checkIfStringExistsInSpecificColumn("LLU_Voice_NetworkElementHierarchy", "LLU_Voice_Element_Name", Level1);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			try {
+				foundInData = dbs.checkIfStringExistsInSpecificColumn("LLU_Voice_NetworkElementHierarchy", "LLU_Data_Element_Name", Level1);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			// If it is both Voice & Data element then return Service Type option
+			if (foundInVoice && foundInData)
+			{
+				List<String> myList = new ArrayList<String>();
+				myList.add("Voice Service");
+				myList.add("Data Service");
+				
+				Product pr = new Product("Type of Service affected", myList);
+				prodElementsList.add(pr);
+			}
+			
+			
+			// If it is only voice element then return LLU_Voice_Subrack
+			if (foundInVoice == true && foundInData == false)
+			{
+				String predicates = Help_Func.AssignSimilarANDPredicates(new String[] {"LLU_Voice_Element_Name"}, new String[] { Level1 });
+				rootElementsList =  dbs.GetOneColumnUniqueResultSet("LLU_Voice_NetworkElementHierarchy", "LLU_Voice_Subrack", predicates);
+				Product pr = new Product("LLU_Voice_Subrack", rootElementsList);
+				prodElementsList.add(pr);
+			}
+			
+			// If it is only data element then return LLU_Data_Slot
+			if (foundInVoice == false && foundInData == true)
+			{
+				String predicates = Help_Func.AssignSimilarANDPredicates(new String[] {"LLU_Data_Element_Name"}, new String[] { Level1 });
+				rootElementsList =  dbs.GetOneColumnUniqueResultSet("LLU_Data_NetworkElementHierarchy", "LLU_Data_Slot", predicates);
+				Product pr = new Product("LLU_Data_Slot", rootElementsList);
+				prodElementsList.add(pr);
+			}
+	
+		}
+		
 		return prodElementsList;
 	}
 	
