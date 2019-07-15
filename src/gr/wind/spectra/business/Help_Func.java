@@ -84,4 +84,33 @@ public class Help_Func
 		return mystring;
 	}
 	
+	
+	public static String ConCatHierarchy(String[] nodeNames, String[] nodeValues )
+	{
+		String UniqueCharSequence = "&";
+		int numOfFields = nodeNames.length;
+		String mystring = "";
+		
+		
+		if (numOfFields == 0)
+		{
+			return "None";
+		}
+		
+		for (int i=0; i<numOfFields; i++)
+		{
+			if (i < numOfFields -1)
+			{
+				mystring += nodeNames[i] + "=" + nodeValues[i] + UniqueCharSequence; 
+			}
+			else
+			{
+				mystring += nodeNames[i] + "=" + nodeValues[i];
+			}
+		}
+		
+		
+		return mystring;
+	}
+	
 }
