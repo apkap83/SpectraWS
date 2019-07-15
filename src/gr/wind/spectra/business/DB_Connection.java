@@ -7,9 +7,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
+
 import java.sql.ResultSet;
 
 import gr.wind.spectra.business.Help_Func;
+import gr.wind.spectra.web.InvalidInputException;
 
 // Notice, do not import com.mysql.cj.jdbc.*
 // or you will have problems!
@@ -27,8 +30,7 @@ public class DB_Connection
     
     FileLogger LogFile = new FileLogger(FileLogPath);
     
-    
-    public Connection Connect()
+    public Connection Connect() throws InvalidInputException
     {
     	LogFile.Log(Help_Func.GetTimeStamp() + "Starting Connection with database...");
     	try {
@@ -47,8 +49,9 @@ public class DB_Connection
     	    System.out.println("SQLState: " + ex.getSQLState());
     	    System.out.println("VendorError: " + ex.getErrorCode());
     	    conn = null;
-    	    
     	    LogFile.Log(Help_Func.GetTimeStamp() + "Could not open connection with database!");
+    	    throw new InvalidInputException("DB Connection Error", "Could not connect to database!");
+    	   
     	}
 		return conn;      	
     	
@@ -74,7 +77,7 @@ public class DB_Connection
     	LogFile.Log(Help_Func.GetTimeStamp() + "Closing DB Connection");
     }
 
-    public static void main(String[] args) throws SQLException 
+    public static void main(String[] args) throws SQLException, InvalidInputException 
     {
 
     	Statement stmt = null;

@@ -5,7 +5,7 @@ import java.util.List;
 import javax.xml.bind.annotation.*;
 
 @XmlRootElement(name = "Element")
-@XmlType(propOrder = {"type", "item"})
+@XmlType(name = "basicStruct", propOrder = {"type", "item"})
 public class Product {
 	
 	private String type;
