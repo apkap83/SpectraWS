@@ -15,7 +15,6 @@ public class ServiceImplementation {
 	public ServiceImplementation()
 	{
 		conObj = new DB_Connection();
-		conn = conObj.Connect();
 		dbs = new DB_Operations(conn);
 	}
 	
@@ -30,13 +29,9 @@ public class ServiceImplementation {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-  	
-    	
 		return rowsAffected;
-		
 	}
-	
-	
+
 	public static void main(String args[])
 	{
 		ServiceImplementation s1 = new ServiceImplementation();

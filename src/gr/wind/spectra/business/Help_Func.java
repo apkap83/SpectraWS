@@ -1,10 +1,27 @@
 package gr.wind.spectra.business;
 
 import java.util.Date;
+
+import gr.wind.spectra.web.InvalidInputException;
+
+import java.awt.List;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
 
 public class Help_Func 
 {
+	public static final String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
+	
+	public static String now() {
+		Calendar cal = Calendar.getInstance();
+		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
+		return sdf.format(cal.getTime());
+		}
+	
 	public static String ColumnsToInsertStatement(String[] columns)
 	{
 		int numOfFields = columns.length;
@@ -37,7 +54,7 @@ public class Help_Func
 		
 		for (int i=0; i<numOfFields ; i ++)
    		{
-   			mystring += '?';
+   			mystring += "?";
    			
    			if (i < numOfFields - 1)
    			{
@@ -84,10 +101,9 @@ public class Help_Func
 		return mystring;
 	}
 	
-	
 	public static String ConCatHierarchy(String[] nodeNames, String[] nodeValues )
 	{
-		String UniqueCharSequence = "&";
+		String UniqueCharSequence = "->";
 		int numOfFields = nodeNames.length;
 		String mystring = "";
 		
@@ -111,6 +127,224 @@ public class Help_Func
 		
 		
 		return mystring;
+	}
+	
+	public static void ValidateDateTimeFormat(String dateInput) throws ParseException, InvalidInputException
+	{
+		try
+		{
+			Date date1=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateInput);
+		} catch (ParseException e)
+		{
+			e.printStackTrace();
+			throw new InvalidInputException("Invalid DateTime Input", "DateTime field is not in expected format \"yyyy-MM-dd HH:mm:ss\"");
+		}
+			
+	}
+	
+	public static ArrayList<String> HierarchyStringToANDPredicates(String hierarchySelected)
+	{
+		// hierarchySelected = FTTX=1|OLTElementName=Tolis
+		
+		String SQLExpression = "";
+		String technology;
+		ArrayList<String> elementHierarchy = new ArrayList<String>();
+		
+		String[] parts = hierarchySelected.split("->");
+
+		// Pick first element e.g FTTX		
+		technology = parts[0].split("=")[0];
+		elementHierarchy.add(technology);		
+		int numOfParts = parts.length;
+
+		System.out.println("Number of Parts: " + numOfParts);
+		for (int i = 0; i < numOfParts ; i ++ )
+		{
+			if (i == 0 ) 
+			{  
+				continue; 
+			}
+			else
+			{
+				if (i < numOfParts -1)
+				{
+					String[] keyValuePair = parts[i].split("=");
+					SQLExpression = SQLExpression + keyValuePair[0] + " = " + "'" + keyValuePair[1] + "'" + " AND ";
+				}
+				else
+				{
+					String[] keyValuePair = parts[i].split("=");
+					SQLExpression = SQLExpression + keyValuePair[0] + " = " + "'" + keyValuePair[1] + "'";
+				}
+			}
+			
+		}
+		
+		elementHierarchy.add(SQLExpression);
+		
+		
+		
+		System.out.println("Part I: " + elementHierarchy.get(0) );
+		System.out.println("Part II: " + elementHierarchy.get(1) );
+		
+		return elementHierarchy;
+	}
+	
+	public static String columnsWithCommas(String[] columns)
+	{
+		int numOfColumns = columns.length;
+		String myString = "";
+		for (int i=0; i < numOfColumns; i++)
+		{
+			if (i < numOfColumns -1)
+			{
+				myString += columns[i] + ",";
+			}
+			else
+			{
+				myString += columns[i];
+			}
+		}
+		return myString;
+	}
+	
+	public static boolean HierarchyHasMultipleSelections(String Hierarchy)
+	{
+		String[] initialParts = Hierarchy.split("\\|");
+		if (initialParts.length > 1)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	// FTTX=1->OLTElementName=ATHOKRDLOLT01->OltSlot=1|OltSlot=2&&OLT=1->OLTElementName=ATHOKRDLOLT01->OltSlot=3|OltSlot=4
+	public static java.util.List<String> GetHierarchySelections(String Hierarchy)
+	{
+		
+		java.util.List<String> myList = new ArrayList<String>();
+		String[] initialParts = Hierarchy.split("%"); // FTTX=1->OLTElementName=ATHOKRDLOLT01->OltSlot=1|OltSlot=2  AND OLT=1->OLTElementName=ATHOKRDLOLT01->OltSlot=3|OltSlot=4
+		if (initialParts.length > 1)
+		{
+			
+			//System.out.println("Part I " +  initialParts[0]);
+			//System.out.println("Part II " +  initialParts[1]);
+			for (int i=0; i<initialParts.length;i++)
+			{
+				String UniqueHierarchy = "";
+				String[] items = initialParts[i].split("->"); // FTTX=1 AND OLTElementName=ATHOKRDLOLT01 AND OltSlot=1|OltSlot=2
+				
+				//System.out.println("Part 1 " +  items[0]);
+				//System.out.println("Part 2 " +  items[1]);
+				//System.out.println("Part 3 " +  items[2]);
+				
+				int itemsNum = items.length;
+				
+				String[] multipleItems = items[itemsNum-1].split("\\|"); // OltSlot=1 AND OltSlot=2
+				
+				//System.out.println("Part 4 " +  multipleItems[0]);
+				//System.out.println("Part 5 " +  multipleItems[1]);
+				
+				for (int j=0;j<items.length-1;j++)
+				{
+					UniqueHierarchy += items[j] + "->";
+					//System.out.println("Part 6 " +  UniqueHierarchy);
+				}
+				
+				for (int k=0;k<multipleItems.length;k++)
+				{
+					//System.out.println("Part 7 " +  UniqueHierarchy + multipleItems[k]);
+					myList.add(UniqueHierarchy + multipleItems[k]);
+				}
+				
+			}
+		
+		}
+		else
+		{
+			String UniqueHierarchy = "";
+			String[] items = Hierarchy.split("->"); // FTTX=1 AND OLTElementName=ATHOKRDLOLT01 AND OltSlot=1|OltSlot=2
+			
+			//System.out.println("Part 1 " +  items[0]);
+			//System.out.println("Part 2 " +  items[1]);
+			//System.out.println("Part 3 " +  items[2]);
+			
+			int itemsNum = items.length;
+			
+			String[] multipleItems = items[itemsNum-1].split("\\|"); // OltSlot=1 AND OltSlot=2
+			
+			//System.out.println("Part 4 " +  multipleItems[0]);
+			//System.out.println("Part 5 " +  multipleItems[1]);
+			
+			for (int j=0;j<items.length-1;j++)
+			{
+				UniqueHierarchy += items[j] + "->";
+				//System.out.println("Part 6 " +  UniqueHierarchy);
+			}
+			
+			for (int k=0;k<multipleItems.length;k++)
+			{
+				//System.out.println("Part 7 " +  UniqueHierarchy + multipleItems[k]);
+				myList.add(UniqueHierarchy + multipleItems[k]);
+			}			
+		}
+		
+		//for (String item : myList)
+		//{
+		//	System.out.println(item);
+		//}
+		
+		
+		return myList;
+	}
+	
+	public static String HierarchyToPredicate(String input)
+	{
+		String myPredicate ="";
+		String[] initialParts = input.split("->");
+		
+		for (int i=1;i<initialParts.length;i++)
+		{
+			String[] secondaryParts = initialParts[i].split("=");
+			
+			if (i < initialParts.length-1)
+			{
+				myPredicate += secondaryParts[0] + " = '" + secondaryParts[1] + "' AND ";
+			}
+			else
+			{
+				myPredicate += secondaryParts[0] + " = '" + secondaryParts[1] + "'";
+			}
+		}
+		return myPredicate;
+	}
+	
+	public static String GetRootHierarchyNode(String input)
+	{
+		String node;
+		String[] initialParts = input.split("->");
+		String[] secondaryParts = initialParts[0].split("=");
+		return secondaryParts[0];
+	}
+	
+	public static ArrayList<String> SplitHierarchy(String Hierarchy)
+	{
+		
+		
+		return null;
+	}
+	
+	
+	public static void main(String[] args)
+	{
+		//HierarchyStringToANDPredicates("FTTX=1->OLTElementName=ATHOKRDLOLT01->OltSlot=4");
+		System.out.println("Starting...");
+		//GetHierarchySelections("FTTX=1->OLTElementName=ATHOKRDLOLT01->OltSlot=1|OltSlot=2&&OLT=1->OLTElementName=ATHOKRDLOLT01->OltSlot=3|OltSlot=4");
+		//FTTX=1->OLTElementName=ATHOKRDLOLT01->OltSlot=1
+		String out = HierarchyToPredicate("FTTX=1->OLTElementName=ATHOKRDLOLT01->OltSlot=1");
+		System.out.println(out);
 	}
 	
 }

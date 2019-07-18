@@ -30,10 +30,11 @@ public class DB_Connection
     
     FileLogger LogFile = new FileLogger(FileLogPath);
     
-    public Connection Connect() throws InvalidInputException
+    public Connection Connect() throws InvalidInputException, InstantiationException, IllegalAccessException, ClassNotFoundException
     {
     	LogFile.Log(Help_Func.GetTimeStamp() + "Starting Connection with database...");
     	try {
+    		Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
     	    conn =
     	       DriverManager.getConnection(DATABASE_URL +
     	                                   "user=" + USERNAME + "&" +
@@ -77,7 +78,7 @@ public class DB_Connection
     	LogFile.Log(Help_Func.GetTimeStamp() + "Closing DB Connection");
     }
 
-    public static void main(String[] args) throws SQLException, InvalidInputException 
+    public static void main(String[] args) throws SQLException, InvalidInputException, InstantiationException, IllegalAccessException, ClassNotFoundException 
     {
 
     	Statement stmt = null;
@@ -95,6 +96,28 @@ public class DB_Connection
     	//boolean result = dbs.checkIfStringExistsInSpecificColumn("TestTable", "Name", "Apostolis Kapetanios");
     	//------------------------------------------------------
     	//boolean result = dbs.InsertValuesInTable("TestTable", new String[] {"ID", "Name"}, new String[] {"3", "Nikos Zorzos"});
+
+    	/*String result = dbs.InsertValuesInTableGetSequence("SubmittedIncidents", 
+				new String[] {"DateTime", "RequestID", "RequestTimestamp", "SystemID", "UserID", "IncidentID", "Scheduled", "StartTime", "EndTime", "Duration", "AffectedServices", "Impact", "Priority", "HierarchySelected"}, 
+				new String[] {
+						"2019-01-01 00:01:00",
+						"R20",
+						"2019-01-01 00:01:00",
+						"Remedy",
+						"akapetan",
+						"Incident1",
+						"N",
+						"2019-01-01 00:01:00",
+						"2019-01-01 00:01:00",
+						"1",
+						"TV",
+						"Quality",
+						"Major",
+						"FTTX=1&amp?OLTElementName=Tolis"
+    	});
+    
+    	System.out.println("Result ID: " + result);
+    	*/
     	//------------------------------------------------------
 //    	List<String> myList = new ArrayList<String>();
 //    	myList = new ArrayList<String>();
@@ -108,6 +131,19 @@ public class DB_Connection
     	//------------------------------------------------------
     	//int rowsAffected = dbs.UpdateValuesForOneColumn("TestTable", "Surname", "Vernikos", "Name = 'Apostolis' or Name = 'Manos'");
     	//System.out.println("Rows affected: " + rowsAffected);
+    	
+    	/*
+    	List<String> myList = new ArrayList<String>();
+    	myList = dbs.GetOneLineResultSet("SubmittedIncidents",new String[] {"SystemID", "UserID"}, "OutageID = '1'");
+    	
+    	for (String item : myList)
+    	{
+    		System.out.println(item);
+    	}
+    	*/
+    	
+    	//int numOfRows = dbs.NumberOfRowsFound("SubmittedIncidents", "IncidentID = 'Incident1' AND IncidentStatus = 'OPEN'");
+    	//System.out.println(numOfRows);
     	
     }
     
