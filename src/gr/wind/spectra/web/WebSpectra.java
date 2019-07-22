@@ -32,14 +32,7 @@ public class WebSpectra// implements WebSpectraInterface
 		
 	public WebSpectra() throws InstantiationException, IllegalAccessException, ClassNotFoundException
 	{
-		conObj = new DB_Connection();
-		try {
-			conn = conObj.Connect();
-		} catch (InvalidInputException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		dbs = new DB_Operations(conn);
+
 	}
 	
 	@WebMethod
@@ -65,8 +58,21 @@ public class WebSpectra// implements WebSpectraInterface
 			@WebParam(name="Level13") String Level13,
 			@WebParam(name="Level14") String Level14,
 			@WebParam(name="Level15") String Level15
-			) throws gr.wind.spectra.web.InvalidInputException, SQLException
+			) throws gr.wind.spectra.web.InvalidInputException, SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException
 	{
+	
+		if (conObj == null || dbs == null)
+		{
+			conObj = new DB_Connection();
+			try {
+				conn = conObj.Connect();
+			} catch (InvalidInputException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			dbs = new DB_Operations(conn);
+		}
+		
 		List<String> rootElementsList = new ArrayList<String>();
 		List<Product> prodElementsList = new ArrayList<>();
 		// FTTX Hierarchy
@@ -250,8 +256,21 @@ public class WebSpectra// implements WebSpectraInterface
 		// @WebParam(name="Type") @XmlElement( required = true ) String Type,
 		//LLU||Elementname||/slot||3##4$$
 		@WebParam(name="HierarchySelected") @XmlElement( required = true ) String HierarchySelected
-	) throws InvalidInputException, ParseException
+	) throws InvalidInputException, ParseException, InstantiationException, IllegalAccessException, ClassNotFoundException
 	{
+		
+		if (conObj == null || dbs == null)
+		{
+			conObj = new DB_Connection();
+			try {
+				conn = conObj.Connect();
+			} catch (InvalidInputException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			dbs = new DB_Operations(conn);
+		}
+		
 		List<ProductOfSubmission> prodElementsList = new ArrayList<>();
 		String OutageID;
 		try {
@@ -366,8 +385,21 @@ public class WebSpectra// implements WebSpectraInterface
 		// Defines Uniquely The Incident
 		@WebParam(name="IncidentID") @XmlElement( required = true ) String IncidentID,
 		@WebParam(name="IncidentStatus") @XmlElement( required = true ) String IncidentStatus
-	) throws SQLException, InvalidInputException
+	) throws SQLException, InvalidInputException, InstantiationException, IllegalAccessException, ClassNotFoundException
 	{
+		
+		if (conObj == null || dbs == null)
+		{
+			conObj = new DB_Connection();
+			try {
+				conn = conObj.Connect();
+			} catch (InvalidInputException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			dbs = new DB_Operations(conn);
+		}
+		
 		List<ProductOfGetOutage> prodElementsList = new ArrayList<>();
 		// Number of rows that will be returned
 		String numOfRows = dbs.NumberOfRowsFound("SubmittedIncidents", "IncidentID = 'Incident1' AND IncidentStatus = 'OPEN'");
@@ -434,8 +466,21 @@ public class WebSpectra// implements WebSpectraInterface
 		// @WebParam(name="Type") @XmlElement( required = true ) String Type,
 		//LLU||Elementname||/slot||3##4$$
 		@WebParam(name="HierarchySelected") @XmlElement( required = true ) String HierarchySelected
-	)
+	) throws InstantiationException, IllegalAccessException, ClassNotFoundException
 	{
+		
+		if (conObj == null || dbs == null)
+		{
+			conObj = new DB_Connection();
+			try {
+				conn = conObj.Connect();
+			} catch (InvalidInputException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			dbs = new DB_Operations(conn);
+		}
+		
 		
 		return null;
 	}
@@ -463,8 +508,19 @@ public class WebSpectra// implements WebSpectraInterface
 		// @WebParam(name="Type") @XmlElement( required = true ) String Type,
 		//LLU||Elementname||/slot||3##4$$
 		//@WebParam(name="HieararchySelected") @XmlElement( required = true ) String HieararchySelected
-	)
+	) throws InstantiationException, IllegalAccessException, ClassNotFoundException
 	{
+		if (conObj == null || dbs == null)
+		{
+			conObj = new DB_Connection();
+			try {
+				conn = conObj.Connect();
+			} catch (InvalidInputException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			dbs = new DB_Operations(conn);
+		}
 		//try {
 		//	boolean result = dbs.InsertValuesInTable("SubmittedIncidents", new String[] {"RequestID", "UserID"}, new String[] {RequestID, UserID});
 		//} catch (SQLException e) {

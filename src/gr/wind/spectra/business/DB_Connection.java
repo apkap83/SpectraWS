@@ -39,7 +39,7 @@ public class DB_Connection
     	       DriverManager.getConnection(DATABASE_URL +
     	                                   "user=" + USERNAME + "&" +
     	                                   "password=" + PASSWORD + "&" +
-    	                                   "useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC");
+    	                                   "useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&autoReconnect=true");
 
     	    LogFile.Log(Help_Func.GetTimeStamp() + "Connection established!");
     	    // Do something with the Connection
