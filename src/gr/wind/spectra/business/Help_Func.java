@@ -115,7 +115,11 @@ public class Help_Func
 		
 		for (int i=0; i<numOfFields; i++)
 		{
-			if (i < numOfFields -1)
+			if (i == 0)
+			{
+				mystring += nodeNames[i];
+			}
+			else if (i < numOfFields -1)
 			{
 				mystring += nodeNames[i] + "=" + nodeValues[i] + UniqueCharSequence; 
 			}
@@ -291,11 +295,10 @@ public class Help_Func
 			}			
 		}
 		
-		//for (String item : myList)
-		//{
-		//	System.out.println(item);
-		//}
-		
+		for (String item : myList)
+		{
+			System.out.println(item);
+		}
 		
 		return myList;
 	}
@@ -304,6 +307,12 @@ public class Help_Func
 	{
 		String myPredicate ="";
 		String[] initialParts = input.split("->");
+		
+		if (initialParts.length == 1)
+		{
+			return "1 = 1";
+		}
+		
 		
 		for (int i=1;i<initialParts.length;i++)
 		{
@@ -324,6 +333,7 @@ public class Help_Func
 	public static String GetRootHierarchyNode(String input)
 	{
 		String node;
+		System.out.println("In HERE: input = "+input);
 		String[] initialParts = input.split("->");
 		String[] secondaryParts = initialParts[0].split("=");
 		return secondaryParts[0];
@@ -340,11 +350,11 @@ public class Help_Func
 	public static void main(String[] args)
 	{
 		//HierarchyStringToANDPredicates("FTTX=1->OLTElementName=ATHOKRDLOLT01->OltSlot=4");
-		System.out.println("Starting...");
-		//GetHierarchySelections("FTTX=1->OLTElementName=ATHOKRDLOLT01->OltSlot=1|OltSlot=2&&OLT=1->OLTElementName=ATHOKRDLOLT01->OltSlot=3|OltSlot=4");
+		//System.out.println("Starting...");
+		//GetHierarchySelections("FTTX=1->OLTElementName=ATHOKRDLOLT01->OltSlot=1|OltSlot=2%OLT=1->OLTElementName=ATHOKRDLOLT01->OltSlot=3|OltSlot=4");
 		//FTTX=1->OLTElementName=ATHOKRDLOLT01->OltSlot=1
-		String out = HierarchyToPredicate("FTTX=1->OLTElementName=ATHOKRDLOLT01->OltSlot=1");
-		System.out.println(out);
+		//String out = HierarchyToPredicate("FTTX=1->OLTElementName=ATHOKRDLOLT01->OltSlot=1");
+		//System.out.println(out);
 	}
 	
 }

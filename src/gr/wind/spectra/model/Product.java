@@ -9,34 +9,31 @@ import gr.wind.spectra.business.DB_Operations;
 import gr.wind.spectra.business.Help_Func;
 
 @XmlRootElement(name = "Element")
-@XmlType(name = "basicStruct", propOrder = {"type", "item", "fullHierarchy", "potentialCustomersAffected"})
+@XmlType(name = "basicStruct", propOrder = {"type", "item", "potentialCustomersAffected"})
 public class Product {
 	
 	private String type;
 	private List<String> item;
-	private String fullHierarchy;
-	private String[] nodeNames;
-	private String[] nodeValues;
 	private String potentialCustomersAffected = "None";
-	
+	private String rootHierarchySelected;
+	private String fullHierarchy;
 	// Empty constructor requirement of JAXB (Java Architecture for XML Binding)
 	public Product()
 	{
 	}
 	
-	public Product(DB_Operations dbs, String type, List<String> valuesList, String[] nodeNames, String[] nodeValues) throws SQLException
+	public Product(DB_Operations dbs, String rootHierarchySelected, String fullHierarchy ,String type, List<String> valuesList, String[] nodeNames, String[] nodeValues) throws SQLException
 	{
 		this.type = type;
 		this.item = valuesList;
-		this.nodeNames = nodeNames;
-		this.nodeValues = nodeValues;
+		this.fullHierarchy = fullHierarchy;
 
 		if (nodeNames.length > 1)
 		{
 			// Firstly determine the hierarchy table that will be used based on the root hierarchy provided 
-			String rootHierarchySelected = Help_Func.GetRootHierarchyNode(getfullHierarchy());
-			String table =  dbs.GetOneValue("HierarchyTablePerTechnology", "TableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
-			String customersAffected = dbs.NumberOfRowsFound(table, Help_Func.HierarchyToPredicate(getfullHierarchy()));
+			this.rootHierarchySelected = rootHierarchySelected;
+			String table =  dbs.GetOneValue("HierarchyTablePerTechnology", "HierarchyTableName", "RootHierarchyNode = '" + this.rootHierarchySelected + "'");
+			String customersAffected = dbs.NumberOfRowsFound(table, Help_Func.HierarchyToPredicate(fullHierarchy));
 			this.potentialCustomersAffected = customersAffected;
 		}
 	}
@@ -73,6 +70,7 @@ public class Product {
 		this.item = valuesList;
 	}
 	
+	/*
 	@XmlElement(name = "HieararchySelected")
 	public String getfullHierarchy()
 	{
@@ -83,5 +81,5 @@ public class Product {
 	{
 		this.fullHierarchy = fullHierarchy;  
 	}
-	
+	*/
 }
