@@ -241,4 +241,30 @@ public class DB_Operations
 		ResultSet rs = pst.executeQuery();
   		return rs;
   	}
+  	
+  	
+  	public boolean AuthenticateRequest(String userName, String password) throws SQLException
+  	{
+		boolean found = false;
+		String table = "WSAccounts";
+		String sqlString = "SELECT * FROM `" + table + "` WHERE `UserName` = ? AND `Password` = ?";
+  	    PreparedStatement pst = conn.prepareStatement(sqlString);
+  	    pst.setString(1, userName);
+  	    pst.setString(2, password);
+  	    pst.execute();
+  	    
+  	    ResultSet rs = pst.executeQuery();
+  	    
+  	    while ( rs.next() )
+  	    {
+  	    	String r_userName = rs.getString("UserName");
+  	    	String r_password = rs.getString("Password");
+
+  	    	if (r_userName.equals(userName) && r_password.equals(password))
+  	    	{
+  	    		found = true;
+  	    	}
+  	    }
+  	  return found;
+  	}
 }

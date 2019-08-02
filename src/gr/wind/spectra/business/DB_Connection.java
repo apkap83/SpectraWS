@@ -145,6 +145,10 @@ public class DB_Connection
     	//int numOfRows = dbs.NumberOfRowsFound("SubmittedIncidents", "IncidentID = 'Incident1' AND IncidentStatus = 'OPEN'");
     	//System.out.println(numOfRows);
     	
+    	// Authenticate
+    	boolean found = dbs.AuthenticateRequest("admin", "1234");
+    	System.out.println(found);
+    	
     }
     
 }

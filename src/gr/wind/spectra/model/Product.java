@@ -9,32 +9,74 @@ import gr.wind.spectra.business.DB_Operations;
 import gr.wind.spectra.business.Help_Func;
 
 @XmlRootElement(name = "Element")
-@XmlType(name = "basicStruct", propOrder = {"type", "item", "potentialCustomersAffected"})
+@XmlType(name = "basicStruct", propOrder = {"requestID", "type", "item", "hierarchySelected", "potentialCustomersAffected"})
 public class Product {
 	
+	private DB_Operations dbs;
 	private String type;
-	private List<String> item;
-	private String potentialCustomersAffected = "None";
-	private String rootHierarchySelected;
-	private String fullHierarchy;
+	private List<String> items;
+	private String potentialCustomersAffected = "none";
+	private String requestID;
+	private String hierarchyProvided;
+	private String[] nodeNames;
+	private String[] nodeValues;
+	private String[] hierarchyFullPathList;
+	private String[] subsFullPathList;
+	private String[] hierElements;
+	
 	// Empty constructor requirement of JAXB (Java Architecture for XML Binding)
 	public Product()
 	{
 	}
 	
-	public Product(DB_Operations dbs, String rootHierarchySelected, String fullHierarchy ,String type, List<String> valuesList, String[] nodeNames, String[] nodeValues) throws SQLException
+	public Product(DB_Operations dbs, String[] hierarchyFullPath, String[] subsFullPath, String hierarchyProvided ,String type, List<String> items, String[] nodeNames, String[] nodeValues, String requestID) throws SQLException
 	{
+		
+		this.dbs = dbs;
+		this.hierarchyProvided = hierarchyProvided;
 		this.type = type;
-		this.item = valuesList;
-		this.fullHierarchy = fullHierarchy;
+		this.items = items;
+		this.nodeNames = nodeNames;
+		this.nodeValues = nodeValues;
+		this.requestID = requestID;
+		this.hierarchyFullPathList = hierarchyFullPath;
+		this.subsFullPathList = subsFullPath;
+		
+		this.hierElements = hierarchyProvided.split("->");
 
-		if (nodeNames.length > 1)
+		// If hierarchyProvided is null then return only values provided
+		if (this.hierarchyProvided == null || this.hierarchyProvided.equals("") || this.hierarchyProvided.equals("?"))
 		{
-			// Firstly determine the hierarchy table that will be used based on the root hierarchy provided 
-			this.rootHierarchySelected = rootHierarchySelected;
-			String table =  dbs.GetOneValue("HierarchyTablePerTechnology", "HierarchyTableName", "RootHierarchyNode = '" + this.rootHierarchySelected + "'");
-			String customersAffected = dbs.NumberOfRowsFound(table, Help_Func.HierarchyToPredicate(fullHierarchy));
-			this.potentialCustomersAffected = customersAffected;
+			// System.out.println("APOSTOLIS PRODUCT HERE 1");
+		}
+		else
+		{
+			// If hierarchyProvided is not null and has > 1 level hierarchy e.g. FTTX->OltElementName
+			if (this.hierElements.length > 1)
+			{
+				System.out.println("APOSTOLIS PRODUCT HERE 2");
+				// Get Root element from hierarchy
+				String rootElement = Help_Func.GetRootHierarchyNode(this.hierarchyProvided);
+				// Firstly determine the hierarchy table that will be used based on the root hierarchy provided 
+				String table =  dbs.GetOneValue("HierarchyTablePerTechnology", "SubscribersTableName", "RootHierarchyNode = '" + rootElement + "'");
+
+				// Number of rows asks different table
+				// Because of that we will use correct hierarchy - replaced hierarchy element
+				
+				
+				// Calculate customers affected but for the correct columns
+				System.out.println("this.hierarchyProvided = "+ this.hierarchyProvided);
+				System.out.println("Help_Func.ReplaceHierarchyForSubscribersAffected = "+ Help_Func.ReplaceHierarchyForSubscribersAffected(this.hierarchyProvided, subsFullPath));
+				for (String item : subsFullPath)
+				{
+					System.out.println("Item: " + item);
+				}
+				
+				// Calculate Customers Affected but replace column names in order to search table for customers affected
+				String customersAffected = dbs.NumberOfRowsFound(table, Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(this.hierarchyProvided, subsFullPath)));
+				this.potentialCustomersAffected = customersAffected;
+				
+			}
 		}
 	}
 	
@@ -48,6 +90,18 @@ public class Product {
 	{
 		this.type = type;
 	}
+
+	@XmlElement(name = "requestID")
+	public String getrequestID()
+	{
+		return this.requestID;
+	}
+	
+	public void setrequestID(String requestID)
+	{
+		this.requestID = requestID;
+	}	
+	
 	
 	@XmlElement(name = "potentialCustomersAffected")
 	public String getpotentialCustomersAffected()
@@ -62,24 +116,42 @@ public class Product {
 	
 	public List<String> getitem()
 	{
-		return item;
+		return this.items;
 	}
 	
 	public void setitem(List<String> valuesList)
 	{
-		this.item = valuesList;
+		this.items = valuesList;
 	}
 	
-	/*
-	@XmlElement(name = "HieararchySelected")
-	public String getfullHierarchy()
+	@XmlElement(name = "hierarchySelected")
+	public String gethierarchySelected()
 	{
-		return Help_Func.ConCatHierarchy(nodeNames, nodeValues);
+		String output = "";
+		if (this.hierarchyProvided == null || this.hierarchyProvided.equals("") || this.hierarchyProvided.equals("?"))
+		{
+			output = "none";
+		}
+		else
+		{
+			// root element provided only
+			if (this.hierElements.length == 0)
+			{
+				output = "None";
+			}
+			else if (this.hierElements.length >= 1)
+			{
+				//return this.hierarchyProvided + "->" + this.hierarchyFullPathList[0] + "=";
+				output = Help_Func.ConCatHierarchy(nodeNames, nodeValues, this.hierarchyFullPathList);
+			}
+		}
+		
+		return output;
 	}
 	
-	public void setfullHierarchy(String fullHierarchy)
+	public void sethierarchySelected(String hierarchyProvided)
 	{
-		this.fullHierarchy = fullHierarchy;  
+		this.hierarchyProvided = hierarchyProvided;  
 	}
-	*/
+	
 }

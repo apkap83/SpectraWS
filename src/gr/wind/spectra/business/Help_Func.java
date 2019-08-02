@@ -101,37 +101,6 @@ public class Help_Func
 		return mystring;
 	}
 	
-	public static String ConCatHierarchy(String[] nodeNames, String[] nodeValues )
-	{
-		String UniqueCharSequence = "->";
-		int numOfFields = nodeNames.length;
-		String mystring = "";
-		
-		
-		if (numOfFields == 0)
-		{
-			return "None";
-		}
-		
-		for (int i=0; i<numOfFields; i++)
-		{
-			if (i == 0)
-			{
-				mystring += nodeNames[i];
-			}
-			else if (i < numOfFields -1)
-			{
-				mystring += nodeNames[i] + "=" + nodeValues[i] + UniqueCharSequence; 
-			}
-			else
-			{
-				mystring += nodeNames[i] + "=" + nodeValues[i];
-			}
-		}
-		
-		
-		return mystring;
-	}
 	
 	public static void ValidateDateTimeFormat(String dateInput) throws ParseException, InvalidInputException
 	{
@@ -333,10 +302,18 @@ public class Help_Func
 	public static String GetRootHierarchyNode(String input)
 	{
 		String node;
-		System.out.println("In HERE: input = "+input);
 		String[] initialParts = input.split("->");
-		String[] secondaryParts = initialParts[0].split("=");
-		return secondaryParts[0];
+		
+		// Only 1 elements without "->"
+		if (initialParts.length == 1)
+		{
+			return input;
+		}
+		else
+		{
+			String[] secondaryParts = initialParts[0].split("=");
+			return secondaryParts[0];
+		}
 	}
 	
 	public static ArrayList<String> SplitHierarchy(String Hierarchy)
@@ -346,15 +323,126 @@ public class Help_Func
 		return null;
 	}
 	
+	public static String ConCatHierarchy(String[] nodeNames, String[] nodeValues, String[] hierarchyFullPathList )
+	{
+		String UniqueCharSequence = "->";
+		int numOfFields = nodeNames.length;
+		String mystring = "";
+		
+		
+		if (numOfFields < 1)
+		{
+			return "None";
+		}
+		else if (numOfFields == 1)
+		{
+			return nodeNames[0] + UniqueCharSequence + hierarchyFullPathList[0] + "=";
+		}
+		else if (numOfFields > 1)
+		{
+			for (int i=0; i<numOfFields; i++)
+			{
+				if (i == 0)
+				{
+					mystring += nodeNames[i] + UniqueCharSequence;
+				}
+				else if (i < numOfFields -1)
+				{
+					mystring += nodeNames[i] + "=" + nodeValues[i] + UniqueCharSequence; 
+				}
+				else
+				{
+					mystring += nodeNames[i] + "=" + nodeValues[i] + UniqueCharSequence + hierarchyFullPathList[i] + "=";
+				}
+			}
+		}
+		
+		
+		return mystring;
+	}
+	
+	public static String ReplaceHierarchyForSubscribersAffected(String hierarchy, String[] subsHierarchy)
+	{
+		String[] hierarchyItems = hierarchy.split("->");
+		String rootElement = "";
+		String outputHierarchy = "";
+		
+		for(int i=0; i < hierarchyItems.length; i++)
+		{
+			if (i == 0) 
+			{
+				rootElement = hierarchyItems[0];
+				continue;
+			} //root element
+			
+			String[] keyValuePair = hierarchyItems[i].split("=");
+			//System.out.println("A: " + keyValuePair[0]);
+			//System.out.println("B: " + subsHierarchy[i-1]);
+			if (keyValuePair[0].equals(subsHierarchy[i-1]))
+			{
+				if (i < hierarchyItems.length-1)
+				{
+					outputHierarchy += keyValuePair[0] + "=" + keyValuePair[1] + "->";
+				}
+				else
+				{
+					outputHierarchy += keyValuePair[0] + "=" + keyValuePair[1];
+				}
+			}
+			else
+			{
+				if (i < hierarchyItems.length-1)
+				{
+					outputHierarchy += subsHierarchy[i-1] + "=" + keyValuePair[1] + "->";
+				}
+				else
+				{
+					outputHierarchy += subsHierarchy[i-1] + "=" + keyValuePair[1];
+				}
+			}
+		}
+		
+		outputHierarchy = rootElement + "->" + outputHierarchy;
+		
+		//System.out.println("Output: " + outputHierarchy);
+		return outputHierarchy;
+	}
 	
 	public static void main(String[] args)
 	{
+		
+		System.out.println(Help_Func.ReplaceHierarchyForSubscribersAffected("FTTX->OltElementName=LAROAKDMOLT01->OltSlot=1->OltPort=0->Onu=0->ElementName=LAROAKDMOFLND010H11", new String[] {"OltElementName","OltSlot","OltPort","Onu","ActiveElement","Slot"}));
+		
+		
 		//HierarchyStringToANDPredicates("FTTX=1->OLTElementName=ATHOKRDLOLT01->OltSlot=4");
 		//System.out.println("Starting...");
 		//GetHierarchySelections("FTTX=1->OLTElementName=ATHOKRDLOLT01->OltSlot=1|OltSlot=2%OLT=1->OLTElementName=ATHOKRDLOLT01->OltSlot=3|OltSlot=4");
 		//FTTX=1->OLTElementName=ATHOKRDLOLT01->OltSlot=1
 		//String out = HierarchyToPredicate("FTTX=1->OLTElementName=ATHOKRDLOLT01->OltSlot=1");
 		//System.out.println(out);
+		//System.out.println(Help_Func.HierarchyToPredicate("FTTX->OltElementName=ak->something=3"));
+
+		/*
+		ArrayList<String> nodeNamesArrayList = new ArrayList<String>();
+		ArrayList<String> nodeValuesArrayList = new ArrayList<String>();
+		
+		nodeNamesArrayList.add("FTTX");
+		nodeValuesArrayList.add("1");
+				
+		nodeNamesArrayList.add("OltElementName");
+		nodeValuesArrayList.add("Somethin1");
+
+		nodeNamesArrayList.add("OltSlot");
+		nodeValuesArrayList.add("Something2");
+		*/
+		//String[] hierarchyFullPathList = {"OltElementName", "OltSlot", "OltPort", "Onu", "ElementName", "Slot"};
+		//String[] nodeNamesArrayList = {"rootElement", "OltElementName", "Onu"};
+		//String[] nodeValuesArrayList = {"", "Something", "SomethingElse"};
+		//System.out.println(Help_Func.ConCatHierarchy(nodeNamesArrayList, nodeValuesArrayList, hierarchyFullPathList));
+		
+		
+				
+		
 	}
 	
 }

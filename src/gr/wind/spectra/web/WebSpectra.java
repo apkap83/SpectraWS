@@ -9,8 +9,12 @@ import java.util.List;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
+import javax.jws.WebParam.Mode;
 import javax.jws.WebResult;
 import javax.jws.WebService;
+
+import javax.xml.soap.SOAPHeader;
+
 import javax.xml.bind.annotation.XmlElement;
 
 import gr.wind.spectra.web.InvalidInputException;
@@ -24,6 +28,7 @@ import gr.wind.spectra.model.ProductOfSubmission;
 
 
 @WebService //(endpointInterface = "gr.wind.spectra.web.WebSpectraInterface")
+
 public class WebSpectra// implements WebSpectraInterface
 {
 	private static final String hierSep = "->";
@@ -48,72 +53,96 @@ public class WebSpectra// implements WebSpectraInterface
 	}
 	
 	
-	@WebMethod
+	@WebMethod()
 	@WebResult(name="Result")
-	public List<Product> getHierarchy_new
+	public List<Product> getHierarchy
 	(
+			//@WebParam(targetNamespace="http://spectra.wind.gr/handler/", name="UserName", header = true, mode = Mode.IN) @XmlElement( required = true ) String UserName,
+			//@WebParam(targetNamespace="http://spectra.wind.gr/handler/", name="Password", header = true) @XmlElement( required = true ) String Password,
+			@WebParam(name="UserName", header = true, mode = Mode.IN) String UserName,
+			@WebParam(name="Password", header = true, mode = Mode.IN) String Password,
 			@WebParam(name="RequestID") @XmlElement( required = true ) String RequestID,
 			@WebParam(name="RequestTimestamp") @XmlElement( required = true ) String RequestTimestamp,
 			@WebParam(name="SystemID") @XmlElement( required = true ) String SystemID,
 			@WebParam(name="UserID") @XmlElement( required = true ) String UserID,
-			@WebParam(name="HierarchySelected") String HierarchySelected
-	) throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException
+			@WebParam(name="Hierarchy") String Hierarchy
+	) throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException, InvalidInputException
 	{
+		
 		WebSpectra wb = new WebSpectra();
-		List<String> rootElementsList = new ArrayList<String>();
+		List<String> ElementsList = new ArrayList<String>();
 		List<Product> prodElementsList = new ArrayList<>();
 		
-		if (HierarchySelected == null || HierarchySelected.equals("") || HierarchySelected.equals("?"))
+		// Check if Authentication credentials are correct.
+		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("Invalid Credentials", "User name or Password incorrect!");}
+		
+		// No Hierarchy is given - returns root elements
+		if (Hierarchy == null || Hierarchy.equals("") || Hierarchy.equals("?"))
 		{
-			String rootHierarchySelected = Help_Func.GetRootHierarchyNode(HierarchySelected);
-			rootElementsList = wb.dbs.GetOneColumnUniqueResultSet("HierarchyTablePerTechnology", "RootHierarchyNode", "1 = 1");
+			System.out.println("APOSTOLIS HERE 1");
+			String rootHierarchySelected = "";
+			ElementsList = wb.dbs.GetOneColumnUniqueResultSet("HierarchyTablePerTechnology", "RootHierarchyNode", "1 = 1");
 			String[] nodeNames = new String[] {};
 			String[] nodeValues = new String[] {};
-			Product pr = new Product(wb.dbs, rootHierarchySelected, HierarchySelected, "rootElements", rootElementsList, nodeNames, nodeValues);
+			Product pr = new Product(wb.dbs, new String[] {}, new String[] {}, Hierarchy, "rootElements", ElementsList, nodeNames, nodeValues, RequestID);
 			prodElementsList.add(pr);
 		}
 		else
 		{
-			String rootHierarchySelected = Help_Func.GetRootHierarchyNode(HierarchySelected);
-			String table = wb.dbs.GetOneValue("HierarchyTablePerTechnology", "HierarchyTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
-			String fullHierarchy = wb.dbs.GetOneValue("HierarchyTablePerTechnology", "FullHierarchyPath", "RootHierarchyNode = '" + rootHierarchySelected + "'");
-			String[] fullHierarchyNodes = fullHierarchy.split("->");
-			
 			ArrayList<String> nodeNamesArrayList = new ArrayList<String>();
 			ArrayList<String> nodeValuesArrayList = new ArrayList<String>();
-			//String[] nodeNames = new String[] {};
-			//String[] nodeValues = new String[] {};
+
+			// Get root hierarchy = hierarchy given
+			String rootElementInHierarchy = Help_Func.GetRootHierarchyNode(Hierarchy);
+
+			// Get Hierarchy Table for that root hierarchy
+			String table = wb.dbs.GetOneValue("HierarchyTablePerTechnology", "HierarchyTableName", "RootHierarchyNode = '" + rootElementInHierarchy + "'");
 			
+			// Get Full hierarchy from the same table as above in style : OltElementName->OltSlot->OltPort->Onu->ElementName->Slot
+			String fullHierarchyFromDB = wb.dbs.GetOneValue("HierarchyTablePerTechnology", "HierarchyTableNamePath", "RootHierarchyNode = '" + rootElementInHierarchy + "'");
+
+			// Split the hierarchy retrieved from DB into fields
+			String[] fullHierarchyFromDBSplit = fullHierarchyFromDB.split("->");			
+			
+			// Get Full hierarchy from the same table as above in style : OltElementName->OltSlot->OltPort->Onu->ActiveElement->Slot
+			String subsHierarchyFromDB = wb.dbs.GetOneValue("HierarchyTablePerTechnology", "SubscribersTableNamePath", "RootHierarchyNode = '" + rootElementInHierarchy + "'");
+
+			// Split the hierarchy retrieved from DB into fields
+			String[] subsHierarchyFromDBSplit = subsHierarchyFromDB.split("->");
+
 			// Split given hierarchy
-			String[] hierItems = HierarchySelected.split(hierSep);
-			if (hierItems.length == 0)
+			String[] hierItemsGiven = Hierarchy.split(hierSep);
+
+			// If only root Hierarchy is given
+			if (hierItemsGiven.length == 1)
 			{
-				rootElementsList = wb.dbs.GetOneColumnUniqueResultSet(table, fullHierarchyNodes[0], Help_Func.HierarchyToPredicate(HierarchySelected));
-				String[] nodeNames = new String[] {rootHierarchySelected};
+				ElementsList = wb.dbs.GetOneColumnUniqueResultSet(table, fullHierarchyFromDBSplit[0], " 1 = 1 ");
+				String[] nodeNames = new String[] {rootElementInHierarchy};
 				String[] nodeValues = new String[] {"1"};
-				Product pr = new Product(wb.dbs, rootHierarchySelected, HierarchySelected, fullHierarchyNodes[0], rootElementsList, nodeNames, nodeValues);
+				Product pr = new Product(wb.dbs, fullHierarchyFromDBSplit, subsHierarchyFromDBSplit, Hierarchy, fullHierarchyFromDBSplit[0] , ElementsList, nodeNames, nodeValues, RequestID);
 				prodElementsList.add(pr);	
 			}
 			else
-			{
-				for (int i=0; i < hierItems.length; i++)
+			{	
+				// If a full hierarchy is given
+				for (int i=0; i < hierItemsGiven.length; i++)
 				{
 					if (i == 0) 
 					{ 
-						nodeNamesArrayList.add(rootHierarchySelected);
+						nodeNamesArrayList.add(rootElementInHierarchy);
 						nodeValuesArrayList.add("1");
 						continue;
 					}
 					
-					String[] keyValue = hierItems[i].split("=");
+					String[] keyValue = hierItemsGiven[i].split("=");
 					nodeNamesArrayList.add(keyValue[0]);
 					nodeValuesArrayList.add(keyValue[1]);
 				}
-	
-				rootElementsList = wb.dbs.GetOneColumnUniqueResultSet(table, fullHierarchyNodes[hierItems.length-1], Help_Func.HierarchyToPredicate(HierarchySelected));
+				
+				ElementsList = wb.dbs.GetOneColumnUniqueResultSet(table, fullHierarchyFromDBSplit[hierItemsGiven.length-1], Help_Func.HierarchyToPredicate(Hierarchy));
 				String[] nodeNames = nodeNamesArrayList.toArray(new String[nodeNamesArrayList.size()]);  
 				String[] nodeValues = nodeValuesArrayList.toArray(new String[nodeValuesArrayList.size()]);
-				Product pr = new Product(wb.dbs, rootHierarchySelected, HierarchySelected, fullHierarchyNodes[hierItems.length-1], rootElementsList, nodeNames, nodeValues);
+				Product pr = new Product(wb.dbs, fullHierarchyFromDBSplit, subsHierarchyFromDBSplit, Hierarchy, fullHierarchyFromDBSplit[hierItemsGiven.length-1], ElementsList, nodeNames, nodeValues, RequestID);
 				prodElementsList.add(pr);
 			}
 		}
@@ -313,6 +342,8 @@ public class WebSpectra// implements WebSpectraInterface
 	@WebResult(name="Result")
 	public List<ProductOfSubmission> submitOutage
 	(
+		@WebParam(name="UserName", header = true, mode = Mode.IN) String UserName,
+		@WebParam(name="Password", header = true, mode = Mode.IN) String Password,
 		@WebParam(name="RequestID") @XmlElement( required = true ) String RequestID,
 		@WebParam(name="RequestTimestamp") @XmlElement( required = true ) String RequestTimestamp,
 		@WebParam(name="SystemID") @XmlElement( required = true ) String SystemID,
@@ -337,6 +368,10 @@ public class WebSpectra// implements WebSpectraInterface
 		WebSpectra wb = new WebSpectra();
 		List<ProductOfSubmission> prodElementsList = new ArrayList<>();
 		String OutageID;
+		
+		// Check if Authentication credentials are correct.
+		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("Invalid Credentials", "User name or Password incorrect!");}
+		
 		try {
 			/*boolean result = wb.dbs.InsertValuesInTable("SubmittedIncidents", 
 					new String[] {"DateTime", "RequestID", "RequestTimestamp", "SystemID", "UserID", "IncidentID", "Scheduled", "StartTime", "EndTime", "Duration", "AffectedServices", "Impact", "Priority", "HierarchySelected"}, 
@@ -447,6 +482,8 @@ public class WebSpectra// implements WebSpectraInterface
 	@WebResult(name="Result")
 	public List<ProductOfGetOutage> getOutageStatus
 	(
+		@WebParam(name="UserName", header = true, mode = Mode.IN) String UserName,
+		@WebParam(name="Password", header = true, mode = Mode.IN) String Password,
 		// Defines Uniquely The Incident
 		@WebParam(name="IncidentID") @XmlElement( required = true ) String IncidentID,
 		@WebParam(name="IncidentStatus") @XmlElement( required = true ) String IncidentStatus
@@ -454,6 +491,11 @@ public class WebSpectra// implements WebSpectraInterface
 	{	
 		WebSpectra wb = new WebSpectra();
 		List<ProductOfGetOutage> prodElementsList = new ArrayList<>();
+		
+		
+		// Check if Authentication credentials are correct.
+		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("Invalid Credentials", "User name or Password incorrect!");}
+		
 		// Number of rows that will be returned
 		String numOfRows = wb.dbs.NumberOfRowsFound("SubmittedIncidents", "IncidentID = 'Incident1' AND IncidentStatus = 'OPEN'");
 		
@@ -501,6 +543,8 @@ public class WebSpectra// implements WebSpectraInterface
 	@WebResult(name="Result")
 	public List<Product> modifyOutage
 	(
+		@WebParam(name="UserName", header = true, mode = Mode.IN) String UserName,
+		@WebParam(name="Password", header = true, mode = Mode.IN) String Password,
 		@WebParam(name="RequestID") @XmlElement( required = true ) String RequestID,
 		@WebParam(name="RequestTimestamp") @XmlElement( required = true ) String RequestTimestamp,
 		@WebParam(name="SystemID") @XmlElement( required = true ) String SystemID,
@@ -521,10 +565,14 @@ public class WebSpectra// implements WebSpectraInterface
 		// @WebParam(name="Type") @XmlElement( required = true ) String Type,
 		//LLU||Elementname||/slot||3##4$$
 		@WebParam(name="HierarchySelected") @XmlElement( required = true ) String HierarchySelected
-	) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException
+	) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, InvalidInputException
 	{	
 		WebSpectra wb = new WebSpectra();
 		wb.conObj.closeDBConnection();
+		
+		// Check if Authentication credentials are correct.
+		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("Invalid Credentials", "User name or Password incorrect!");}
+		
 		return null;
 	}
 
@@ -532,6 +580,8 @@ public class WebSpectra// implements WebSpectraInterface
 	@WebResult(name="Result")
 	public List<Product> closeOutage
 	(
+		@WebParam(name="UserName", header = true, mode = Mode.IN) String UserName,
+		@WebParam(name="Password", header = true, mode = Mode.IN) String Password,
 		@WebParam(name="RequestID") @XmlElement( required = true ) String RequestID,
 		@WebParam(name="RequestTimestamp") @XmlElement( required = true ) String RequestTimestamp,
 		@WebParam(name="SystemID") @XmlElement( required = true ) String SystemID,
@@ -551,7 +601,7 @@ public class WebSpectra// implements WebSpectraInterface
 		// @WebParam(name="Type") @XmlElement( required = true ) String Type,
 		//LLU||Elementname||/slot||3##4$$
 		//@WebParam(name="HieararchySelected") @XmlElement( required = true ) String HieararchySelected
-	) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException
+	) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, InvalidInputException
 	{
 		//try {
 		//	boolean result = wb.dbs.InsertValuesInTable("SubmittedIncidents", new String[] {"RequestID", "UserID"}, new String[] {RequestID, UserID});
@@ -561,6 +611,11 @@ public class WebSpectra// implements WebSpectraInterface
 		//}
 		WebSpectra wb = new WebSpectra();
 		wb.conObj.closeDBConnection();
+		
+		// Check if Authentication credentials are correct.
+		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("Invalid Credentials", "User name or Password incorrect!");}
+		
+		
 		return null;
 	}
 	
