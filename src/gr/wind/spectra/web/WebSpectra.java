@@ -124,26 +124,54 @@ public class WebSpectra// implements WebSpectraInterface
 			}
 			else
 			{	
-				// If a full hierarchy is given
-				for (int i=0; i < hierItemsGiven.length; i++)
+				// Check if Max hierarchy is used
+				// FTTX->OltElementName=LAROAKDMOLT01->OltSlot=1->OltPort=0->Onu=0->ElementName=LAROAKDMOFLND010H11->Slot=4:  7 MAX = FTTX + OltElementName->OltSlot->OltPort->Onu->ElementName->Slot
+				if (hierItemsGiven.length < fullHierarchyFromDBSplit.length + 1)
 				{
-					if (i == 0) 
-					{ 
-						nodeNamesArrayList.add(rootElementInHierarchy);
-						nodeValuesArrayList.add("1");
-						continue;
+					// If a full hierarchy is given
+					for (int i=0; i < hierItemsGiven.length; i++)
+					{
+						if (i == 0) 
+						{ 
+							nodeNamesArrayList.add(rootElementInHierarchy);
+							nodeValuesArrayList.add("1");
+							continue;
+						}
+						
+						String[] keyValue = hierItemsGiven[i].split("=");
+						nodeNamesArrayList.add(keyValue[0]);
+						nodeValuesArrayList.add(keyValue[1]);
 					}
 					
-					String[] keyValue = hierItemsGiven[i].split("=");
-					nodeNamesArrayList.add(keyValue[0]);
-					nodeValuesArrayList.add(keyValue[1]);
+					ElementsList = wb.dbs.GetOneColumnUniqueResultSet(table, fullHierarchyFromDBSplit[hierItemsGiven.length-1], Help_Func.HierarchyToPredicate(Hierarchy));
+					String[] nodeNames = nodeNamesArrayList.toArray(new String[nodeNamesArrayList.size()]);  
+					String[] nodeValues = nodeValuesArrayList.toArray(new String[nodeValuesArrayList.size()]);
+					Product pr = new Product(wb.dbs, fullHierarchyFromDBSplit, subsHierarchyFromDBSplit, Hierarchy, fullHierarchyFromDBSplit[hierItemsGiven.length-1], ElementsList, nodeNames, nodeValues, RequestID);
+					prodElementsList.add(pr);
 				}
-				
-				ElementsList = wb.dbs.GetOneColumnUniqueResultSet(table, fullHierarchyFromDBSplit[hierItemsGiven.length-1], Help_Func.HierarchyToPredicate(Hierarchy));
-				String[] nodeNames = nodeNamesArrayList.toArray(new String[nodeNamesArrayList.size()]);  
-				String[] nodeValues = nodeValuesArrayList.toArray(new String[nodeValuesArrayList.size()]);
-				Product pr = new Product(wb.dbs, fullHierarchyFromDBSplit, subsHierarchyFromDBSplit, Hierarchy, fullHierarchyFromDBSplit[hierItemsGiven.length-1], ElementsList, nodeNames, nodeValues, RequestID);
-				prodElementsList.add(pr);
+				else
+				{	// Max Hierarchy Level
+					// If a full hierarchy is given
+					for (int i=0; i < hierItemsGiven.length; i++)
+					{
+						if (i == 0) 
+						{ 
+							nodeNamesArrayList.add(rootElementInHierarchy);
+							nodeValuesArrayList.add("1");
+							continue;
+						}
+						
+						String[] keyValue = hierItemsGiven[i].split("=");
+						nodeNamesArrayList.add(keyValue[0]);
+						nodeValuesArrayList.add(keyValue[1]);
+					}
+					
+					ElementsList = new ArrayList<String>();
+					String[] nodeNames = nodeNamesArrayList.toArray(new String[nodeNamesArrayList.size()]);  
+					String[] nodeValues = nodeValuesArrayList.toArray(new String[nodeValuesArrayList.size()]);
+					Product pr = new Product(wb.dbs, fullHierarchyFromDBSplit, subsHierarchyFromDBSplit, Hierarchy, "MaxLevel", ElementsList, nodeNames, nodeValues, RequestID);
+					prodElementsList.add(pr);
+				}
 			}
 		}
 		

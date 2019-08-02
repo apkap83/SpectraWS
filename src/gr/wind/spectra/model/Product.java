@@ -63,7 +63,6 @@ public class Product {
 				// Number of rows asks different table
 				// Because of that we will use correct hierarchy - replaced hierarchy element
 				
-				
 				// Calculate customers affected but for the correct columns
 				System.out.println("this.hierarchyProvided = "+ this.hierarchyProvided);
 				System.out.println("Help_Func.ReplaceHierarchyForSubscribersAffected = "+ Help_Func.ReplaceHierarchyForSubscribersAffected(this.hierarchyProvided, subsFullPath));

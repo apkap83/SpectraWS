@@ -352,7 +352,14 @@ public class Help_Func
 				}
 				else
 				{
-					mystring += nodeNames[i] + "=" + nodeValues[i] + UniqueCharSequence + hierarchyFullPathList[i] + "=";
+					if (i == hierarchyFullPathList.length)
+					{
+						mystring += nodeNames[i] + "=" + nodeValues[i];
+					}
+					else
+					{
+						mystring += nodeNames[i] + "=" + nodeValues[i] + UniqueCharSequence + hierarchyFullPathList[i] + "=";
+					}
 				}
 			}
 		}
@@ -411,7 +418,7 @@ public class Help_Func
 	public static void main(String[] args)
 	{
 		
-		System.out.println(Help_Func.ReplaceHierarchyForSubscribersAffected("FTTX->OltElementName=LAROAKDMOLT01->OltSlot=1->OltPort=0->Onu=0->ElementName=LAROAKDMOFLND010H11", new String[] {"OltElementName","OltSlot","OltPort","Onu","ActiveElement","Slot"}));
+		//System.out.println(Help_Func.ReplaceHierarchyForSubscribersAffected("FTTX->OltElementName=LAROAKDMOLT01->OltSlot=1->OltPort=0->Onu=0->ElementName=LAROAKDMOFLND010H11", new String[] {"OltElementName","OltSlot","OltPort","Onu","ActiveElement","Slot"}));
 		
 		
 		//HierarchyStringToANDPredicates("FTTX=1->OLTElementName=ATHOKRDLOLT01->OltSlot=4");
@@ -435,10 +442,11 @@ public class Help_Func
 		nodeNamesArrayList.add("OltSlot");
 		nodeValuesArrayList.add("Something2");
 		*/
-		//String[] hierarchyFullPathList = {"OltElementName", "OltSlot", "OltPort", "Onu", "ElementName", "Slot"};
-		//String[] nodeNamesArrayList = {"rootElement", "OltElementName", "Onu"};
-		//String[] nodeValuesArrayList = {"", "Something", "SomethingElse"};
-		//System.out.println(Help_Func.ConCatHierarchy(nodeNamesArrayList, nodeValuesArrayList, hierarchyFullPathList));
+		//FTTX->OltElementName=LAROAKDMOLT01->OltSlot=1->OltPort=0->Onu=0->ElementName=LAROAKDMOFLND010H11->Slot=4
+		String[] hierarchyFullPathList = {"OltElementName", "OltSlot", "OltPort", "Onu", "ElementName", "Slot"};
+		String[] nodeNamesArrayList = {"FTTX","OltElementName","OltSlot","OltPort","Onu","ElementName", "Slot"};
+		String[] nodeValuesArrayList = {"1","LAROAKDMOLT01","1","0","0","LAROAKDMOFLND010H11", "5"};
+		System.out.println(Help_Func.ConCatHierarchy(nodeNamesArrayList, nodeValuesArrayList, hierarchyFullPathList));
 		
 		
 				
