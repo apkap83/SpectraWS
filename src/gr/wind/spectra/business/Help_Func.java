@@ -1,6 +1,8 @@
 package gr.wind.spectra.business;
 
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import gr.wind.spectra.web.InvalidInputException;
 
@@ -414,6 +416,7 @@ public class Help_Func
 		//System.out.println("Output: " + outputHierarchy);
 		return outputHierarchy;
 	}
+
 	
 	public static void main(String[] args)
 	{
@@ -443,10 +446,10 @@ public class Help_Func
 		nodeValuesArrayList.add("Something2");
 		*/
 		//FTTX->OltElementName=LAROAKDMOLT01->OltSlot=1->OltPort=0->Onu=0->ElementName=LAROAKDMOFLND010H11->Slot=4
-		String[] hierarchyFullPathList = {"OltElementName", "OltSlot", "OltPort", "Onu", "ElementName", "Slot"};
-		String[] nodeNamesArrayList = {"FTTX","OltElementName","OltSlot","OltPort","Onu","ElementName", "Slot"};
-		String[] nodeValuesArrayList = {"1","LAROAKDMOLT01","1","0","0","LAROAKDMOFLND010H11", "5"};
-		System.out.println(Help_Func.ConCatHierarchy(nodeNamesArrayList, nodeValuesArrayList, hierarchyFullPathList));
+		//String[] hierarchyFullPathList = {"OltElementName", "OltSlot", "OltPort", "Onu", "ElementName", "Slot"};
+		//String[] nodeNamesArrayList = {"FTTX","OltElementName","OltSlot","OltPort","Onu","ElementName", "Slot"};
+		//String[] nodeValuesArrayList = {"1","LAROAKDMOLT01","1","0","0","LAROAKDMOFLND010H11", "5"};
+		//System.out.println(Help_Func.ConCatHierarchy(nodeNamesArrayList, nodeValuesArrayList, hierarchyFullPathList));
 		
 		
 				

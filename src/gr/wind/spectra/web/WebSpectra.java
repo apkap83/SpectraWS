@@ -74,7 +74,8 @@ public class WebSpectra// implements WebSpectraInterface
 		List<Product> prodElementsList = new ArrayList<>();
 		
 		// Check if Authentication credentials are correct.
-		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("Invalid Credentials", "User name or Password incorrect!");}
+		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("Error 100", "User name or Password incorrect!");}
+		
 		
 		// No Hierarchy is given - returns root elements
 		if (Hierarchy == null || Hierarchy.equals("") || Hierarchy.equals("?"))
@@ -113,6 +114,15 @@ public class WebSpectra// implements WebSpectraInterface
 			// Split given hierarchy
 			String[] hierItemsGiven = Hierarchy.split(hierSep);
 
+			// Check if max hierarchy level is surpassed
+			// Max hierarchy level is fullHieararchyPath.length + 1
+			int maxLevelsOfHierarchy = fullHierarchyFromDBSplit.length + 1;
+			if (hierItemsGiven.length > maxLevelsOfHierarchy)
+			{
+				throw new InvalidInputException("Error 120", "More hierarchy levels than expected");
+			}
+			
+			
 			// If only root Hierarchy is given
 			if (hierItemsGiven.length == 1)
 			{
@@ -398,7 +408,7 @@ public class WebSpectra// implements WebSpectraInterface
 		String OutageID;
 		
 		// Check if Authentication credentials are correct.
-		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("Invalid Credentials", "User name or Password incorrect!");}
+		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("Error 100", "User name or Password incorrect!");}
 		
 		try {
 			/*boolean result = wb.dbs.InsertValuesInTable("SubmittedIncidents", 
@@ -522,7 +532,7 @@ public class WebSpectra// implements WebSpectraInterface
 		
 		
 		// Check if Authentication credentials are correct.
-		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("Invalid Credentials", "User name or Password incorrect!");}
+		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("Error 100", "User name or Password incorrect!");}
 		
 		// Number of rows that will be returned
 		String numOfRows = wb.dbs.NumberOfRowsFound("SubmittedIncidents", "IncidentID = 'Incident1' AND IncidentStatus = 'OPEN'");
@@ -599,7 +609,7 @@ public class WebSpectra// implements WebSpectraInterface
 		wb.conObj.closeDBConnection();
 		
 		// Check if Authentication credentials are correct.
-		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("Invalid Credentials", "User name or Password incorrect!");}
+		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("Error 100", "User name or Password incorrect!");}
 		
 		return null;
 	}
@@ -641,7 +651,7 @@ public class WebSpectra// implements WebSpectraInterface
 		wb.conObj.closeDBConnection();
 		
 		// Check if Authentication credentials are correct.
-		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("Invalid Credentials", "User name or Password incorrect!");}
+		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("Error 100", "User name or Password incorrect!");}
 		
 		
 		return null;
