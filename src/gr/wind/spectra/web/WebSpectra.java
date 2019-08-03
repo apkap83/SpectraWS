@@ -76,6 +76,7 @@ public class WebSpectra// implements WebSpectraInterface
 		// Check if Authentication credentials are correct.
 		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("Error 100", "User name or Password incorrect!");}
 		
+		// Check if Required fields are emptys
 		Help_Func.ValidateNotEmpty("RequestID", RequestID);
 		Help_Func.ValidateNotEmpty("RequestTimestamp", RequestTimestamp);
 		Help_Func.ValidateNotEmpty("SystemID", SystemID);
