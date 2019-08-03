@@ -76,6 +76,10 @@ public class WebSpectra// implements WebSpectraInterface
 		// Check if Authentication credentials are correct.
 		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("Error 100", "User name or Password incorrect!");}
 		
+		Help_Func.ValidateNotEmpty("RequestID", RequestID);
+		Help_Func.ValidateNotEmpty("RequestTimestamp", RequestTimestamp);
+		Help_Func.ValidateNotEmpty("SystemID", SystemID);
+		Help_Func.ValidateNotEmpty("UserID", UserID);
 		
 		// No Hierarchy is given - returns root elements
 		if (Hierarchy == null || Hierarchy.equals("") || Hierarchy.equals("?"))

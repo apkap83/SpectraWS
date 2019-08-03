@@ -103,7 +103,6 @@ public class Help_Func
 		return mystring;
 	}
 	
-	
 	public static void ValidateDateTimeFormat(String dateInput) throws ParseException, InvalidInputException
 	{
 		try
@@ -417,6 +416,14 @@ public class Help_Func
 		return outputHierarchy;
 	}
 
+	public static void ValidateNotEmpty(String fieldName, String value) throws InvalidInputException
+	{
+		if (value.isEmpty())
+		{
+			throw new InvalidInputException("Error 158", "The required field '" + fieldName + "' is empty");
+		}
+	}
+	
 	
 	public static void main(String[] args)
 	{
