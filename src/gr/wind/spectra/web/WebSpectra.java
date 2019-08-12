@@ -76,7 +76,7 @@ public class WebSpectra// implements WebSpectraInterface
 		// Check if Authentication credentials are correct.
 		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("Error 100", "User name or Password incorrect!");}
 		
-		// Check if Required fields are emptys
+		// Check if Required fields are empty
 		Help_Func.ValidateNotEmpty("RequestID", RequestID);
 		Help_Func.ValidateNotEmpty("RequestTimestamp", RequestTimestamp);
 		Help_Func.ValidateNotEmpty("SystemID", SystemID);
@@ -197,11 +197,9 @@ public class WebSpectra// implements WebSpectraInterface
 	(
 		@WebParam(name="UserName", header = true, mode = Mode.IN) String UserName,
 		@WebParam(name="Password", header = true, mode = Mode.IN) String Password,
-		@WebParam(name="RequestID") @XmlElement( required = true ) String RequestID,
 		@WebParam(name="RequestTimestamp") @XmlElement( required = true ) String RequestTimestamp,
 		@WebParam(name="SystemID") @XmlElement( required = true ) String SystemID,
 		@WebParam(name="UserID") @XmlElement( required = true ) String UserID,
-
 		// Defines Uniquely The Incident
 		@WebParam(name="IncidentID") @XmlElement( required = true ) String IncidentID,
 		@WebParam(name="Scheduled") @XmlElement( required = true ) String Scheduled,
@@ -209,24 +207,53 @@ public class WebSpectra// implements WebSpectraInterface
 		@WebParam(name="EndTime") @XmlElement( required = false ) String EndTime,
 		@WebParam(name="Duration") @XmlElement( required = false ) String Duration,
 		// TV, VOICE, DATA
-		@WebParam(name="AffectedServices") @XmlElement( required = false ) String AffectedServices,
+		@WebParam(name="AffectedServices") @XmlElement( required = true ) String AffectedServices,
 		// Quality, Loss
-		@WebParam(name="Impact") @XmlElement( required = false ) String Impact,
+		@WebParam(name="Impact") @XmlElement( required = true ) String Impact,
 		@WebParam(name="Priority") @XmlElement( required = true ) String Priority,
-		// @WebParam(name="Type") @XmlElement( required = true ) String Type,
-		//LLU||Elementname||/slot||3##4$$
 		@WebParam(name="HierarchySelected") @XmlElement( required = true ) String HierarchySelected
 	) throws InvalidInputException, ParseException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException
 	{	
 		WebSpectra wb = new WebSpectra();
 		List<ProductOfSubmission> prodElementsList = new ArrayList<>();
-		String OutageID;
+		int OutageID_Integer;
 		
 		// Check if Authentication credentials are correct.
 		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("Error 100", "User name or Password incorrect!");}
 		
+		// Check if Required fields are empty
+		Help_Func.ValidateNotEmpty("RequestTimestamp", RequestTimestamp);
+		Help_Func.ValidateNotEmpty("StartTime", StartTime);
+		Help_Func.ValidateNotEmpty("SystemID", SystemID);
+		Help_Func.ValidateNotEmpty("UserID", UserID);
+		Help_Func.ValidateNotEmpty("IncidentID", IncidentID);
+		Help_Func.ValidateNotEmpty("Scheduled", Scheduled);
+		Help_Func.ValidateNotEmpty("AffectedServices", AffectedServices);
+		Help_Func.ValidateNotEmpty("Impact", Impact);
+		Help_Func.ValidateNotEmpty("Priority", Priority);
+		Help_Func.ValidateNotEmpty("HierarchySelected", HierarchySelected);
+
+		// Validate Date Formats if the fields are not empty
+		if (! Help_Func.checkIfEmpty("RequestTimestamp", RequestTimestamp))	{ Help_Func.ValidateDateTimeFormat("RequestTimestamp", RequestTimestamp); }
+		if (! Help_Func.checkIfEmpty("StartTime", StartTime))	{ Help_Func.ValidateDateTimeFormat("StartTime", StartTime); }
+		if (! Help_Func.checkIfEmpty("EndTime", EndTime))	{ Help_Func.ValidateDateTimeFormat("EndTime", EndTime); }
+		
+		// Validate against predefined values
+		Help_Func.ValidateAgainstPredefinedValues("Scheduled", Scheduled, new String[] {"Yes", "No"});
+		
+		// Validate against predefined values alone or delimited by "|"
+		Help_Func.ValidateDelimitedValues("AffectedServices", AffectedServices, "\\|", new String[] {"Voice", "Internet", "IP TV"});
+		
+		// Validate against predefined values
+		Help_Func.ValidateAgainstPredefinedValues("Impact", Impact, new String[] {"QoS", "LoS"});
+				
+		// Validate against predefined values
+		Help_Func.ValidateAgainstPredefinedValues("Priority", Priority, new String[] {"Critical", "Medium", "Low"});
+
 		try {
-			/*boolean result = wb.dbs.InsertValuesInTable("SubmittedIncidents", 
+			
+			/*
+			boolean result = wb.dbs.InsertValuesInTable("SubmittedIncidents", 
 					new String[] {"DateTime", "RequestID", "RequestTimestamp", "SystemID", "UserID", "IncidentID", "Scheduled", "StartTime", "EndTime", "Duration", "AffectedServices", "Impact", "Priority", "HierarchySelected"}, 
 					new String[] {
 							"2019-01-01 00:01:00",
@@ -247,25 +274,32 @@ public class WebSpectra// implements WebSpectraInterface
 				*/
 			
 				// Validate
-				Help_Func.ValidateDateTimeFormat(RequestTimestamp);
-				Help_Func.ValidateDateTimeFormat(StartTime);
-				Help_Func.ValidateDateTimeFormat(EndTime);
-
+				
 				java.util.List myHier = Help_Func.GetHierarchySelections(HierarchySelected);
+				
+				// Get Max Outage ID (type int)
+				OutageID_Integer = wb.dbs.GetMaxIntegerValue("SubmittedIncidents", "OutageID");
+				
+				// Add One
+				OutageID_Integer += 1;
 				
 				for(int i=0;i<myHier.size();i++)
 				{
 					// Firstly determine the hierarchy table that will be used based on the root hierarchy provided 
 					String rootHierarchySelected = Help_Func.GetRootHierarchyNode(myHier.get(i).toString());
-					String table =  wb.dbs.GetOneValue("HierarchyTablePerTechnology", "TableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+					String table =  wb.dbs.GetOneValue("HierarchyTablePerTechnology", "SubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
 					String customersAffected = wb.dbs.NumberOfRowsFound(table, Help_Func.HierarchyToPredicate(myHier.get(i).toString()));
+			
+					// Convert it to String (only for the sake of the below method (InsertValuesInTableGetSequence) - In the database it is still an integer
+					String OutageID_String = Integer.toString(OutageID_Integer);
 					
-					OutageID = wb.dbs.InsertValuesInTableGetSequence("SubmittedIncidents", 
-					new String[] {"DateTime", "RequestID", "IncidentStatus", "RequestTimestamp", "SystemID", "UserID", "IncidentID", 
+					// Insert Value in Database
+					wb.dbs.InsertValuesInTableGetSequence("SubmittedIncidents", 
+					new String[] {"DateTime", "OutageID", "IncidentStatus", "RequestTimestamp", "SystemID", "UserID", "IncidentID", 
 							"Scheduled", "StartTime", "EndTime", "Duration", "AffectedServices", "Impact", "Priority", "HierarchySelected", "AffectedCustomers" },
 					new String[] {
 							Help_Func.now(),
-							RequestID,
+							OutageID_String,
 							"OPEN",
 							RequestTimestamp,
 							SystemID,
@@ -281,24 +315,24 @@ public class WebSpectra// implements WebSpectraInterface
 							myHier.get(i).toString(),
 							customersAffected
 					},
-					new String[] {"DateTime", "String", "String", "DateTime", "String", "String", "String", "String", "DateTime", "DateTime", 
+					new String[] {"DateTime", "Integer", "String", "DateTime", "String", "String", "String", "String", "DateTime", "DateTime", 
 							"String", "String", "String", "String", "String", "Integer" }
 							);
 					
-					if (Integer.parseInt(OutageID) > 0)
+					if (Integer.parseInt(OutageID_String) > 0)
 					{
-						ProductOfSubmission ps = new ProductOfSubmission(RequestID, OutageID, IncidentID, customersAffected, "1", "Submitted Successfully");
+						ProductOfSubmission ps = new ProductOfSubmission(OutageID_String, IncidentID, customersAffected, "1", "Submitted Successfully");
 						prodElementsList.add(ps);
 					
 					}
 				}
+				
 
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			System.out.println("ERRRRROR!");
 			e.printStackTrace();
 		}
-		
 		// Calculate CLIs affected
 		//if (Outcome == true)
 		//{
@@ -327,7 +361,7 @@ public class WebSpectra// implements WebSpectraInterface
 		//}
 		//return prodElementsList;
 		
-		wb.conObj.closeDBConnection();
+		//wb.conObj.closeDBConnection();
 		return prodElementsList;
 	}
 
@@ -394,44 +428,48 @@ public class WebSpectra// implements WebSpectraInterface
 	
 	@WebMethod
 	@WebResult(name="Result")
-	public List<Product> modifyOutage
+	public List<ProductOfSubmission> modifyOutage
 	(
 		@WebParam(name="UserName", header = true, mode = Mode.IN) String UserName,
 		@WebParam(name="Password", header = true, mode = Mode.IN) String Password,
-		@WebParam(name="RequestID") @XmlElement( required = true ) String RequestID,
+		@WebParam(name="OutageID") @XmlElement( required = true ) String OutageID,
 		@WebParam(name="RequestTimestamp") @XmlElement( required = true ) String RequestTimestamp,
 		@WebParam(name="SystemID") @XmlElement( required = true ) String SystemID,
 		@WebParam(name="UserID") @XmlElement( required = true ) String UserID,
-
-		// Defines Uniquely The Incident & Should match line in SubmittedIncidents Table
 		@WebParam(name="IncidentID") @XmlElement( required = true ) String IncidentID,
-		// @WebParam(name="Scheduled") @XmlElement( required = true ) String Scheduled,
-		// @WebParam(name="StartTime") @XmlElement( required = true ) String StartTime,
-		
+		@WebParam(name="StartTime") @XmlElement( required = false ) String StartTime,
 		@WebParam(name="EndTime") @XmlElement( required = false ) String EndTime,
 		@WebParam(name="Duration") @XmlElement( required = false ) String Duration,
-		// TV, VOICE, DATA
+		// Voice|Internet|IP TV
 		@WebParam(name="AffectedServices") @XmlElement( required = false ) String AffectedServices,
 		// Quality, Loss
 		@WebParam(name="Impact") @XmlElement( required = false ) String Impact,
-		@WebParam(name="Priority") @XmlElement( required = false ) String Priority,
-		// @WebParam(name="Type") @XmlElement( required = true ) String Type,
-		//LLU||Elementname||/slot||3##4$$
-		@WebParam(name="HierarchySelected") @XmlElement( required = true ) String HierarchySelected
+		@WebParam(name="HierarchySelected") @XmlElement( required = false ) String HierarchySelected
 	) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, InvalidInputException
 	{	
 		WebSpectra wb = new WebSpectra();
-		wb.conObj.closeDBConnection();
+		List<ProductOfSubmission> prodElementsList = new ArrayList<>();
 		
 		// Check if Authentication credentials are correct.
 		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("Error 100", "User name or Password incorrect!");}
 		
-		return null;
+		// Check if Required fields are empty
+		Help_Func.ValidateNotEmpty("OutageID", OutageID);
+		Help_Func.ValidateNotEmpty("RequestTimestamp", RequestTimestamp);
+		Help_Func.ValidateNotEmpty("SystemID", SystemID);
+		Help_Func.ValidateNotEmpty("UserID", UserID);
+		Help_Func.ValidateNotEmpty("IncidentID", IncidentID);
+		
+		ProductOfSubmission ps = new ProductOfSubmission(OutageID, IncidentID, "Unknown", "1", "Modified Successfully");
+		prodElementsList.add(ps);
+		
+		wb.conObj.closeDBConnection();
+		return prodElementsList;
 	}
 
 	@WebMethod
 	@WebResult(name="Result")
-	public List<Product> closeOutage
+	public List<ProductOfSubmission> closeOutage
 	(
 		@WebParam(name="UserName", header = true, mode = Mode.IN) String UserName,
 		@WebParam(name="Password", header = true, mode = Mode.IN) String Password,

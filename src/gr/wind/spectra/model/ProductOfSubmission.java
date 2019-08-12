@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.*;
 import gr.wind.spectra.business.Help_Func;
 
 @XmlRootElement(name = "Element")
-@XmlType(name = "basicStruct2", propOrder = {"requestID", "outageID", "incidentID", "numOfCustomerssAffected", "statusCode", "description"})
+@XmlType(name = "basicStruct2", propOrder = {"outageID", "incidentID", "numOfCustomerssAffected", "statusCode", "description"})
 public class ProductOfSubmission {
 	
 	private String requestID;
@@ -22,7 +22,7 @@ public class ProductOfSubmission {
 	{
 	}
 	
-	public ProductOfSubmission(String requestID, String outageID, String incidentID, String numOfCustomerssAffected, String statusCode, String description)
+	public ProductOfSubmission(String outageID, String incidentID, String numOfCustomerssAffected, String statusCode, String description)
 	{
 		this.incidentID = incidentID;
 		this.outageID = outageID;
@@ -31,17 +31,6 @@ public class ProductOfSubmission {
 		this.description = description;
 	}
 	
-	@XmlElement(name = "requestID")
-	public String getrequestID()
-	{
-		return this.requestID;
-	}
-	
-	public void setrequestID(String requestID)
-	{
-		this.requestID = requestID;
-	}
-
 	@XmlElement(name = "outageID")
 	public String getoutageID()
 	{

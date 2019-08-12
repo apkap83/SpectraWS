@@ -103,7 +103,7 @@ public class Help_Func
 		return mystring;
 	}
 	
-	public static void ValidateDateTimeFormat(String dateInput) throws ParseException, InvalidInputException
+	public static void ValidateDateTimeFormat(String fieldName, String dateInput) throws ParseException, InvalidInputException
 	{
 		try
 		{
@@ -111,11 +111,55 @@ public class Help_Func
 		} catch (ParseException e)
 		{
 			e.printStackTrace();
-			throw new InvalidInputException("Invalid DateTime Input", "DateTime field is not in expected format \"yyyy-MM-dd HH:mm:ss\"");
+			throw new InvalidInputException("Invalid DateTime Input", fieldName + " field is not in expected format \"yyyy-MM-dd HH:mm:ss\"");
 		}
 			
 	}
-	
+	public static void ValidateAgainstPredefinedValues(String fieldName, String fieldValue, String[] values) throws InvalidInputException
+	{
+		boolean found = false;
+		for (String preValue: values)
+		{
+			if (preValue.equals(fieldValue))
+			{
+				found = true;
+			}
+		}
+		
+		if (! found)
+		{
+			throw new InvalidInputException("Error 180", "The accepted values of field '" + fieldName + "' are: " + String.join(", ", values) );
+		}
+		
+	}
+	public static void ValidateDelimitedValues(String fieldName, String fieldValue, String delimiter, String[] acceptedValues  ) throws InvalidInputException
+	{
+		// Accepted values are Voice, Internet, IP TV or Voice|Internet|IP TV and any other combination
+		boolean acceptedValue = false;
+		
+		// Split with pipe (|) delimiter
+		delimiter = "\\|";
+		String[] allDelimitedFields = fieldValue.split(delimiter);
+		
+		for (String item: allDelimitedFields)
+		{
+			boolean foundInArray = false;
+			
+			for (String acceptedVal : acceptedValues)
+			{
+				if (item.equals(acceptedVal))
+				{
+					foundInArray = true;
+				}
+			}
+			
+			if (! foundInArray)
+			{
+				throw new InvalidInputException("Error 181", "The accepted values of field '" + fieldName + "' are not validated against any combination of Voice, Internet, IP TV alone or with pipe delimiter" );
+			}
+			
+		}
+	}
 	public static ArrayList<String> HierarchyStringToANDPredicates(String hierarchySelected)
 	{
 		// hierarchySelected = FTTX=1|OLTElementName=Tolis
@@ -163,7 +207,6 @@ public class Help_Func
 		
 		return elementHierarchy;
 	}
-	
 	public static String columnsWithCommas(String[] columns)
 	{
 		int numOfColumns = columns.length;
@@ -423,6 +466,22 @@ public class Help_Func
 			throw new InvalidInputException("Error 158", "The required field '" + fieldName + "' is empty");
 		}
 	}
+	
+	public static boolean checkIfEmpty(String fieldName, String value) throws InvalidInputException
+	{
+		boolean emptiness = false;
+		
+		if (value.isEmpty())
+		{
+			emptiness = true;
+		}
+		else
+		{
+			emptiness = false;
+		}
+		return emptiness;
+	}
+	
 	
 	
 	public static void main(String[] args)
