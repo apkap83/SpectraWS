@@ -216,7 +216,8 @@ public class WebSpectra// implements WebSpectraInterface
 	{	
 		WebSpectra wb = new WebSpectra();
 		List<ProductOfSubmission> prodElementsList = new ArrayList<>();
-		int OutageID_Integer;
+		int OutageID_Integer = 0;
+		int totalNumberOfCustomersAffectedPerIncident = 0;
 		
 		// Check if Authentication credentials are correct.
 		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("Error 100", "User name or Password incorrect!");}
@@ -250,118 +251,97 @@ public class WebSpectra// implements WebSpectraInterface
 		// Validate against predefined values
 		Help_Func.ValidateAgainstPredefinedValues("Priority", Priority, new String[] {"Critical", "Medium", "Low"});
 
-		try {
-			
-			/*
-			boolean result = wb.dbs.InsertValuesInTable("SubmittedIncidents", 
-					new String[] {"DateTime", "RequestID", "RequestTimestamp", "SystemID", "UserID", "IncidentID", "Scheduled", "StartTime", "EndTime", "Duration", "AffectedServices", "Impact", "Priority", "HierarchySelected"}, 
-					new String[] {
-							"2019-01-01 00:01:00",
-							"R1",
-							"2019-01-01 00:01:00",
-							"Remedy",
-							"akapetan",
-							"Incident1",
-							"N",
-							"2019-01-01 00:01:00",
-							"2019-01-01 00:01:00",
-							"1",
-							"TV",
-							"Quality",
-							"Major",
-							"FTTX=1||OLTElementName=Tolis"
-					});
-				*/
-			
-				// Validate
-				
-				java.util.List myHier = Help_Func.GetHierarchySelections(HierarchySelected);
-				
-				// Get Max Outage ID (type int)
-				OutageID_Integer = wb.dbs.GetMaxIntegerValue("SubmittedIncidents", "OutageID");
-				
+
+		java.util.List myHier = Help_Func.GetHierarchySelections(HierarchySelected);
+
+		// Get Max Outage ID (type int)
+		OutageID_Integer = wb.dbs.GetMaxIntegerValue("SubmittedIncidents", "OutageID");
+
+		// Services affected
+		String [] servicesAffected = AffectedServices.split("\\|");
+
+		// Calculate Total number of customers affected per incident
+		for (String service : servicesAffected)
+		{	
+			for(int i=0;i<myHier.size();i++)
+			{
+				// Firstly determine the hierarchy table that will be used based on the root hierarchy provided 
+				String rootHierarchySelected = Help_Func.GetRootHierarchyNode(myHier.get(i).toString());
+				String table =  wb.dbs.GetOneValue("HierarchyTablePerTechnology", "SubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+					String customersAffected = wb.dbs.NumberOfRowsFound(table, Help_Func.HierarchyToPredicate(myHier.get(i).toString()));
+		
+				// Calculate Total number of customers affected per incident
+				totalNumberOfCustomersAffectedPerIncident += Integer.parseInt(customersAffected);
+			}
+		}
+
+		// Check if for the same Incident ID, Service & Hierarchy - We have already an entry
+		for (String service : servicesAffected)
+		{	
+			for(int i=0;i<myHier.size();i++)
+			{
+				// Firstly determine the hierarchy table that will be used based on the root hierarchy provided
+				String rootHierarchySelected = Help_Func.GetRootHierarchyNode(myHier.get(i).toString());
+				String table =  wb.dbs.GetOneValue("HierarchyTablePerTechnology", "SubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+
+				boolean incidentAlreadyExists = wb.dbs.CheckIfCriteriaExists("SubmittedIncidents", new String[] {"IncidentStatus", "IncidentID", "AffectedServices", "HierarchySelected"}, "IncidentStatus='OPEN' AND IncidentID = '" + IncidentID + "' AND AffectedServices = '" + service + "' AND HierarchySelected = '" + myHier.get(i).toString() + "'"); 
+				if (incidentAlreadyExists)
+				{
+					throw new InvalidInputException("Error 195", "There is already an openned incident (" + IncidentID + ") that defines outage for AffectedService = " + service + " and HierarchySelected = " + myHier.get(i).toString());
+				}
+			}
+		}
+		
+		for (String service : servicesAffected)
+		{	
+			for(int i=0;i<myHier.size();i++)
+			{
 				// Add One
 				OutageID_Integer += 1;
 				
-				for(int i=0;i<myHier.size();i++)
-				{
-					// Firstly determine the hierarchy table that will be used based on the root hierarchy provided 
-					String rootHierarchySelected = Help_Func.GetRootHierarchyNode(myHier.get(i).toString());
-					String table =  wb.dbs.GetOneValue("HierarchyTablePerTechnology", "SubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
-					String customersAffected = wb.dbs.NumberOfRowsFound(table, Help_Func.HierarchyToPredicate(myHier.get(i).toString()));
-			
-					// Convert it to String (only for the sake of the below method (InsertValuesInTableGetSequence) - In the database it is still an integer
-					String OutageID_String = Integer.toString(OutageID_Integer);
-					
-					// Insert Value in Database
-					wb.dbs.InsertValuesInTableGetSequence("SubmittedIncidents", 
-					new String[] {"DateTime", "OutageID", "IncidentStatus", "RequestTimestamp", "SystemID", "UserID", "IncidentID", 
-							"Scheduled", "StartTime", "EndTime", "Duration", "AffectedServices", "Impact", "Priority", "HierarchySelected", "AffectedCustomers" },
-					new String[] {
-							Help_Func.now(),
-							OutageID_String,
-							"OPEN",
-							RequestTimestamp,
-							SystemID,
-							UserID,
-							IncidentID,
-							Scheduled,
-							StartTime,
-							EndTime,
-							Duration,
-							AffectedServices,
-							Impact,
-							Priority,
-							myHier.get(i).toString(),
-							customersAffected
-					},
-					new String[] {"DateTime", "Integer", "String", "DateTime", "String", "String", "String", "String", "DateTime", "DateTime", 
-							"String", "String", "String", "String", "String", "Integer" }
-							);
-					
-					if (Integer.parseInt(OutageID_String) > 0)
-					{
-						ProductOfSubmission ps = new ProductOfSubmission(OutageID_String, IncidentID, customersAffected, "1", "Submitted Successfully");
-						prodElementsList.add(ps);
-					
-					}
-				}
+				// Firstly determine the hierarchy table that will be used based on the root hierarchy provided
+				String rootHierarchySelected = Help_Func.GetRootHierarchyNode(myHier.get(i).toString());
+				String table =  wb.dbs.GetOneValue("HierarchyTablePerTechnology", "SubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+				String customersAffected = wb.dbs.NumberOfRowsFound(table, Help_Func.HierarchyToPredicate(myHier.get(i).toString()));
 				
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			System.out.println("ERRRRROR!");
-			e.printStackTrace();
+				// Convert it to String (only for the sake of the below method (InsertValuesInTableGetSequence) - In the database it is still an integer
+				String OutageID_String = Integer.toString(OutageID_Integer);
+				
+				// Insert Values in Database
+				wb.dbs.InsertValuesInTable("SubmittedIncidents", 
+				new String[] {"DateTime", "OutageID", "IncidentStatus", "RequestTimestamp", "SystemID", "UserID", "IncidentID", 
+						"Scheduled", "StartTime", "EndTime", "Duration", "AffectedServices", "Impact", "Priority", "HierarchySelected", "AffectedCustomers" },
+				new String[] {
+						Help_Func.now(),
+						OutageID_String,
+						"OPEN",
+						RequestTimestamp,
+						SystemID,
+						UserID,
+						IncidentID,
+						Scheduled,
+						StartTime,
+						EndTime,
+						Duration,
+						service,
+						Impact,
+						Priority,
+						myHier.get(i).toString(),
+						customersAffected
+				},
+				new String[] {"DateTime", "Integer", "String", "DateTime", "String", "String", "String", "String", "DateTime", "DateTime", 
+						"String", "String", "String", "String", "String", "Integer" }
+				);
+						
+				if (Integer.parseInt(OutageID_String) > 0)
+				{
+					ProductOfSubmission ps = new ProductOfSubmission(OutageID_String, IncidentID, customersAffected, "1", service, myHier.get(i).toString(), totalNumberOfCustomersAffectedPerIncident, "Submitted Successfully");
+					prodElementsList.add(ps);
+				}
+			}
 		}
-		// Calculate CLIs affected
-		//if (Outcome == true)
-		//{
-			// Firstly determine the hierarchy table that will be used based on the root hierarchy provided 
-			//wb.dbs.GetOneValue("HierarchyTablePerTechnology", "TableName", "RootHierarchyNode = ");
-		
-			//int rowsAffected = wb.dbs.NumberOfRowsFound(, String predicate)
-			//ProductOfSubmission ps = new ProductOfSubmission(RequestID, IncidentID, Integer.toString(rowsAffected), "1", "SUCCESS!");
-			//prodElementsList.add(ps);
-		//}
-		
-		//try {
-			
-		//	if (predicates.get(0).equals("FTTX"))
-			//{
-			
-				//int rowsAffected = wb.dbs.UpdateValuesForOneColumn("Internet_Resource_Path", "OutageID", OutageID, predicates.get(1));	
-				//ProductOfSubmission ps = new ProductOfSubmission(RequestID, IncidentID, Integer.toString(rowsAffected), "1", "SUCCESS!");
-				//prodElementsList.add(ps);
-			//}
-		//	System.out.println(predicates.get(0));
-			
-		//} catch (SQLException e) {
-			// TODO Auto-generated catch block
-		//	e.printStackTrace();
-		//}
-		//return prodElementsList;
-		
-		//wb.conObj.closeDBConnection();
+
+		wb.conObj.closeDBConnection();
 		return prodElementsList;
 	}
 
@@ -460,11 +440,12 @@ public class WebSpectra// implements WebSpectraInterface
 		Help_Func.ValidateNotEmpty("UserID", UserID);
 		Help_Func.ValidateNotEmpty("IncidentID", IncidentID);
 		
-		ProductOfSubmission ps = new ProductOfSubmission(OutageID, IncidentID, "Unknown", "1", "Modified Successfully");
-		prodElementsList.add(ps);
+	//	ProductOfSubmission ps = new ProductOfSubmission(OutageID, IncidentID, "Unknown", "1", "Modified Successfully");
+	//	prodElementsList.add(ps);
 		
 		wb.conObj.closeDBConnection();
-		return prodElementsList;
+	//	return prodElementsList;
+		return null;
 	}
 
 	@WebMethod

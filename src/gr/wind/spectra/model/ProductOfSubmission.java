@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.*;
 import gr.wind.spectra.business.Help_Func;
 
 @XmlRootElement(name = "Element")
-@XmlType(name = "basicStruct2", propOrder = {"outageID", "incidentID", "numOfCustomerssAffected", "statusCode", "description"})
+@XmlType(name = "basicStruct2", propOrder = {"outageID", "incidentID", "numOfCustomerssAffected", "serviceAffected", "hierarchySelected", "totalNumberOfCustomersAffected", "statusCode", "description"})
 public class ProductOfSubmission {
 	
 	private String requestID;
@@ -16,20 +16,59 @@ public class ProductOfSubmission {
 	private String numOfCustomerssAffected;
 	private String statusCode;
 	private String description;
-	
+	private String serviceAffected;
+	private String hierarchySelected;
+	private int totalNumberOfCustomersAffected;
 	// Empty constructor requirement of JAXB (Java Architecture for XML Binding)
 	public ProductOfSubmission()
 	{
 	}
 	
-	public ProductOfSubmission(String outageID, String incidentID, String numOfCustomerssAffected, String statusCode, String description)
+	public ProductOfSubmission(String outageID, String incidentID, String numOfCustomerssAffected, String statusCode, String serviceAffected, String hierarchySelected, int totalNumberOfCustomersAffected, String description)
 	{
 		this.incidentID = incidentID;
 		this.outageID = outageID;
 		this.numOfCustomerssAffected = numOfCustomerssAffected;
 		this.statusCode = statusCode;
 		this.description = description;
+		this.serviceAffected = serviceAffected;
+		this.hierarchySelected = hierarchySelected;
+		this.totalNumberOfCustomersAffected = totalNumberOfCustomersAffected;
 	}
+
+	@XmlElement(name = "serviceAffected")
+	public String getserviceAffected()
+	{
+		return this.serviceAffected;
+	}
+	
+	public void setserviceAffected(String serviceAffected)
+	{
+		this.serviceAffected = serviceAffected;
+	}
+	
+	@XmlElement(name = "hierarchySelected")
+	public String gethierarchySelected()
+	{
+		return this.hierarchySelected;
+	}
+	
+	public void sethierarchySelected(String hierarchySelected)
+	{
+		this.hierarchySelected = hierarchySelected;
+	}
+	
+	@XmlElement(name = "totalNumberOfCustomersAffected")
+	public int gettotalNumberOfCustomersAffected()
+	{
+		return this.totalNumberOfCustomersAffected;
+	}
+	
+	public void settotalNumberOfCustomersAffected(int totalNumberOfCustomersAffected)
+	{
+		this.totalNumberOfCustomersAffected = totalNumberOfCustomersAffected;
+	}
+	
 	
 	@XmlElement(name = "outageID")
 	public String getoutageID()
