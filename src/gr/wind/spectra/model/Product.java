@@ -72,7 +72,8 @@ public class Product {
 				}
 				
 				// Calculate Customers Affected but replace column names in order to search table for customers affected
-				String customersAffected = dbs.NumberOfRowsFound(table, Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(this.hierarchyProvided, subsFullPath)));
+				//String customersAffected = dbs.NumberOfRowsFound(table, Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(this.hierarchyProvided, subsFullPath)));
+				String customersAffected = dbs.NumberOfDistinctRowsForSpecificColumnFound(table, "Username", Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(this.hierarchyProvided, subsFullPath)));
 				this.potentialCustomersAffected = customersAffected;
 				
 			}

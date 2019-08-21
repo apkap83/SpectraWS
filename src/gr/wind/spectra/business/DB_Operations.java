@@ -280,6 +280,23 @@ public class DB_Operations
   		
   		return Integer.toString(numOfRows);
   	}
+
+  	public String NumberOfDistinctRowsForSpecificColumnFound(String table, String column, String predicate) throws SQLException
+  	{
+  		int numOfRows = 0;
+  		String sqlQuery = "SELECT DISTINCT " + column + " FROM " + table + " WHERE " + predicate + ";";
+		System.out.println(sqlQuery);
+		PreparedStatement pst = conn.prepareStatement(sqlQuery);
+		pst.execute();
+		ResultSet rs = pst.executeQuery();
+  		
+  		while ( rs.next() )
+  	    {
+  			numOfRows++;
+ 	    }
+  		
+  		return Integer.toString(numOfRows);
+  	}  	
   	
   	public ResultSet GetRows(String table, String[] columnNames, String predicate) throws SQLException
   	{
