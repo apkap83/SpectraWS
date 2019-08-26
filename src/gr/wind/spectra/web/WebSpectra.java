@@ -291,12 +291,13 @@ public class WebSpectra// implements WebSpectraInterface
 				// Get Hierarchies for Data/Voice Tables
 				String fullDataHierarchyPath = wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "DataSubscribersTableNamePath", "RootHierarchyNode = '" + rootHierarchySelected + "'");
 				String[] fullDataHierarchyPathSplit = fullDataHierarchyPath.split("->"); 
+
 				String fullVoiceHierarchyPath = wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "VoiceSubscribersTableNamePath", "RootHierarchyNode = '" + rootHierarchySelected + "'");
 				String[] fullVoiceHierarchyPathSplit = fullVoiceHierarchyPath.split("->");
 				
 				// Count distinct values of Usernames or CliVlaues the respective columns
-				String dataCustomersAffected = dbs.CountDistinctRowsForSpecificColumn(dataSubsTable, "Username", Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(HierarchySelected, fullDataHierarchyPathSplit)));
-				String voiceCustomersAffected = dbs.CountDistinctRowsForSpecificColumn(voiceSubsTable, "Username", Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(HierarchySelected, fullVoiceHierarchyPathSplit)));
+				String dataCustomersAffected = dbs.CountDistinctRowsForSpecificColumn(dataSubsTable, "Username", Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(myHier.get(i).toString(), fullDataHierarchyPathSplit)));
+				String voiceCustomersAffected = dbs.CountDistinctRowsForSpecificColumn(voiceSubsTable, "Username", Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
 				
 				// For Voice no data customers are affected and vice versa
 				if (service.equals("Voice"))
@@ -355,9 +356,9 @@ public class WebSpectra// implements WebSpectraInterface
 				String[] fullVoiceHierarchyPathSplit = fullVoiceHierarchyPath.split("->");
 				
 				// Count distinct values of Usernames or CliVlaues the respective columns
-				String dataCustomersAffected = dbs.CountDistinctRowsForSpecificColumn(dataSubsTable, "Username", Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(HierarchySelected, fullDataHierarchyPathSplit)));
-				String voiceCustomersAffected = dbs.CountDistinctRowsForSpecificColumn(voiceSubsTable, "Username", Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(HierarchySelected, fullVoiceHierarchyPathSplit)));
-				String CLIsAffected = dbs.CountDistinctRowsForSpecificColumn(voiceSubsTable, "CliValue", Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(HierarchySelected, fullVoiceHierarchyPathSplit)));
+				String dataCustomersAffected = dbs.CountDistinctRowsForSpecificColumn(dataSubsTable, "Username", Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(myHier.get(i).toString(), fullDataHierarchyPathSplit)));
+				String voiceCustomersAffected = dbs.CountDistinctRowsForSpecificColumn(voiceSubsTable, "Username", Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
+				String CLIsAffected = dbs.CountDistinctRowsForSpecificColumn(voiceSubsTable, "CliValue", Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
 				
 				// For Voice no data customers are affected and vice versa
 				if (service.equals("Voice"))
@@ -397,9 +398,8 @@ public class WebSpectra// implements WebSpectraInterface
 						voiceCustomersAffected,
 						dataCustomersAffected,
 						CLIsAffected,
-						Integer.toString(incidentDataCustomersAffected),
 						Integer.toString(incidentVoiceCustomersAffected),
-						
+						Integer.toString(incidentDataCustomersAffected)
 				},
 				new String[] {"DateTime", "Integer", "String", "DateTime", "String", "String", "String", "String", "DateTime", "DateTime", 
 						"String", "String", "String", "String", "String", "Integer", "Integer", "Integer", "Integer", "Integer" }
