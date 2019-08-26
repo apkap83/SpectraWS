@@ -238,7 +238,10 @@ public class DB_Operations
 			while ( rs.next() )
 			{
 				String current = rs.getString(columnName);
-				myList.add(current);
+				if (! (current == null || current.isEmpty()))
+				{
+					myList.add(current);
+				}
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

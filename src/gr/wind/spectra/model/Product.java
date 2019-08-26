@@ -9,18 +9,22 @@ import gr.wind.spectra.business.DB_Operations;
 import gr.wind.spectra.business.Help_Func;
 
 @XmlRootElement(name = "Element")
-@XmlType(name = "basicStruct", propOrder = {"requestID", "type", "item", "hierarchySelected", "potentialCustomersAffected"})
+@XmlType(name = "basicStruct", propOrder = {"requestID", "type", "item", "hierarchySelected", "internetCustomersAffected", "voiceCustomersAffected", "clisAffected"})
 public class Product {
 	
 	private DB_Operations dbs;
 	private String type;
 	private List<String> items;
-	private String potentialCustomersAffected = "none";
+	private String internetCustomersAffected = "none";
+	private String voiceCustomersAffected = "none";
+	private String CLIsAffected = "none";
 	private String requestID;
 	private String hierarchyProvided;
 	private String[] nodeNames;
 	private String[] nodeValues;
 	private String[] hierarchyFullPathList;
+	private String[] fullDataHierarchyPath;
+	private String[] fullVoiceHierarchyPath;
 	private String[] subsFullPathList;
 	private String[] hierElements;
 	
@@ -28,8 +32,13 @@ public class Product {
 	public Product()
 	{
 	}
+	    // Product(wb.dbs, fullHierarchyFromDBSplit, fullDataSubsHierarchyFromDBSplit, 
+		//		  fullVoiceSubsHierarchyFromDBSplit, Hierarchy, fullHierarchyFromDBSplit[0] ,
+	    //		  ElementsList, nodeNames, nodeValues, RequestID);
 	
-	public Product(DB_Operations dbs, String[] hierarchyFullPath, String[] subsFullPath, String hierarchyProvided ,String type, List<String> items, String[] nodeNames, String[] nodeValues, String requestID) throws SQLException
+	public Product(DB_Operations dbs, String[] hierarchyFullPathList, String[] fullDataHierarchyPath,
+			String[] fullVoiceHierarchyPath, String hierarchyProvided ,String type, List<String> items, 
+			String[] nodeNames, String[] nodeValues, String requestID) throws SQLException
 	{
 		
 		this.dbs = dbs;
@@ -39,8 +48,10 @@ public class Product {
 		this.nodeNames = nodeNames;
 		this.nodeValues = nodeValues;
 		this.requestID = requestID;
-		this.hierarchyFullPathList = hierarchyFullPath;
-		this.subsFullPathList = subsFullPath;
+		
+		//this.fullDataHierarchyPath = fullDataHierarchyPath;
+		//this.fullVoiceHierarchyPath = fullVoiceHierarchyPath;
+		this.hierarchyFullPathList = hierarchyFullPathList;
 		
 		this.hierElements = hierarchyProvided.split("->");
 
@@ -54,28 +65,25 @@ public class Product {
 			// If hierarchyProvided is not null and has > 1 level hierarchy e.g. FTTX->OltElementName
 			if (this.hierElements.length > 1)
 			{
-				System.out.println("APOSTOLIS PRODUCT HERE 2");
 				// Get Root element from hierarchy
 				String rootElement = Help_Func.GetRootHierarchyNode(this.hierarchyProvided);
+				
 				// Firstly determine the hierarchy table that will be used based on the root hierarchy provided 
-				String table =  dbs.GetOneValue("HierarchyTablePerTechnology", "SubscribersTableName", "RootHierarchyNode = '" + rootElement + "'");
+				String dataSubsTable =  dbs.GetOneValue("HierarchyTablePerTechnology2", "DataSubscribersTableName", "RootHierarchyNode = '" + rootElement + "'");
+				String voiceSubsTable =  dbs.GetOneValue("HierarchyTablePerTechnology2", "VoiceSubscribersTableName", "RootHierarchyNode = '" + rootElement + "'");
 
-				// Number of rows asks different table
-				// Because of that we will use correct hierarchy - replaced hierarchy element
 				
-				// Calculate customers affected but for the correct columns
-				System.out.println("this.hierarchyProvided = "+ this.hierarchyProvided);
-				System.out.println("Help_Func.ReplaceHierarchyForSubscribersAffected = "+ Help_Func.ReplaceHierarchyForSubscribersAffected(this.hierarchyProvided, subsFullPath));
-				for (String item : subsFullPath)
-				{
-					System.out.println("Item: " + item);
-				}
+				// Calculate Internet Customers Affected but replace column names in order to search table for customers affected
+				String internetCustomersAffected = dbs.NumberOfDistinctRowsForSpecificColumnFound(dataSubsTable, "Username", Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(this.hierarchyProvided, fullDataHierarchyPath)));
+				this.internetCustomersAffected = internetCustomersAffected;
 				
-				// Calculate Customers Affected but replace column names in order to search table for customers affected
-				//String customersAffected = dbs.NumberOfRowsFound(table, Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(this.hierarchyProvided, subsFullPath)));
-				String customersAffected = dbs.NumberOfDistinctRowsForSpecificColumnFound(table, "Username", Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(this.hierarchyProvided, subsFullPath)));
-				this.potentialCustomersAffected = customersAffected;
+				// Calculate Voice Customers Affected but replace column names in order to search table for customers affected
+				String voiceCustomersAffected = dbs.NumberOfDistinctRowsForSpecificColumnFound(voiceSubsTable, "Username", Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(this.hierarchyProvided, fullVoiceHierarchyPath)));
+				this.voiceCustomersAffected = voiceCustomersAffected;
 				
+				// Calculate CLIs Affected but replace column names in order to search table for customers affected
+				String CLIsAffected = dbs.NumberOfDistinctRowsForSpecificColumnFound(voiceSubsTable, "CliValue", Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(this.hierarchyProvided, fullVoiceHierarchyPath)));
+				this.CLIsAffected = CLIsAffected;
 			}
 		}
 	}
@@ -103,15 +111,38 @@ public class Product {
 	}	
 	
 	
-	@XmlElement(name = "potentialCustomersAffected")
-	public String getpotentialCustomersAffected()
+	@XmlElement(name = "internetCustomersAffected")
+	public String getinternetCustomersAffected()
 	{
-		return potentialCustomersAffected;
+		return internetCustomersAffected;
 	}
 	
-	public void setpotentialCustomersAffected(String potentialCustomersAffected)
+	public void setinternetCustomersAffected(String internetCustomersAffected)
 	{
-		this.potentialCustomersAffected = potentialCustomersAffected;
+		this.internetCustomersAffected = internetCustomersAffected;
+	}
+
+	
+	@XmlElement(name = "voiceCustomersAffected")
+	public String getvoiceCustomersAffected()
+	{
+		return voiceCustomersAffected;
+	}
+	
+	public void setvoiceCustomersAffected(String voiceCustomersAffected)
+	{
+		this.voiceCustomersAffected = voiceCustomersAffected;
+	}
+	
+	@XmlElement(name = "clisAffected")
+	public String getclisAffected()
+	{
+		return this.CLIsAffected;
+	}
+	
+	public void setclisAffected(String clisAffected)
+	{
+		this.CLIsAffected = clisAffected;
 	}
 	
 	public List<String> getitem()

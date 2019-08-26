@@ -69,6 +69,12 @@ public class WebSpectra// implements WebSpectraInterface
 	) throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException, InvalidInputException
 	{
 		
+		/*
+        	<internetCustomersAffected>34</potentialCustomersAffected>// unique user names from Internet Resource path
+        	<voiceCustomersAffected>34</potentialCustomersAffected>  // unique user names from Voice Resource path
+	    	<cLIsAffected>34</potentialCustomersAffected> // unique CLIs from Voice Resource path
+		*/
+		
 		WebSpectra wb = new WebSpectra();
 		List<String> ElementsList = new ArrayList<String>();
 		List<Product> prodElementsList = new ArrayList<>();
@@ -86,10 +92,10 @@ public class WebSpectra// implements WebSpectraInterface
 		if (Hierarchy == null || Hierarchy.equals("") || Hierarchy.equals("?"))
 		{
 			String rootHierarchySelected = "";
-			ElementsList = wb.dbs.GetOneColumnUniqueResultSet("HierarchyTablePerTechnology", "RootHierarchyNode", "1 = 1");
+			ElementsList = wb.dbs.GetOneColumnUniqueResultSet("HierarchyTablePerTechnology2", "RootHierarchyNode", "1 = 1");
 			String[] nodeNames = new String[] {};
 			String[] nodeValues = new String[] {};
-			Product pr = new Product(wb.dbs, new String[] {}, new String[] {}, Hierarchy, "rootElements", ElementsList, nodeNames, nodeValues, RequestID);
+			Product pr = new Product(wb.dbs, new String[] {}, new String[] {}, new String[] {}, Hierarchy, "rootElements", ElementsList, nodeNames, nodeValues, RequestID);
 			prodElementsList.add(pr);
 		}
 		else
@@ -101,20 +107,27 @@ public class WebSpectra// implements WebSpectraInterface
 			String rootElementInHierarchy = Help_Func.GetRootHierarchyNode(Hierarchy);
 
 			// Get Hierarchy Table for that root hierarchy
-			String table = wb.dbs.GetOneValue("HierarchyTablePerTechnology", "HierarchyTableName", "RootHierarchyNode = '" + rootElementInHierarchy + "'");
+			String table = wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "HierarchyTableName", "RootHierarchyNode = '" + rootElementInHierarchy + "'");
 			
 			// Get Full hierarchy from the same table as above in style : OltElementName->OltSlot->OltPort->Onu->ElementName->Slot
-			String fullHierarchyFromDB = wb.dbs.GetOneValue("HierarchyTablePerTechnology", "HierarchyTableNamePath", "RootHierarchyNode = '" + rootElementInHierarchy + "'");
+			String fullHierarchyFromDB = wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "HierarchyTableNamePath", "RootHierarchyNode = '" + rootElementInHierarchy + "'");
 
 			// Split the hierarchy retrieved from DB into fields
 			String[] fullHierarchyFromDBSplit = fullHierarchyFromDB.split("->");			
 			
-			// Get Full hierarchy from the same table as above in style : OltElementName->OltSlot->OltPort->Onu->ActiveElement->Slot
-			String subsHierarchyFromDB = wb.dbs.GetOneValue("HierarchyTablePerTechnology", "SubscribersTableNamePath", "RootHierarchyNode = '" + rootElementInHierarchy + "'");
+			// Get Full Internet hierarchy in style : OltElementName->OltSlot->OltPort->Onu->ActiveElement->Slot
+			String fullDataSubsHierarchyFromDB = wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "DataSubscribersTableNamePath", "RootHierarchyNode = '" + rootElementInHierarchy + "'");
 
-			// Split the hierarchy retrieved from DB into fields
-			String[] subsHierarchyFromDBSplit = subsHierarchyFromDB.split("->");
+			// Split the Internet hierarchy retrieved from DB into fields
+			String[] fullDataSubsHierarchyFromDBSplit = fullDataSubsHierarchyFromDB.split("->");
 
+			// Get Full Voice hierarchy in style : OltElementName->OltSlot->OltPort->Onu->ActiveElement->Slot
+			String fullVoiceSubsHierarchyFromDB = wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "VoiceSubscribersTableNamePath", "RootHierarchyNode = '" + rootElementInHierarchy + "'");
+
+			// Split the Internet hierarchy retrieved from DB into fields
+			String[] fullVoiceSubsHierarchyFromDBSplit = fullVoiceSubsHierarchyFromDB.split("->");
+			
+			
 			// Split given hierarchy
 			String[] hierItemsGiven = Hierarchy.split(hierSep);
 
@@ -133,7 +146,7 @@ public class WebSpectra// implements WebSpectraInterface
 				ElementsList = wb.dbs.GetOneColumnUniqueResultSet(table, fullHierarchyFromDBSplit[0], " 1 = 1 ");
 				String[] nodeNames = new String[] {rootElementInHierarchy};
 				String[] nodeValues = new String[] {"1"};
-				Product pr = new Product(wb.dbs, fullHierarchyFromDBSplit, subsHierarchyFromDBSplit, Hierarchy, fullHierarchyFromDBSplit[0] , ElementsList, nodeNames, nodeValues, RequestID);
+				Product pr = new Product(wb.dbs, fullHierarchyFromDBSplit, fullDataSubsHierarchyFromDBSplit, fullVoiceSubsHierarchyFromDBSplit, Hierarchy, fullHierarchyFromDBSplit[0] , ElementsList, nodeNames, nodeValues, RequestID);
 				prodElementsList.add(pr);	
 			}
 			else
@@ -160,7 +173,7 @@ public class WebSpectra// implements WebSpectraInterface
 					ElementsList = wb.dbs.GetOneColumnUniqueResultSet(table, fullHierarchyFromDBSplit[hierItemsGiven.length-1], Help_Func.HierarchyToPredicate(Hierarchy));
 					String[] nodeNames = nodeNamesArrayList.toArray(new String[nodeNamesArrayList.size()]);  
 					String[] nodeValues = nodeValuesArrayList.toArray(new String[nodeValuesArrayList.size()]);
-					Product pr = new Product(wb.dbs, fullHierarchyFromDBSplit, subsHierarchyFromDBSplit, Hierarchy, fullHierarchyFromDBSplit[hierItemsGiven.length-1], ElementsList, nodeNames, nodeValues, RequestID);
+					Product pr = new Product(wb.dbs, fullHierarchyFromDBSplit, fullDataSubsHierarchyFromDBSplit, fullVoiceSubsHierarchyFromDBSplit, Hierarchy, fullHierarchyFromDBSplit[hierItemsGiven.length-1], ElementsList, nodeNames, nodeValues, RequestID);
 					prodElementsList.add(pr);
 				}
 				else
@@ -183,7 +196,7 @@ public class WebSpectra// implements WebSpectraInterface
 					ElementsList = new ArrayList<String>();
 					String[] nodeNames = nodeNamesArrayList.toArray(new String[nodeNamesArrayList.size()]);  
 					String[] nodeValues = nodeValuesArrayList.toArray(new String[nodeValuesArrayList.size()]);
-					Product pr = new Product(wb.dbs, fullHierarchyFromDBSplit, subsHierarchyFromDBSplit, Hierarchy, "MaxLevel", ElementsList, nodeNames, nodeValues, RequestID);
+					Product pr = new Product(wb.dbs, fullHierarchyFromDBSplit, fullDataSubsHierarchyFromDBSplit, fullVoiceSubsHierarchyFromDBSplit, Hierarchy, "MaxLevel", ElementsList, nodeNames, nodeValues, RequestID);
 					prodElementsList.add(pr);
 				}
 			}
@@ -243,7 +256,7 @@ public class WebSpectra// implements WebSpectraInterface
 		Help_Func.ValidateAgainstPredefinedValues("Scheduled", Scheduled, new String[] {"Yes", "No"});
 		
 		// Validate against predefined values alone or delimited by "|"
-		Help_Func.ValidateDelimitedValues("AffectedServices", AffectedServices, "\\|", new String[] {"Voice", "Internet", "IP TV"});
+		Help_Func.ValidateDelimitedValues("AffectedServices", AffectedServices, "\\|", new String[] {"Voice", "Internet", "IPTV"});
 		
 		// Validate against predefined values
 		Help_Func.ValidateAgainstPredefinedValues("Impact", Impact, new String[] {"QoS", "LoS"});
@@ -267,8 +280,8 @@ public class WebSpectra// implements WebSpectraInterface
 			{
 				// Firstly determine the hierarchy table that will be used based on the root hierarchy provided 
 				String rootHierarchySelected = Help_Func.GetRootHierarchyNode(myHier.get(i).toString());
-				String table =  wb.dbs.GetOneValue("HierarchyTablePerTechnology", "SubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
-					String customersAffected = wb.dbs.NumberOfRowsFound(table, Help_Func.HierarchyToPredicate(myHier.get(i).toString()));
+				String table =  wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "SubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+				String customersAffected = wb.dbs.NumberOfRowsFound(table, Help_Func.HierarchyToPredicate(myHier.get(i).toString()));
 		
 				// Calculate Total number of customers affected per incident
 				totalNumberOfCustomersAffectedPerIncident += Integer.parseInt(customersAffected);
@@ -282,7 +295,7 @@ public class WebSpectra// implements WebSpectraInterface
 			{
 				// Firstly determine the hierarchy table that will be used based on the root hierarchy provided
 				String rootHierarchySelected = Help_Func.GetRootHierarchyNode(myHier.get(i).toString());
-				String table =  wb.dbs.GetOneValue("HierarchyTablePerTechnology", "SubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+				String table =  wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "SubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
 
 				boolean incidentAlreadyExists = wb.dbs.CheckIfCriteriaExists("SubmittedIncidents", new String[] {"IncidentStatus", "IncidentID", "AffectedServices", "HierarchySelected"}, "IncidentStatus='OPEN' AND IncidentID = '" + IncidentID + "' AND AffectedServices = '" + service + "' AND HierarchySelected = '" + myHier.get(i).toString() + "'"); 
 				if (incidentAlreadyExists)
@@ -301,7 +314,7 @@ public class WebSpectra// implements WebSpectraInterface
 				
 				// Firstly determine the hierarchy table that will be used based on the root hierarchy provided
 				String rootHierarchySelected = Help_Func.GetRootHierarchyNode(myHier.get(i).toString());
-				String table =  wb.dbs.GetOneValue("HierarchyTablePerTechnology", "SubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+				String table =  wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "SubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
 				String customersAffected = wb.dbs.NumberOfRowsFound(table, Help_Func.HierarchyToPredicate(myHier.get(i).toString()));
 				
 				// Convert it to String (only for the sake of the below method (InsertValuesInTableGetSequence) - In the database it is still an integer
