@@ -264,7 +264,7 @@ public class WebSpectra// implements WebSpectraInterface
 		// Validate against predefined values
 		Help_Func.ValidateAgainstPredefinedValues("Priority", Priority, new String[] {"Critical", "Medium", "Low"});
 
-
+		// Split to % and to | the hierarchy provided
 		java.util.List myHier = Help_Func.GetHierarchySelections(HierarchySelected);
 
 		// Get Max Outage ID (type int)
@@ -273,21 +273,50 @@ public class WebSpectra// implements WebSpectraInterface
 		// Services affected
 		String [] servicesAffected = AffectedServices.split("\\|");
 
-		// Calculate Total number of customers affected per incident
+		// Calculate Total number per Indicent, of customers affected per incident
+		int incidentDataCustomersAffected = 0;
+		int incidentVoiceCustomersAffected = 0;
+		int incidentCLIsAffected = 0;
 		for (String service : servicesAffected)
 		{	
 			for(int i=0;i<myHier.size();i++)
 			{
 				// Firstly determine the hierarchy table that will be used based on the root hierarchy provided 
 				String rootHierarchySelected = Help_Func.GetRootHierarchyNode(myHier.get(i).toString());
-				String table =  wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "SubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
-				String customersAffected = wb.dbs.NumberOfRowsFound(table, Help_Func.HierarchyToPredicate(myHier.get(i).toString()));
-		
-				// Calculate Total number of customers affected per incident
-				totalNumberOfCustomersAffectedPerIncident += Integer.parseInt(customersAffected);
+			
+				// Determine Tables for Data/Voice subscribers
+				String dataSubsTable =  wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "DataSubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+				String voiceSubsTable =  wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "VoiceSubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+					
+				// Get Hierarchies for Data/Voice Tables
+				String fullDataHierarchyPath = wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "DataSubscribersTableNamePath", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+				String[] fullDataHierarchyPathSplit = fullDataHierarchyPath.split("->"); 
+				String fullVoiceHierarchyPath = wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "VoiceSubscribersTableNamePath", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+				String[] fullVoiceHierarchyPathSplit = fullVoiceHierarchyPath.split("->");
+				
+				// Count distinct values of Usernames or CliVlaues the respective columns
+				String dataCustomersAffected = dbs.CountDistinctRowsForSpecificColumn(dataSubsTable, "Username", Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(HierarchySelected, fullDataHierarchyPathSplit)));
+				String voiceCustomersAffected = dbs.CountDistinctRowsForSpecificColumn(voiceSubsTable, "Username", Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(HierarchySelected, fullVoiceHierarchyPathSplit)));
+				
+				// For Voice no data customers are affected and vice versa
+				if (service.equals("Voice"))
+				{
+					dataCustomersAffected = "0";
+				}
+				else if (service.equals("Internet"))
+				{
+					voiceCustomersAffected = "0";
+				}
+				
+				incidentDataCustomersAffected += Integer.parseInt(dataCustomersAffected);
+				incidentVoiceCustomersAffected += Integer.parseInt(voiceCustomersAffected);
+				
+				System.out.println("incidentDataCustomersAffected = " + incidentDataCustomersAffected);
+				System.out.println("incidentVoiceCustomersAffected = " + incidentVoiceCustomersAffected);
 			}
 		}
-
+		
+/*
 		// Check if for the same Incident ID, Service & Hierarchy - We have already an entry
 		for (String service : servicesAffected)
 		{	
@@ -304,26 +333,51 @@ public class WebSpectra// implements WebSpectraInterface
 				}
 			}
 		}
-		
+*/	
 		for (String service : servicesAffected)
 		{	
-			for(int i=0;i<myHier.size();i++)
+			for(int i=0; i < myHier.size(); i++)
 			{
 				// Add One
 				OutageID_Integer += 1;
 				
 				// Firstly determine the hierarchy table that will be used based on the root hierarchy provided
 				String rootHierarchySelected = Help_Func.GetRootHierarchyNode(myHier.get(i).toString());
-				String table =  wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "SubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
-				String customersAffected = wb.dbs.NumberOfRowsFound(table, Help_Func.HierarchyToPredicate(myHier.get(i).toString()));
 				
+				// Determine Tables for Data/Voice subscribers
+				String dataSubsTable =  wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "DataSubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+				String voiceSubsTable =  wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "VoiceSubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+				
+				// Get Hierarchies for Data/Voice Tables
+				String fullDataHierarchyPath = wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "DataSubscribersTableNamePath", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+				String[] fullDataHierarchyPathSplit = fullDataHierarchyPath.split("->"); 
+				String fullVoiceHierarchyPath = wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "VoiceSubscribersTableNamePath", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+				String[] fullVoiceHierarchyPathSplit = fullVoiceHierarchyPath.split("->");
+				
+				// Count distinct values of Usernames or CliVlaues the respective columns
+				String dataCustomersAffected = dbs.CountDistinctRowsForSpecificColumn(dataSubsTable, "Username", Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(HierarchySelected, fullDataHierarchyPathSplit)));
+				String voiceCustomersAffected = dbs.CountDistinctRowsForSpecificColumn(voiceSubsTable, "Username", Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(HierarchySelected, fullVoiceHierarchyPathSplit)));
+				String CLIsAffected = dbs.CountDistinctRowsForSpecificColumn(voiceSubsTable, "CliValue", Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(HierarchySelected, fullVoiceHierarchyPathSplit)));
+				
+				// For Voice no data customers are affected and vice versa
+				if (service.equals("Voice"))
+				{
+					dataCustomersAffected = "0";
+				}
+				else if (service.equals("Internet"))
+				{
+					voiceCustomersAffected = "0";
+					CLIsAffected = "0";
+				}
+
 				// Convert it to String (only for the sake of the below method (InsertValuesInTableGetSequence) - In the database it is still an integer
 				String OutageID_String = Integer.toString(OutageID_Integer);
 				
 				// Insert Values in Database
 				wb.dbs.InsertValuesInTable("SubmittedIncidents", 
 				new String[] {"DateTime", "OutageID", "IncidentStatus", "RequestTimestamp", "SystemID", "UserID", "IncidentID", 
-						"Scheduled", "StartTime", "EndTime", "Duration", "AffectedServices", "Impact", "Priority", "HierarchySelected", "AffectedCustomers" },
+						"Scheduled", "StartTime", "EndTime", "Duration", "AffectedServices", "Impact", "Priority", "HierarchySelected", "AffectedVoiceCustomers",
+						"AffectedDataCustomers", "AffectedCLICustomers", "IncidentAffectedVoiceCustomers", "IncidentAffectedDataCustomers" },
 				new String[] {
 						Help_Func.now(),
 						OutageID_String,
@@ -340,15 +394,31 @@ public class WebSpectra// implements WebSpectraInterface
 						Impact,
 						Priority,
 						myHier.get(i).toString(),
-						customersAffected
+						voiceCustomersAffected,
+						dataCustomersAffected,
+						CLIsAffected,
+						Integer.toString(incidentDataCustomersAffected),
+						Integer.toString(incidentVoiceCustomersAffected),
+						
 				},
 				new String[] {"DateTime", "Integer", "String", "DateTime", "String", "String", "String", "String", "DateTime", "DateTime", 
-						"String", "String", "String", "String", "String", "Integer" }
+						"String", "String", "String", "String", "String", "Integer", "Integer", "Integer", "Integer", "Integer" }
 				);
-						
+		
 				if (Integer.parseInt(OutageID_String) > 0)
 				{
-					ProductOfSubmission ps = new ProductOfSubmission(OutageID_String, IncidentID, customersAffected, "1", service, myHier.get(i).toString(), totalNumberOfCustomersAffectedPerIncident, "Submitted Successfully");
+					ProductOfSubmission ps = new ProductOfSubmission(OutageID_String, 
+							IncidentID, 
+							voiceCustomersAffected, 
+							dataCustomersAffected, 
+							CLIsAffected, 
+							Integer.toString(incidentVoiceCustomersAffected),
+							Integer.toString(incidentDataCustomersAffected), 
+							"1", 
+							service, 
+							myHier.get(i).toString(), 
+							"Submitted Successfully");
+					
 					prodElementsList.add(ps);
 				}
 			}
@@ -417,7 +487,6 @@ public class WebSpectra// implements WebSpectraInterface
 		
 		return prodElementsList;
 	}	
-	
 	
 	@WebMethod
 	@WebResult(name="Result")
