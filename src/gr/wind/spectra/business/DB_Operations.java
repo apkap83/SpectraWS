@@ -301,6 +301,47 @@ public class DB_Operations
   		
   		return numOfRows;
   	}  	
+
+  	/*
+  	 * SELECT COUNT(*)
+		FROM (
+		SELECT DISTINCT ActiveElement,Subrack,Slot,Port,PON FROM Voice_Resource_Path 
+		WHERE SiteName = 'ACHARNAI' AND ActiveElement = 'ATHOACHRNAGW01' AND Subrack = '2' AND Slot = '04'
+		) as AK;
+  	 * 
+  	 */
+  	
+  	public String CountDistinctRowsForSpecificColumns(String table, String[] columns, String predicate) throws SQLException
+  	{
+  		String numOfRows = "";
+  		String sqlQuery = "SELECT COUNT(*) AS Result FROM(SELECT DISTINCT ";
+		
+		for (int i = 0; i < columns.length; i++)
+		{
+			if (i < columns.length -1 )
+			{
+				sqlQuery += columns[i] + ","; 
+			}
+			else
+			{
+				sqlQuery += columns[i];
+			}
+		}
+		
+		sqlQuery += " FROM " + table + " WHERE " + predicate + ") as AK ";
+  		
+		System.out.println("SQL Query: " +sqlQuery);
+  		
+		PreparedStatement pst = conn.prepareStatement(sqlQuery);
+		pst.execute();
+		ResultSet rs = pst.executeQuery();
+		
+		while ( rs.next() )
+  	    {
+  			numOfRows = rs.getString("Result");
+ 	    }
+  		return numOfRows;
+  	} 
   	
   	public ResultSet GetRows(String table, String[] columnNames, String predicate) throws SQLException
   	{
@@ -336,4 +377,5 @@ public class DB_Operations
   	    }
   	  return found;
   	}
+  	
 }

@@ -78,7 +78,7 @@ public class Product {
 				this.internetCustomersAffected = internetCustomersAffected;
 				
 				// Calculate Voice Customers Affected but replace column names in order to search table for customers affected
-				String voiceCustomersAffected = dbs.CountDistinctRowsForSpecificColumn(voiceSubsTable, "Username", Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(this.hierarchyProvided, fullVoiceHierarchyPath)));
+				String voiceCustomersAffected = dbs.CountDistinctRowsForSpecificColumns(voiceSubsTable, new String[] {"ActiveElement","Subrack","Slot","Port","PON"}, Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(this.hierarchyProvided, fullVoiceHierarchyPath)));
 				this.voiceCustomersAffected = voiceCustomersAffected;
 				
 				// Calculate CLIs Affected but replace column names in order to search table for customers affected

@@ -28,7 +28,6 @@ import gr.wind.spectra.model.ProductOfSubmission;
 
 
 @WebService //(endpointInterface = "gr.wind.spectra.web.WebSpectraInterface")
-
 public class WebSpectra// implements WebSpectraInterface
 {
 	private static final String hierSep = "->";
@@ -249,8 +248,8 @@ public class WebSpectra// implements WebSpectraInterface
 
 		// Validate Date Formats if the fields are not empty
 		if (! Help_Func.checkIfEmpty("RequestTimestamp", RequestTimestamp))	{ Help_Func.ValidateDateTimeFormat("RequestTimestamp", RequestTimestamp); }
-		if (! Help_Func.checkIfEmpty("StartTime", StartTime))	{ Help_Func.ValidateDateTimeFormat("StartTime", StartTime); }
-		if (! Help_Func.checkIfEmpty("EndTime", EndTime))	{ Help_Func.ValidateDateTimeFormat("EndTime", EndTime); }
+		if (! Help_Func.checkIfEmpty("StartTime", StartTime)) { Help_Func.ValidateDateTimeFormat("StartTime", StartTime); }
+		if (! Help_Func.checkIfEmpty("EndTime", EndTime)) { Help_Func.ValidateDateTimeFormat("EndTime", EndTime); }
 		
 		// Validate against predefined values
 		Help_Func.ValidateAgainstPredefinedValues("Scheduled", Scheduled, new String[] {"Yes", "No"});
@@ -297,7 +296,7 @@ public class WebSpectra// implements WebSpectraInterface
 				
 				// Count distinct values of Usernames or CliVlaues the respective columns
 				String dataCustomersAffected = dbs.CountDistinctRowsForSpecificColumn(dataSubsTable, "Username", Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(myHier.get(i).toString(), fullDataHierarchyPathSplit)));
-				String voiceCustomersAffected = dbs.CountDistinctRowsForSpecificColumn(voiceSubsTable, "Username", Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
+				String voiceCustomersAffected = dbs.CountDistinctRowsForSpecificColumns(voiceSubsTable, new String[] {"ActiveElement","Subrack","Slot","Port","PON"}, Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
 				
 				// For Voice no data customers are affected and vice versa
 				if (service.equals("Voice"))
@@ -357,7 +356,7 @@ public class WebSpectra// implements WebSpectraInterface
 				
 				// Count distinct values of Usernames or CliVlaues the respective columns
 				String dataCustomersAffected = dbs.CountDistinctRowsForSpecificColumn(dataSubsTable, "Username", Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(myHier.get(i).toString(), fullDataHierarchyPathSplit)));
-				String voiceCustomersAffected = dbs.CountDistinctRowsForSpecificColumn(voiceSubsTable, "Username", Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
+				String voiceCustomersAffected = dbs.CountDistinctRowsForSpecificColumns(voiceSubsTable, new String[] {"ActiveElement","Subrack","Slot","Port","PON"}, Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
 				String CLIsAffected = dbs.CountDistinctRowsForSpecificColumn(voiceSubsTable, "CliValue", Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
 				
 				// For Voice no data customers are affected and vice versa
@@ -573,8 +572,10 @@ public class WebSpectra// implements WebSpectraInterface
 		return null;
 	}
 	
+	
+	/*
 	public static void main(String args[]) throws SQLException
-	{/*
+	{
 		WebSpectraInterface ws = new WebSpectra();
 		List<String> myList = new ArrayList<String>();
 		
@@ -584,8 +585,9 @@ public class WebSpectra// implements WebSpectraInterface
 		{
 			System.out.println(item);
 		}
-		*/
+
 	}
+	 */
 }
 
 

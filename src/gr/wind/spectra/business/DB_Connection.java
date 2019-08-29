@@ -39,7 +39,7 @@ public class DB_Connection
     	       DriverManager.getConnection(DATABASE_URL +
     	                                   "user=" + USERNAME + "&" +
     	                                   "password=" + PASSWORD + "&" +
-    	                                   "useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&autoReconnect=true");
+    	                                   "useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Europe/Athens&autoReconnect=true");
 
     	    LogFile.Log(Help_Func.GetTimeStamp() + "Connection established!");
     	    // Do something with the Connection
@@ -146,8 +146,10 @@ public class DB_Connection
     	//System.out.println(numOfRows);
     	
     	// Authenticate
-    	boolean found = dbs.AuthenticateRequest("admin", "1234");
-    	System.out.println(found);
+    	//boolean found = dbs.AuthenticateRequest("admin", "1234");
+    	//System.out.println(found);
+    	//dbs.CountDistinctRowsForSpecificColumns("Voice_Resource_Path", new String[] {"ActiveElement","Subrack","Slot","Port","PON"}, "SiteName = 'ACHARNAI' AND ActiveElement = 'ATHOACHRNAGW01' AND Subrack = '2' AND Slot = '04'");
+      	
     	
     }
     
