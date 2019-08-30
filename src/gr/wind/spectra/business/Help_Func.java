@@ -111,7 +111,7 @@ public class Help_Func
 		} catch (ParseException e)
 		{
 			e.printStackTrace();
-			throw new InvalidInputException("Invalid DateTime Input", fieldName + " field is not in expected format \"yyyy-MM-dd HH:mm:ss\"");
+			throw new InvalidInputException("The date field " + fieldName + " is not in expected format \"YYYY-MM-dd HH:mm:ss\"", "Error 208");
 		}
 			
 	}
@@ -128,7 +128,7 @@ public class Help_Func
 		
 		if (! found)
 		{
-			throw new InvalidInputException("Error 180", "The accepted values of field '" + fieldName + "' are: " + String.join(", ", values) );
+			throw new InvalidInputException("The accepted values of field '" + fieldName + "' are: " + String.join(", ", values), "Error 180" );
 		}
 		
 	}
@@ -155,11 +155,35 @@ public class Help_Func
 			
 			if (! foundInArray)
 			{
-				throw new InvalidInputException("Error 181", "The accepted values of field '" + fieldName + "' are not validated against any combination of Voice, Internet, IP TV alone or with pipe delimiter" );
+				throw new InvalidInputException("The accepted values of field '" + fieldName + "' are not validated against any combination of Voice, Internet, IP TV alone or with pipe delimiter", "Error 181");
 			}
 			
 		}
 	}
+	
+	public static void ValidateIntegerOrEmptyValue(String fieldName, String valueOfField) throws InvalidInputException
+	{
+		// Accepted values integer or empty
+		boolean acceptedValue = false;
+		
+		if (valueOfField.equals(""))
+		{
+			acceptedValue = true;
+		}
+		else
+		{
+			try
+			{
+				int integerValue = Integer.parseInt(valueOfField);
+			} catch (NumberFormatException e)
+			{
+				e.printStackTrace();
+				throw new InvalidInputException("Expected Integer or empty value for field '" + fieldName +"'", "Error 305");
+			}
+		}
+		
+	}
+	
 	public static ArrayList<String> HierarchyStringToANDPredicates(String hierarchySelected)
 	{
 		// hierarchySelected = FTTX=1|OLTElementName=Tolis
@@ -412,7 +436,33 @@ public class Help_Func
 		return mystring;
 	}
 	
-	public static String ReplaceHierarchyForSubscribersAffected(String hierarchy, String[] subsHierarchy)
+	/*
+	 *  Checks format of hierarchy that has key=value pairs (after root element)
+	*/
+	public static void checkHierarchyFormatKeyValuePairs(String hierarchy) throws InvalidInputException
+	{
+		String[] hierarchyItems = hierarchy.split("->");
+		
+		for(int i=0; i < hierarchyItems.length; i++)
+		{
+			if (i == 0) 
+			{
+				continue;
+			}
+			String[] keyValuePair = hierarchyItems[i].split("=");
+			if (keyValuePair.length == 2)
+			{
+
+			}
+			else
+			{
+				throw new InvalidInputException("Error Hierarchy format provided (must be Key=Value pairs)", "Error 170");
+			}
+		}
+	}
+	
+	
+	public static String ReplaceHierarchyForSubscribersAffected(String hierarchy, String[] subsHierarchy) throws InvalidInputException
 	{
 		String[] hierarchyItems = hierarchy.split("->");
 		String rootElement = "";
@@ -427,29 +477,35 @@ public class Help_Func
 			} //root element
 			
 			String[] keyValuePair = hierarchyItems[i].split("=");
-			//System.out.println("A: " + keyValuePair[0]);
-			//System.out.println("B: " + subsHierarchy[i-1]);
-			if (keyValuePair[0].equals(subsHierarchy[i-1]))
+			
+			if (keyValuePair.length == 2)
 			{
-				if (i < hierarchyItems.length-1)
+				if (keyValuePair[0].equals(subsHierarchy[i-1]))
 				{
-					outputHierarchy += keyValuePair[0] + "=" + keyValuePair[1] + "->";
+					if (i < hierarchyItems.length-1)
+					{
+						outputHierarchy += keyValuePair[0] + "=" + keyValuePair[1] + "->";
+					}
+					else
+					{
+						outputHierarchy += keyValuePair[0] + "=" + keyValuePair[1];
+					}
 				}
 				else
 				{
-					outputHierarchy += keyValuePair[0] + "=" + keyValuePair[1];
+					if (i < hierarchyItems.length-1)
+					{
+						outputHierarchy += subsHierarchy[i-1] + "=" + keyValuePair[1] + "->";
+					}
+					else
+					{
+						outputHierarchy += subsHierarchy[i-1] + "=" + keyValuePair[1];
+					}
 				}
 			}
 			else
 			{
-				if (i < hierarchyItems.length-1)
-				{
-					outputHierarchy += subsHierarchy[i-1] + "=" + keyValuePair[1] + "->";
-				}
-				else
-				{
-					outputHierarchy += subsHierarchy[i-1] + "=" + keyValuePair[1];
-				}
+				throw new InvalidInputException("Error Hierarchy format provided (must be Key=Value pairs)", "Error 170");
 			}
 		}
 		
@@ -461,9 +517,9 @@ public class Help_Func
 
 	public static void ValidateNotEmpty(String fieldName, String value) throws InvalidInputException
 	{
-		if (value.isEmpty())
+		if (value.isEmpty() || value.equals("?"))
 		{
-			throw new InvalidInputException("Error 158", "The required field '" + fieldName + "' is empty");
+			throw new InvalidInputException("The required field '" + fieldName + "' is empty", "Error 158");
 		}
 	}
 	
@@ -482,7 +538,33 @@ public class Help_Func
 		return emptiness;
 	}
 	
-	
+	public static void CheckColumnsOfHierarchyVSFullHierarchy(String hierarchy, String fullHierarchyFromDB) throws InvalidInputException 
+	{
+		String[] hierarchyItems = hierarchy.split("->");
+		String[] fullHierarchyFromDBSplit = fullHierarchyFromDB.split("->");
+		
+		for(int i=0; i < hierarchyItems.length; i++)
+		{
+			if (i == 0) 
+			{
+				continue;
+			}
+			
+			String[] keyValuePair = hierarchyItems[i].split("=");
+			
+			if (keyValuePair.length == 2)
+			{
+				if (! keyValuePair[0].equals(fullHierarchyFromDBSplit[i-1]))
+				{
+					throw new InvalidInputException("Wrong column '" + keyValuePair[0] + "' in hierarchy format provided", "Error 203" );	
+				}
+			}
+			else
+			{
+				throw new InvalidInputException("Error Hierarchy format provided (must be Key=Value pairs)", "Error 170");
+			}
+		}
+	}	
 	
 	public static void main(String[] args)
 	{
@@ -521,5 +603,7 @@ public class Help_Func
 				
 		
 	}
+
+
 	
 }

@@ -32,6 +32,7 @@ public class DB_Connection
     
     public Connection Connect() throws InvalidInputException, InstantiationException, IllegalAccessException, ClassNotFoundException
     {
+    	System.setProperty("javax.xml.soap.SAAJMetaFactory", "com.sun.xml.messaging.saaj.soap.SAAJMetaFactoryImpl");
     	LogFile.Log(Help_Func.GetTimeStamp() + "Starting Connection with database...");
     	try {
     		Class.forName("com.mysql.cj.jdbc.Driver").newInstance();

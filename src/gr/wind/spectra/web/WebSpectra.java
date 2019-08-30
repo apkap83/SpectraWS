@@ -65,7 +65,7 @@ public class WebSpectra// implements WebSpectraInterface
 			@WebParam(name="SystemID") @XmlElement( required = true ) String SystemID,
 			@WebParam(name="UserID") @XmlElement( required = true ) String UserID,
 			@WebParam(name="Hierarchy") String Hierarchy
-	) throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException, InvalidInputException
+	) throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException, InvalidInputException, ParseException
 	{
 		
 		/*
@@ -79,13 +79,15 @@ public class WebSpectra// implements WebSpectraInterface
 		List<Product> prodElementsList = new ArrayList<>();
 		
 		// Check if Authentication credentials are correct.
-		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("Error 100", "User name or Password incorrect!");}
+		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("User name or Password incorrect!", "Error 100");}
 		
 		// Check if Required fields are empty
 		Help_Func.ValidateNotEmpty("RequestID", RequestID);
-		Help_Func.ValidateNotEmpty("RequestTimestamp", RequestTimestamp);
 		Help_Func.ValidateNotEmpty("SystemID", SystemID);
 		Help_Func.ValidateNotEmpty("UserID", UserID);
+
+		// Validate Date Formats if the fields are not empty
+		if (! Help_Func.checkIfEmpty("RequestTimestamp", RequestTimestamp))	{ Help_Func.ValidateDateTimeFormat("RequestTimestamp", RequestTimestamp); }
 		
 		// No Hierarchy is given - returns root elements
 		if (Hierarchy == null || Hierarchy.equals("") || Hierarchy.equals("?"))
@@ -102,15 +104,18 @@ public class WebSpectra// implements WebSpectraInterface
 			ArrayList<String> nodeNamesArrayList = new ArrayList<String>();
 			ArrayList<String> nodeValuesArrayList = new ArrayList<String>();
 
-			// Get root hierarchy = hierarchy given
+			// Get root hierarchy String
 			String rootElementInHierarchy = Help_Func.GetRootHierarchyNode(Hierarchy);
 
 			// Get Hierarchy Table for that root hierarchy
 			String table = wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "HierarchyTableName", "RootHierarchyNode = '" + rootElementInHierarchy + "'");
 			
-			// Get Full hierarchy from the same table as above in style : OltElementName->OltSlot->OltPort->Onu->ElementName->Slot
+			// Get Hierarchy data in style : OltElementName->OltSlot->OltPort->Onu->ElementName->Slot
 			String fullHierarchyFromDB = wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "HierarchyTableNamePath", "RootHierarchyNode = '" + rootElementInHierarchy + "'");
 
+			// Check Columns of Hierarchy against fullHierarchy (avoid wrong key values in hierarchy e.g. SiteNa7me=AKADIMIAS)
+			Help_Func.CheckColumnsOfHierarchyVSFullHierarchy(Hierarchy, fullHierarchyFromDB);
+			
 			// Split the hierarchy retrieved from DB into fields
 			String[] fullHierarchyFromDBSplit = fullHierarchyFromDB.split("->");			
 			
@@ -135,7 +140,7 @@ public class WebSpectra// implements WebSpectraInterface
 			int maxLevelsOfHierarchy = fullHierarchyFromDBSplit.length + 1;
 			if (hierItemsGiven.length > maxLevelsOfHierarchy)
 			{
-				throw new InvalidInputException("Error 120", "More hierarchy levels than expected");
+				throw new InvalidInputException("More hierarchy levels than expected", "Error 120");
 			}
 			
 			
@@ -232,39 +237,39 @@ public class WebSpectra// implements WebSpectraInterface
 		int totalNumberOfCustomersAffectedPerIncident = 0;
 		
 		// Check if Authentication credentials are correct.
-		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("Error 100", "User name or Password incorrect!");}
+		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("User name or Password incorrect!", "Error 100");}
 		
-		// Check if Required fields are empty
+		// Check if Required fields are not empty and they contain the desired values
 		Help_Func.ValidateNotEmpty("RequestTimestamp", RequestTimestamp);
-		Help_Func.ValidateNotEmpty("StartTime", StartTime);
-		Help_Func.ValidateNotEmpty("SystemID", SystemID);
-		Help_Func.ValidateNotEmpty("UserID", UserID);
-		Help_Func.ValidateNotEmpty("IncidentID", IncidentID);
-		Help_Func.ValidateNotEmpty("Scheduled", Scheduled);
-		Help_Func.ValidateNotEmpty("AffectedServices", AffectedServices);
-		Help_Func.ValidateNotEmpty("Impact", Impact);
-		Help_Func.ValidateNotEmpty("Priority", Priority);
-		Help_Func.ValidateNotEmpty("HierarchySelected", HierarchySelected);
-
-		// Validate Date Formats if the fields are not empty
 		if (! Help_Func.checkIfEmpty("RequestTimestamp", RequestTimestamp))	{ Help_Func.ValidateDateTimeFormat("RequestTimestamp", RequestTimestamp); }
+		
+		Help_Func.ValidateNotEmpty("StartTime", StartTime);
 		if (! Help_Func.checkIfEmpty("StartTime", StartTime)) { Help_Func.ValidateDateTimeFormat("StartTime", StartTime); }
 		if (! Help_Func.checkIfEmpty("EndTime", EndTime)) { Help_Func.ValidateDateTimeFormat("EndTime", EndTime); }
 		
-		// Validate against predefined values
+		Help_Func.ValidateNotEmpty("SystemID", SystemID);
+		Help_Func.ValidateNotEmpty("UserID", UserID);
+		Help_Func.ValidateNotEmpty("IncidentID", IncidentID);
+		
+		Help_Func.ValidateNotEmpty("Scheduled", Scheduled);
 		Help_Func.ValidateAgainstPredefinedValues("Scheduled", Scheduled, new String[] {"Yes", "No"});
 		
-		// Validate against predefined values alone or delimited by "|"
+		Help_Func.ValidateIntegerOrEmptyValue("Duration", Duration);
+		
+		Help_Func.ValidateNotEmpty("AffectedServices", AffectedServices);
 		Help_Func.ValidateDelimitedValues("AffectedServices", AffectedServices, "\\|", new String[] {"Voice", "Internet", "IPTV"});
 		
-		// Validate against predefined values
+		Help_Func.ValidateNotEmpty("Impact", Impact);
 		Help_Func.ValidateAgainstPredefinedValues("Impact", Impact, new String[] {"QoS", "LoS"});
-				
-		// Validate against predefined values
+		
+		Help_Func.ValidateNotEmpty("Priority", Priority);
 		Help_Func.ValidateAgainstPredefinedValues("Priority", Priority, new String[] {"Critical", "Medium", "Low"});
+		
+		Help_Func.ValidateNotEmpty("HierarchySelected", HierarchySelected);
+
 
 		// Split to % and to | the hierarchy provided
-		java.util.List myHier = Help_Func.GetHierarchySelections(HierarchySelected);
+		java.util.List myHier = Help_Func.GetHierarchySelections(HierarchySelected);		
 
 		// Get Max Outage ID (type int)
 		OutageID_Integer = wb.dbs.GetMaxIntegerValue("SubmittedIncidents", "OutageID");
@@ -280,8 +285,17 @@ public class WebSpectra// implements WebSpectraInterface
 		{	
 			for(int i=0;i<myHier.size();i++)
 			{
+				// Check Hierarchy Format Key_Value Pairs
+				Help_Func.checkHierarchyFormatKeyValuePairs(myHier.get(i).toString());
+				
 				// Firstly determine the hierarchy table that will be used based on the root hierarchy provided 
 				String rootHierarchySelected = Help_Func.GetRootHierarchyNode(myHier.get(i).toString());
+
+				// Get Hierarchy data in style : OltElementName->OltSlot->OltPort->Onu->ElementName->Slot
+				String fullHierarchyFromDB = wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "HierarchyTableNamePath", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+
+				// Check Columns of Hierarchy against fullHierarchy (avoid wrong key values in hierarchy e.g. SiteNa7me=AKADIMIAS)
+				Help_Func.CheckColumnsOfHierarchyVSFullHierarchy(myHier.get(i).toString(), fullHierarchyFromDB);
 			
 				// Determine Tables for Data/Voice subscribers
 				String dataSubsTable =  wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "DataSubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
@@ -294,7 +308,7 @@ public class WebSpectra// implements WebSpectraInterface
 				String fullVoiceHierarchyPath = wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "VoiceSubscribersTableNamePath", "RootHierarchyNode = '" + rootHierarchySelected + "'");
 				String[] fullVoiceHierarchyPathSplit = fullVoiceHierarchyPath.split("->");
 				
-				// Count distinct values of Usernames or CliVlaues the respective columns
+				// Count distinct values of Usernames or CliVlaues in the respective columns
 				String dataCustomersAffected = dbs.CountDistinctRowsForSpecificColumn(dataSubsTable, "Username", Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(myHier.get(i).toString(), fullDataHierarchyPathSplit)));
 				String voiceCustomersAffected = dbs.CountDistinctRowsForSpecificColumns(voiceSubsTable, new String[] {"ActiveElement","Subrack","Slot","Port","PON"}, Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
 				
@@ -316,30 +330,28 @@ public class WebSpectra// implements WebSpectraInterface
 			}
 		}
 		
-/*
 		// Check if for the same Incident ID, Service & Hierarchy - We have already an entry
 		for (String service : servicesAffected)
 		{	
 			for(int i=0;i<myHier.size();i++)
 			{
-				// Firstly determine the hierarchy table that will be used based on the root hierarchy provided
-				String rootHierarchySelected = Help_Func.GetRootHierarchyNode(myHier.get(i).toString());
-				String table =  wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "SubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
-
 				boolean incidentAlreadyExists = wb.dbs.CheckIfCriteriaExists("SubmittedIncidents", new String[] {"IncidentStatus", "IncidentID", "AffectedServices", "HierarchySelected"}, "IncidentStatus='OPEN' AND IncidentID = '" + IncidentID + "' AND AffectedServices = '" + service + "' AND HierarchySelected = '" + myHier.get(i).toString() + "'"); 
 				if (incidentAlreadyExists)
 				{
-					throw new InvalidInputException("Error 195", "There is already an openned incident (" + IncidentID + ") that defines outage for AffectedService = " + service + " and HierarchySelected = " + myHier.get(i).toString());
+					throw new InvalidInputException("There is already an openned incident (" + IncidentID + ") that defines outage for AffectedService = " + service + " and HierarchySelected = " + myHier.get(i).toString(), "Error 195" );
 				}
 			}
 		}
-*/	
+
 		for (String service : servicesAffected)
 		{	
 			for(int i=0; i < myHier.size(); i++)
 			{
 				// Add One
 				OutageID_Integer += 1;
+				
+				// Check Hierarchy Format Key_Value Pairs
+				Help_Func.checkHierarchyFormatKeyValuePairs(myHier.get(i).toString());				
 				
 				// Firstly determine the hierarchy table that will be used based on the root hierarchy provided
 				String rootHierarchySelected = Help_Func.GetRootHierarchyNode(myHier.get(i).toString());
@@ -443,7 +455,7 @@ public class WebSpectra// implements WebSpectraInterface
 		
 		
 		// Check if Authentication credentials are correct.
-		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("Error 100", "User name or Password incorrect!");}
+		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("User name or Password incorrect!", "Error 100");}
 		
 		// Number of rows that will be returned
 		String numOfRows = wb.dbs.NumberOfRowsFound("SubmittedIncidents", "IncidentID = 'Incident1' AND IncidentStatus = 'OPEN'");
@@ -512,7 +524,7 @@ public class WebSpectra// implements WebSpectraInterface
 		List<ProductOfSubmission> prodElementsList = new ArrayList<>();
 		
 		// Check if Authentication credentials are correct.
-		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("Error 100", "User name or Password incorrect!");}
+		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("User name or Password incorrect!", "Error 100");}
 		
 		// Check if Required fields are empty
 		Help_Func.ValidateNotEmpty("OutageID", OutageID);
@@ -566,7 +578,7 @@ public class WebSpectra// implements WebSpectraInterface
 		wb.conObj.closeDBConnection();
 		
 		// Check if Authentication credentials are correct.
-		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("Error 100", "User name or Password incorrect!");}
+		if (! wb.dbs.AuthenticateRequest(UserName, Password) ) {throw new InvalidInputException("User name or Password incorrect!", "Error 100");}
 		
 		
 		return null;

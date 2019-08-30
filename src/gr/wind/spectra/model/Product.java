@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.*;
 
 import gr.wind.spectra.business.DB_Operations;
 import gr.wind.spectra.business.Help_Func;
+import gr.wind.spectra.web.InvalidInputException;
 
 @XmlRootElement(name = "Element")
 @XmlType(name = "basicStruct", propOrder = {"requestID", "type", "item", "hierarchySelected", "internetCustomersAffected", "voiceCustomersAffected", "clisAffected"})
@@ -38,7 +39,7 @@ public class Product {
 	
 	public Product(DB_Operations dbs, String[] hierarchyFullPathList, String[] fullDataHierarchyPath,
 			String[] fullVoiceHierarchyPath, String hierarchyProvided ,String type, List<String> items, 
-			String[] nodeNames, String[] nodeValues, String requestID) throws SQLException
+			String[] nodeNames, String[] nodeValues, String requestID) throws SQLException, InvalidInputException
 	{
 		
 		this.dbs = dbs;
