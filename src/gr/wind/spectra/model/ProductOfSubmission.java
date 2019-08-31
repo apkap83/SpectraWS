@@ -1,19 +1,17 @@
 package gr.wind.spectra.model;
 
-import java.util.List;
-
-import javax.xml.bind.annotation.*;
-
-import gr.wind.spectra.business.Help_Func;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name = "Element")
-@XmlType(name = "basicStruct2", propOrder = {"outageID", "incidentID", "serviceAffected", "hierarchySelected", 
-		"voiceCustomersAffected", "dataCustomersAffected", "CLIsAffected", "incidentVoiceCustomersAffected", 
-		"incidentDataCustomersAffected", "statusCode", "description"})
+@XmlType(name = "basicStruct2", propOrder = { "outageID", "incidentID", "serviceAffected", "hierarchySelected",
+		"voiceCustomersAffected", "dataCustomersAffected", "CLIsAffected", "incidentVoiceCustomersAffected",
+		"incidentDataCustomersAffected", "statusCode", "description" })
 
-public class ProductOfSubmission {
-	
-	private String requestID;
+public class ProductOfSubmission
+{
+
 	private String outageID;
 	private String incidentID;
 	private String voiceCustomersAffected;
@@ -26,21 +24,15 @@ public class ProductOfSubmission {
 	private String serviceAffected;
 	private String hierarchySelected;
 	private int totalNumberOfCustomersAffected;
+
 	// Empty constructor requirement of JAXB (Java Architecture for XML Binding)
 	public ProductOfSubmission()
 	{
 	}
-	
-	public ProductOfSubmission(String outageID, 
-			String incidentID, 
-			String voiceCustomersAffected,
-			String dataCustomersAffected, 
-			String CLIsAffected, 
-			String incidentVoiceCustomersAffected,
-			String incidentDataCustomersAffected, 
-			String statusCode,  
-			String serviceAffected,
-			String hierarchySelected, 
+
+	public ProductOfSubmission(String outageID, String incidentID, String voiceCustomersAffected,
+			String dataCustomersAffected, String CLIsAffected, String incidentVoiceCustomersAffected,
+			String incidentDataCustomersAffected, String statusCode, String serviceAffected, String hierarchySelected,
 			String description)
 	{
 		this.incidentID = incidentID;
@@ -50,7 +42,7 @@ public class ProductOfSubmission {
 		this.CLIsAffected = CLIsAffected;
 		this.incidentVoiceCustomersAffected = incidentVoiceCustomersAffected;
 		this.incidentDataCustomersAffected = incidentDataCustomersAffected;
-		
+
 		this.statusCode = statusCode;
 		this.description = description;
 		this.serviceAffected = serviceAffected;
@@ -63,29 +55,29 @@ public class ProductOfSubmission {
 	{
 		return this.serviceAffected;
 	}
-	
+
 	public void setserviceAffected(String serviceAffected)
 	{
 		this.serviceAffected = serviceAffected;
 	}
-	
+
 	@XmlElement(name = "hierarchySelected")
 	public String gethierarchySelected()
 	{
 		return this.hierarchySelected;
 	}
-	
+
 	public void sethierarchySelected(String hierarchySelected)
 	{
 		this.hierarchySelected = hierarchySelected;
 	}
-	
+
 	@XmlElement(name = "voiceCustomersAffected")
 	public String getvoiceCustomersAffected()
 	{
 		return this.voiceCustomersAffected;
 	}
-	
+
 	public void setvoiceCustomersAffected(String voiceCustomersAffected)
 	{
 		this.voiceCustomersAffected = voiceCustomersAffected;
@@ -96,40 +88,40 @@ public class ProductOfSubmission {
 	{
 		return this.dataCustomersAffected;
 	}
-	
+
 	public void setdataCustomersAffected(String dataCustomersAffected)
 	{
 		this.dataCustomersAffected = dataCustomersAffected;
 	}
-	
+
 	@XmlElement(name = "CLIsAffected")
 	public String getCLIsAffected()
 	{
 		return this.CLIsAffected;
 	}
-	
+
 	public void setCLIsAffected(String CLIsAffected)
 	{
 		this.CLIsAffected = CLIsAffected;
-	}	
+	}
 
 	@XmlElement(name = "incidentVoiceCustomersAffected")
 	public String getincidentVoiceCustomersAffected()
 	{
 		return this.incidentVoiceCustomersAffected;
 	}
-	
+
 	public void setincidentVoiceCustomersAffected(String incidentVoiceCustomersAffected)
 	{
 		this.incidentVoiceCustomersAffected = incidentVoiceCustomersAffected;
-	}	
-	
+	}
+
 	@XmlElement(name = "incidentDataCustomersAffected")
 	public String getincidentDataCustomersAffected()
 	{
 		return this.incidentDataCustomersAffected;
 	}
-	
+
 	public void setincidentDataCustomersAffected(String incidentDataCustomersAffected)
 	{
 		this.incidentDataCustomersAffected = incidentDataCustomersAffected;
@@ -140,43 +132,42 @@ public class ProductOfSubmission {
 	{
 		return this.outageID;
 	}
-	
+
 	public void setoutageID(String outageID)
 	{
-		this.requestID = outageID;
 	}
-	
+
 	@XmlElement(name = "IncidentID")
 	public String getIncidentID()
 	{
 		return this.incidentID;
 	}
-	
+
 	public void setIncidentID(String incidentID)
 	{
 		this.incidentID = incidentID;
 	}
-	
+
 	@XmlElement(name = "statusCode")
 	public String getstatusCode()
 	{
 		return this.statusCode;
 	}
-	
+
 	public void setstatusCode(String statusCode)
 	{
 		this.statusCode = statusCode;
 	}
-	
+
 	@XmlElement(name = "description")
 	public String getdescription()
 	{
 		return this.description;
 	}
-	
+
 	public void setdescription(String description)
 	{
 		this.description = description;
 	}
-	
+
 }
