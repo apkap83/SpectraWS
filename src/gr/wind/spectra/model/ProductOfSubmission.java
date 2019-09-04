@@ -23,7 +23,6 @@ public class ProductOfSubmission
 	private String description;
 	private String serviceAffected;
 	private String hierarchySelected;
-	private int totalNumberOfCustomersAffected;
 
 	// Empty constructor requirement of JAXB (Java Architecture for XML Binding)
 	public ProductOfSubmission()
@@ -47,7 +46,6 @@ public class ProductOfSubmission
 		this.description = description;
 		this.serviceAffected = serviceAffected;
 		this.hierarchySelected = hierarchySelected;
-		this.totalNumberOfCustomersAffected = totalNumberOfCustomersAffected;
 	}
 
 	@XmlElement(name = "serviceAffected")

@@ -298,7 +298,7 @@ public class WebSpectra// implements WebSpectraInterface
 		Help_Func.ValidateNotEmpty("HierarchySelected", HierarchySelected);
 
 		// Split to % and to | the hierarchy provided
-		java.util.List myHier = Help_Func.GetHierarchySelections(HierarchySelected);
+		List<String> myHier = Help_Func.GetHierarchySelections(HierarchySelected);
 
 		// Get Max Outage ID (type int)
 		OutageID_Integer = wb.dbs.GetMaxIntegerValue("SubmittedIncidents", "OutageID");
