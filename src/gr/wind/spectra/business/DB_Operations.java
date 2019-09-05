@@ -12,6 +12,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import gr.wind.spectra.web.InvalidInputException;
+
 public class DB_Operations
 {
 	Connection conn;
@@ -406,4 +408,71 @@ public class DB_Operations
 
 		return numOfRows;
 	}
+
+	public int UpdateColumnOnSpecificCriteria(String tableName, String[] columnNamesForUpdate,
+			String[] columnValuesForUpdate, String[] setColumnDataTypes, String[] predicateColumns,
+			String[] predicateValues, String[] predicateColumnsDataTypes) throws SQLException, InvalidInputException
+	{
+		int numOfRowsUpdated = 0;
+		// update SmartOutageDB.SubmittedIncidents set Duration = '2' where OutageID =
+		// '5' and IncidentID = 'INC1';
+		String sqlQuery = "UPDATE " + tableName + " SET "
+				+ Help_Func.GenerateCommaPredicateQuestionMarks(columnNamesForUpdate) + " WHERE "
+				+ Help_Func.GenerateANDPredicateQuestionMarks(predicateColumns);
+		System.out.println(sqlQuery);
+
+		PreparedStatement pst = conn.prepareStatement(sqlQuery);
+
+		// If no predicates are provided then SQL update command will update all
+		// (something VERY undesirable)
+		if (columnNamesForUpdate.length == 0)
+		{
+			throw new InvalidInputException("No predicated provided for SQL update - Aborting Operation", "Error 702");
+		} else
+		{
+			// Set Values for the Updated Columns (SET Part of SQL Expresion)
+			for (int i = 0; i < columnNamesForUpdate.length; i++)
+			{
+				if (setColumnDataTypes[i].equals("String"))
+				{
+					pst.setString(i + 1, columnValuesForUpdate[i]);
+				} else if (setColumnDataTypes[i].equals("Integer"))
+				{
+					pst.setInt(i + 1, Integer.parseInt(columnValuesForUpdate[i]));
+				} else if (setColumnDataTypes[i].equals("Date"))
+				{
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+					LocalDateTime dateTime = LocalDateTime.parse(columnValuesForUpdate[i], formatter);
+
+					pst.setObject(i + 1, dateTime);
+				}
+
+			}
+
+			// Set Values for the predicate Columns (WHERE Part of SQL Expresion)
+			if (predicateColumns.length == predicateValues.length)
+			{
+				for (int i = 0; i < predicateColumns.length; i++)
+				{
+					if (predicateColumnsDataTypes[i].equals("String"))
+					{
+						pst.setString(i + columnNamesForUpdate.length + 1, predicateValues[i]);
+					} else if (predicateColumnsDataTypes[i].equals("Integer"))
+					{
+						pst.setInt(i + columnNamesForUpdate.length + 1, Integer.parseInt(predicateValues[i]));
+					} else if (predicateColumnsDataTypes[i].equals("Date"))
+					{
+						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+						LocalDateTime dateTime = LocalDateTime.parse(predicateValues[i], formatter);
+
+						pst.setObject(i + columnNamesForUpdate.length + 1, dateTime);
+					}
+				}
+			}
+		}
+
+		numOfRowsUpdated = pst.executeUpdate();
+		return numOfRowsUpdated;
+	}
+
 }

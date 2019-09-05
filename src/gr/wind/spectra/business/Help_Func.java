@@ -561,6 +561,23 @@ public class Help_Func
 		return output;
 	}
 
+	public static String GenerateCommaPredicateQuestionMarks(String predicateColumns[])
+	{
+		String output = "";
+		for (int i = 0; i < predicateColumns.length; i++)
+		{
+			if (i < predicateColumns.length - 1)
+			{
+				output = output + "`" + predicateColumns[i] + "` = ?, ";
+			} else
+			{
+				output = output + "`" + predicateColumns[i] + "` = ?";
+			}
+		}
+
+		return output;
+	}
+
 	public static void main(String[] args)
 	{
 

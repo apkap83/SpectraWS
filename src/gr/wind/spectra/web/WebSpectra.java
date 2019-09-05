@@ -19,6 +19,7 @@ import gr.wind.spectra.business.DB_Operations;
 import gr.wind.spectra.business.Help_Func;
 import gr.wind.spectra.model.Product;
 import gr.wind.spectra.model.ProductOfGetOutage;
+import gr.wind.spectra.model.ProductOfModify;
 import gr.wind.spectra.model.ProductOfSubmission;
 
 @WebService // (endpointInterface = "gr.wind.spectra.web.WebSpectraInterface")
@@ -555,8 +556,7 @@ public class WebSpectra// implements WebSpectraInterface
 
 	@WebMethod
 	@WebResult(name = "Result")
-	public List<ProductOfSubmission> modifyOutage(
-			@WebParam(name = "UserName", header = true, mode = Mode.IN) String UserName,
+	public ProductOfModify modifyOutage(@WebParam(name = "UserName", header = true, mode = Mode.IN) String UserName,
 			@WebParam(name = "Password", header = true, mode = Mode.IN) String Password,
 			@WebParam(name = "RequestTimestamp") @XmlElement(required = true) String RequestTimestamp,
 			@WebParam(name = "SystemID") @XmlElement(required = true) String SystemID,
@@ -578,6 +578,8 @@ public class WebSpectra// implements WebSpectraInterface
 		{
 			throw new InvalidInputException("User name or Password incorrect!", "Error 100");
 		}
+
+		ProductOfModify pom = null;
 
 		// Check if Required fields are empty
 		Help_Func.ValidateNotEmpty("RequestTimestamp", RequestTimestamp);
@@ -627,20 +629,69 @@ public class WebSpectra// implements WebSpectraInterface
 					new String[] { "IncidentID", "OutageID" },
 					"`IncidentID` = '" + IncidentID + "' AND  `OutageID` = '" + OutageID + "' AND `Scheduled` = 'Yes'");
 
-			// If it scheduled
-			if (incidentIsScheduled)
+			// Create a new list with the updated columns - based on what is empty or not
+			List<String> listOfColumnsForUpdate = new ArrayList<>();
+			List<String> listOfValuesForUpdate = new ArrayList<>();
+			List<String> listOfDataTypesForUpdate = new ArrayList<>();
+
+			if (!Help_Func.checkIfEmpty("StartTime", StartTime))
 			{
-				System.out.println("Incident is Scheduled");
+				listOfColumnsForUpdate.add("StartTime");
+				listOfValuesForUpdate.add(StartTime);
+				listOfDataTypesForUpdate.add("Date");
+			}
+
+			if (!Help_Func.checkIfEmpty("EndTime", EndTime))
+			{
+				listOfColumnsForUpdate.add("EndTime");
+				listOfValuesForUpdate.add(EndTime);
+				listOfDataTypesForUpdate.add("Date");
+			}
+
+			if (!Help_Func.checkIfEmpty("Impact", Impact))
+			{
+				listOfColumnsForUpdate.add("Impact");
+				listOfValuesForUpdate.add(Impact);
+				listOfDataTypesForUpdate.add("String");
+			}
+
+			if (!Help_Func.checkIfEmpty("Duration", Duration))
+			{
+				listOfColumnsForUpdate.add("Duration");
+				listOfValuesForUpdate.add(Duration);
+				listOfDataTypesForUpdate.add("Integer");
+			}
+
+			String[] arrayOfColumnsForUpdate = listOfColumnsForUpdate
+					.toArray(new String[listOfColumnsForUpdate.size()]);
+			String[] arrayOfValuesForUpdate = listOfValuesForUpdate.toArray(new String[listOfValuesForUpdate.size()]);
+			String[] arrayOfDataTypesForUpdate = listOfDataTypesForUpdate
+					.toArray(new String[listOfDataTypesForUpdate.size()]);
+
+			System.out.println("incidentIsScheduled = " + incidentIsScheduled);
+
+			// Update Start/End Times ONLY for Scheduled Incidents
+			if (!incidentIsScheduled && (!Help_Func.checkIfEmpty("StartTime", StartTime)
+					|| (!Help_Func.checkIfEmpty("EndTime", EndTime))))
+			{
+				throw new InvalidInputException(
+						"The fields of 'Star Time'/'End Time' cannot be modified on non scheduled Outages (Incident: "
+								+ IncidentID + ", OutageID " + OutageID + " is not a scheduled incident)",
+						"Error 385");
+			}
+
+			// Update Operation
+			int numOfRowsUpdated = wb.dbs.UpdateColumnOnSpecificCriteria("SubmittedIncidents", arrayOfColumnsForUpdate,
+					arrayOfValuesForUpdate, arrayOfDataTypesForUpdate, new String[] { "IncidentID", "OutageID" },
+					new String[] { IncidentID, OutageID }, new String[] { "String", "Integer" });
+
+			if (numOfRowsUpdated == 1)
+			{
+				pom = new ProductOfModify(
+						"Successfully Modified Incident: " + IncidentID + " - Outage ID: " + OutageID);
 			} else
 			{
-				// If it is NOT scheduled then Start Time & End Time could not be modified
-				if ((!Help_Func.checkIfEmpty("StartTime", StartTime)) || (!Help_Func.checkIfEmpty("EndTime", EndTime)))
-				{
-					throw new InvalidInputException(
-							"The fields of 'Star Time'/'End Time' cannot be modified on non scheduled Incidents (Incident: "
-									+ IncidentID + " is not a scheduled incident)",
-							"Error 385");
-				}
+				pom = new ProductOfModify("Error modifying incident!");
 			}
 
 		} else
@@ -654,7 +705,7 @@ public class WebSpectra// implements WebSpectraInterface
 		wb.conObj.closeDBConnection();
 
 		// return prodElementsList;
-		return null;
+		return pom;
 	}
 
 	@WebMethod
