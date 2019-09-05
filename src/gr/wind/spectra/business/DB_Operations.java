@@ -383,4 +383,27 @@ public class DB_Operations
 		return found;
 	}
 
+	public String MaxNumberOfCustomersAffected(String table, String SumOfColumn, String[] predicateColumns,
+			String[] predicateValues) throws SQLException
+	{
+		String numOfRows = "";
+		String sqlQuery = "SELECT MAX(" + SumOfColumn + ") as Result FROM " + table + " WHERE "
+				+ Help_Func.GenerateANDPredicateQuestionMarks(predicateColumns);
+		System.out.println(sqlQuery);
+		PreparedStatement pst = conn.prepareStatement(sqlQuery);
+
+		if (predicateColumns.length == predicateValues.length)
+		{
+			for (int i = 0; i < predicateColumns.length; i++)
+			{
+				pst.setString(i + 1, predicateValues[i]);
+			}
+		}
+
+		ResultSet rs = pst.executeQuery();
+		rs.next();
+		numOfRows = rs.getString("Result");
+
+		return numOfRows;
+	}
 }

@@ -504,7 +504,7 @@ public class Help_Func
 	{
 		boolean emptiness = false;
 
-		if (value.isEmpty())
+		if (value.isEmpty() || value.equals("?"))
 		{
 			emptiness = true;
 		} else
@@ -544,6 +544,23 @@ public class Help_Func
 		}
 	}
 
+	public static String GenerateANDPredicateQuestionMarks(String predicateColumns[])
+	{
+		String output = "";
+		for (int i = 0; i < predicateColumns.length; i++)
+		{
+			if (i < predicateColumns.length - 1)
+			{
+				output = output + "`" + predicateColumns[i] + "` = ? AND ";
+			} else
+			{
+				output = output + "`" + predicateColumns[i] + "` = ?";
+			}
+		}
+
+		return output;
+	}
+
 	public static void main(String[] args)
 	{
 
@@ -581,6 +598,7 @@ public class Help_Func
 		// System.out.println(Help_Func.ConCatHierarchy(nodeNamesArrayList,
 		// nodeValuesArrayList, hierarchyFullPathList));
 
+		System.out.println(GenerateANDPredicateQuestionMarks(new String[] { "a", "b", "c", "d" }));
 	}
 
 }

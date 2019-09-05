@@ -389,6 +389,25 @@ public class WebSpectra// implements WebSpectraInterface
 			}
 		}
 
+		// Calculate Sum of Voice/Data Customers affected for potentially already opened
+		// same incident
+		String numberOfVoiceCustAffectedFromPreviousIncidents = "0";
+		String numberOfDataCustAffectedFromPreviousIncidents = "0";
+
+		if (wb.dbs.CheckIfCriteriaExists("SubmittedIncidents", new String[] { "IncidentID" },
+				"`IncidentID` = '" + IncidentID + "'"))
+		{
+			numberOfVoiceCustAffectedFromPreviousIncidents = wb.dbs.MaxNumberOfCustomersAffected("SubmittedIncidents",
+					"IncidentAffectedVoiceCustomers", new String[] { "IncidentID" }, new String[] { IncidentID });
+			numberOfDataCustAffectedFromPreviousIncidents = wb.dbs.MaxNumberOfCustomersAffected("SubmittedIncidents",
+					"IncidentAffectedDataCustomers", new String[] { "IncidentID" }, new String[] { IncidentID });
+
+			System.out.println("numberOfVoiceCustAffectedFromPreviousIncidents = "
+					+ numberOfVoiceCustAffectedFromPreviousIncidents);
+			System.out.println(
+					"numberOfDataCustAffectedFromPreviousIncidents = " + numberOfDataCustAffectedFromPreviousIncidents);
+		}
+
 		for (String service : servicesAffected)
 		{
 			for (int i = 0; i < myHier.size(); i++)
@@ -443,6 +462,14 @@ public class WebSpectra// implements WebSpectraInterface
 				// (InsertValuesInTableGetSequence) - In the database it is still an integer
 				String OutageID_String = Integer.toString(OutageID_Integer);
 
+				// Sum Customers Affected from Previous but same Incidents that were inserted in
+				// the
+				// past
+				int totalVoiceIncidentAffected = incidentVoiceCustomersAffected
+						+ Integer.parseInt(numberOfVoiceCustAffectedFromPreviousIncidents);
+				int totalDataIncidentAffected = incidentDataCustomersAffected
+						+ Integer.parseInt(numberOfDataCustAffectedFromPreviousIncidents);
+
 				// Insert Values in Database
 				wb.dbs.InsertValuesInTable("SubmittedIncidents",
 						new String[] { "DateTime", "OutageID", "IncidentStatus", "RequestTimestamp", "SystemID",
@@ -453,8 +480,8 @@ public class WebSpectra// implements WebSpectraInterface
 						new String[] { Help_Func.now(), OutageID_String, "OPEN", RequestTimestamp, SystemID, UserID,
 								IncidentID, Scheduled, StartTime, EndTime, Duration, service, Impact, Priority,
 								myHier.get(i).toString(), voiceCustomersAffected, dataCustomersAffected, CLIsAffected,
-								Integer.toString(incidentVoiceCustomersAffected),
-								Integer.toString(incidentDataCustomersAffected) },
+								Integer.toString(totalVoiceIncidentAffected),
+								Integer.toString(totalDataIncidentAffected) },
 						new String[] { "DateTime", "Integer", "String", "DateTime", "String", "String", "String",
 								"String", "DateTime", "DateTime", "String", "String", "String", "String", "String",
 								"Integer", "Integer", "Integer", "Integer", "Integer" });
@@ -463,9 +490,8 @@ public class WebSpectra// implements WebSpectraInterface
 				{
 					ProductOfSubmission ps = new ProductOfSubmission(OutageID_String, IncidentID,
 							voiceCustomersAffected, dataCustomersAffected, CLIsAffected,
-							Integer.toString(incidentVoiceCustomersAffected),
-							Integer.toString(incidentDataCustomersAffected), "1", service, myHier.get(i).toString(),
-							"Submitted Successfully");
+							Integer.toString(totalVoiceIncidentAffected), Integer.toString(totalDataIncidentAffected),
+							"1", service, myHier.get(i).toString(), "Submitted Successfully");
 
 					prodElementsList.add(ps);
 				}
@@ -532,21 +558,17 @@ public class WebSpectra// implements WebSpectraInterface
 	public List<ProductOfSubmission> modifyOutage(
 			@WebParam(name = "UserName", header = true, mode = Mode.IN) String UserName,
 			@WebParam(name = "Password", header = true, mode = Mode.IN) String Password,
-			@WebParam(name = "OutageID") @XmlElement(required = true) String OutageID,
 			@WebParam(name = "RequestTimestamp") @XmlElement(required = true) String RequestTimestamp,
 			@WebParam(name = "SystemID") @XmlElement(required = true) String SystemID,
 			@WebParam(name = "UserID") @XmlElement(required = true) String UserID,
 			@WebParam(name = "IncidentID") @XmlElement(required = true) String IncidentID,
+			@WebParam(name = "OutageID") @XmlElement(required = true) String OutageID,
 			@WebParam(name = "StartTime") @XmlElement(required = false) String StartTime,
 			@WebParam(name = "EndTime") @XmlElement(required = false) String EndTime,
 			@WebParam(name = "Duration") @XmlElement(required = false) String Duration,
-			// Voice|Internet|IP TV
-			@WebParam(name = "AffectedServices") @XmlElement(required = false) String AffectedServices,
 			// Quality, Loss
-			@WebParam(name = "Impact") @XmlElement(required = false) String Impact,
-			@WebParam(name = "HierarchySelected") @XmlElement(required = false) String HierarchySelected)
-			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException,
-			InvalidInputException
+			@WebParam(name = "Impact") @XmlElement(required = false) String Impact) throws InstantiationException,
+			IllegalAccessException, ClassNotFoundException, SQLException, InvalidInputException, ParseException
 	{
 		WebSpectra wb = new WebSpectra();
 		new ArrayList<>();
@@ -558,17 +580,79 @@ public class WebSpectra// implements WebSpectraInterface
 		}
 
 		// Check if Required fields are empty
-		Help_Func.ValidateNotEmpty("OutageID", OutageID);
 		Help_Func.ValidateNotEmpty("RequestTimestamp", RequestTimestamp);
+		Help_Func.ValidateDateTimeFormat("RequestTimestamp", RequestTimestamp);
 		Help_Func.ValidateNotEmpty("SystemID", SystemID);
 		Help_Func.ValidateNotEmpty("UserID", UserID);
 		Help_Func.ValidateNotEmpty("IncidentID", IncidentID);
+		Help_Func.ValidateNotEmpty("OutageID", OutageID);
 
-		// ProductOfSubmission ps = new ProductOfSubmission(OutageID, IncidentID,
-		// "Unknown", "1", "Modified Successfully");
-		// prodElementsList.add(ps);
+		// if Start Time Value Exists
+		if (!Help_Func.checkIfEmpty("StartTime", StartTime))
+		{
+			// Check if it has the appropriate format
+			Help_Func.ValidateDateTimeFormat("StartTime", StartTime);
+		}
+		// if End Time Value Exists
+		if (!Help_Func.checkIfEmpty("EndTime", EndTime))
+		{
+			// Check if it has the appropriate format
+			Help_Func.ValidateDateTimeFormat("EndTime", EndTime);
+		}
 
+		// if Impact Value Exists
+		if (!Help_Func.checkIfEmpty("Impact", Impact))
+		{
+			// Check if it has the appropriate format
+			Help_Func.ValidateAgainstPredefinedValues("Impact", Impact, new String[] { "QoS", "LoS" });
+		}
+
+		// if Duration Value Exists
+		if (!Help_Func.checkIfEmpty("Duration", Duration))
+		{
+			// Check if it has the appropriate format
+			Help_Func.ValidateIntegerOrEmptyValue("Duration", Duration);
+		}
+
+		// Check if the combination of IncidentID & OutageID exists
+		boolean incidentPlusOutageExists = wb.dbs.CheckIfCriteriaExists("SubmittedIncidents",
+				new String[] { "IncidentID", "OutageID" },
+				"`IncidentID` = '" + IncidentID + "' AND  `OutageID` = '" + OutageID + "'");
+
+		if (incidentPlusOutageExists)
+		{
+			// Check if the combination of IncidentID & OutageID refers to a scheduled
+			// Incident (Scheduled = "Yes")
+			boolean incidentIsScheduled = wb.dbs.CheckIfCriteriaExists("SubmittedIncidents",
+					new String[] { "IncidentID", "OutageID" },
+					"`IncidentID` = '" + IncidentID + "' AND  `OutageID` = '" + OutageID + "' AND `Scheduled` = 'Yes'");
+
+			// If it scheduled
+			if (incidentIsScheduled)
+			{
+				System.out.println("Incident is Scheduled");
+			} else
+			{
+				// If it is NOT scheduled then Start Time & End Time could not be modified
+				if ((!Help_Func.checkIfEmpty("StartTime", StartTime)) || (!Help_Func.checkIfEmpty("EndTime", EndTime)))
+				{
+					throw new InvalidInputException(
+							"The fields of 'Star Time'/'End Time' cannot be modified on non scheduled Incidents (Incident: "
+									+ IncidentID + " is not a scheduled incident)",
+							"Error 385");
+				}
+			}
+
+		} else
+		{
+			throw new InvalidInputException(
+					"The combination of IncidentID: " + IncidentID + " and OutageID: " + OutageID + " does not exist!",
+					"Error 550");
+		}
+
+		// Close DB Connection
 		wb.conObj.closeDBConnection();
+
 		// return prodElementsList;
 		return null;
 	}

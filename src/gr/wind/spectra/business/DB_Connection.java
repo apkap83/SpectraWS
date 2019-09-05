@@ -15,7 +15,7 @@ public class DB_Connection
 	private static final String DATABASE_URL = "jdbc:mysql://172.16.142.124:3306/SmartOutageDB?";
 	private static final String USERNAME = "root";
 	private static final String PASSWORD = "vQaSx4iVipDPLKfmdVDc";
-	private static final String FileLogPath = "C:\\Users\\AP.KAPETANIOS\\eclipse_enterprise\\SpectraWS\\logs\\DB_Operations.txt";
+	private static final String FileLogPath = "C:\\Users\\AP.KAPETANIOS\\eclipse_enterprise\\Spectra_WS\\logs\\DB_Operations.txt";
 	java.sql.Connection conn = null;
 
 	FileLogger LogFile = new FileLogger(FileLogPath);
