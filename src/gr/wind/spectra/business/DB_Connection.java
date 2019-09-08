@@ -4,6 +4,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.ResourceBundle;
+
+import org.apache.logging.log4j.LogManager;
+//Import log4j classes.
+import org.apache.logging.log4j.Logger;
 
 import gr.wind.spectra.web.InvalidInputException;
 
@@ -12,26 +17,38 @@ import gr.wind.spectra.web.InvalidInputException;
 
 public class DB_Connection
 {
-	private static final String DATABASE_URL = "jdbc:mysql://172.16.142.124:3306/SmartOutageDB?";
-	private static final String USERNAME = "root";
-	private static final String PASSWORD = "vQaSx4iVipDPLKfmdVDc";
-	private static final String FileLogPath = "C:\\Users\\AP.KAPETANIOS\\eclipse_enterprise\\Spectra_WS\\logs\\DB_Operations.txt";
+	private static String DATABASE_URL;// = "jdbc:mysql://172.16.142.124:3306/SmartOutageDB?";
+	private static String USERNAME;// = "root";
+	private static String PASSWORD;// = "vQaSx4iVipDPLKfmdVDc";
 	java.sql.Connection conn = null;
 
-	FileLogger LogFile = new FileLogger(FileLogPath);
+	// Define a static logger variable so that it references the
+	// Logger instance named "DB_Connection".
+	private static final Logger logger = LogManager.getLogger(DB_Connection.class);
 
 	public Connection Connect()
 			throws InvalidInputException, InstantiationException, IllegalAccessException, ClassNotFoundException
 	{
 		System.setProperty("javax.xml.soap.SAAJMetaFactory", "com.sun.xml.messaging.saaj.soap.SAAJMetaFactoryImpl");
-		LogFile.Log(Help_Func.GetTimeStamp() + "Starting Connection with database...");
+		// database...");
+
+		/**
+		 * Use property file with glassfish Place your property files in the
+		 * <glassfish-install-dir>/glassfish/domains/<domain-name>/lib/classes directory
+		 * and they will be accessible from within your applications via the
+		 * ResourceBundle class.
+		 */
+		DATABASE_URL = ResourceBundle.getBundle("database").getString("DATABASE_URL");
+		USERNAME = ResourceBundle.getBundle("database").getString("USERNAME");
+		PASSWORD = ResourceBundle.getBundle("database").getString("PASSWORD");
+
 		try
 		{
 			Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
 			conn = DriverManager.getConnection(DATABASE_URL + "user=" + USERNAME + "&" + "password=" + PASSWORD + "&"
 					+ "useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Europe/Athens&autoReconnect=true");
 
-			LogFile.Log(Help_Func.GetTimeStamp() + "Connection established!");
+			logger.info("Connection established!");
 			// Do something with the Connection
 
 		} catch (SQLException ex)
@@ -41,7 +58,12 @@ public class DB_Connection
 			System.out.println("SQLState: " + ex.getSQLState());
 			System.out.println("VendorError: " + ex.getErrorCode());
 			conn = null;
-			LogFile.Log(Help_Func.GetTimeStamp() + "Could not open connection with database!");
+
+			logger.error("Could not open connection with database!");
+			logger.error("SQLException: " + ex.getMessage());
+			logger.error("SQLState: " + ex.getSQLState());
+			logger.error("VendorError: " + ex.getErrorCode());
+
 			throw new InvalidInputException("DB Connection Error", "Could not connect to database!");
 
 		}
@@ -63,7 +85,7 @@ public class DB_Connection
 	public void closeDBConnection() throws SQLException
 	{
 		conn.close();
-		LogFile.Log(Help_Func.GetTimeStamp() + "Closing DB Connection");
+		logger.info("Closing DB Connection");
 	}
 
 	public static void main(String[] args) throws SQLException, InvalidInputException, InstantiationException,

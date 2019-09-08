@@ -1,0 +1,1 @@
+-Doracle.mds.cache=simple -Dlog4j.configurationFile=C:\My_Programs\glassfish5\glassfish\domains\domain1\config\log4j2.properties
