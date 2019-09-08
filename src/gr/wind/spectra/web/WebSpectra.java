@@ -693,7 +693,6 @@ public class WebSpectra// implements WebSpectraInterface
 			{
 				pom = new ProductOfModify("Error modifying incident!");
 			}
-
 		} else
 		{
 			throw new InvalidInputException(
@@ -704,7 +703,7 @@ public class WebSpectra// implements WebSpectraInterface
 		// Close DB Connection
 		wb.conObj.closeDBConnection();
 
-		// return prodElementsList;
+		// Return instance of class ProductOfModify
 		return pom;
 	}
 
