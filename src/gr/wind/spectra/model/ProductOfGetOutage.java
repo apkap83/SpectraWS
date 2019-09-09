@@ -9,53 +9,94 @@ import javax.xml.bind.annotation.XmlType;
 import gr.wind.spectra.web.InvalidInputException;
 
 @XmlRootElement(name = "Element")
-@XmlType(name = "basicStruct3", propOrder = { "outageID", "requestID", "incidentStatus", "requestTimestamp", "systemID",
-		"userID", "incidentID", "scheduled", "startTime", "endTime", "duration", "affectedServices", "impact",
-		"priority", "hierarchyselected" })
+@XmlType(name = "basicStruct3", propOrder = { "outageID", "incidentStatus", "requestTimestamp", "systemID", "userID",
+		"incidentID", "scheduled", "startTime", "endTime", "duration", "affectedServices", "impact", "priority",
+		"hierarchyselected" })
 public class ProductOfGetOutage
 {
 
-	private String outageID;
-	private String requestID;
-	private String incidentStatus;
-	private String requestTimestamp;
-	private String systemID;
-	private String userID;
-	private String incidentID;
-	private String scheduled;
-	private String startTime;
-	private String endTime;
-	private String duration;
-	private String affectedServices;
-	private String impact;
-	private String priority;
-	private String hierarchyselected;
+	private String outageID = "NULL";
+	private String incidentStatus = "NULL";
+	private String requestTimestamp = "NULL";
+	private String systemID = "NULL";
+	private String userID = "NULL";
+	private String incidentID = "NULL";
+	private String scheduled = "NULL";
+	private String startTime = "NULL";
+	private String endTime = "NULL";
+	private String duration = "NULL";
+	private String affectedServices = "NULL";
+	private String impact = "NULL";
+	private String priority = "NULL";
+	private String hierarchyselected = "NULL";
 
 	// Empty constructor requirement of JAXB (Java Architecture for XML Binding)
 	public ProductOfGetOutage()
 	{
 	}
 
-	public ProductOfGetOutage(String outageID, String requestID, String incidentStatus, String requestTimestamp,
-			String systemID, String userID, String incidentID, String scheduled, String startTime, String endTime,
-			String duration, String affectedServices, String impact, String priority, String hierarchyselected)
+	public ProductOfGetOutage(String outageID, String incidentStatus, String requestTimestamp, String systemID,
+			String userID, String incidentID, String scheduled, String startTime, String endTime, String duration,
+			String affectedServices, String impact, String priority, String hierarchyselected)
 			throws SQLException, InvalidInputException
 	{
-		this.outageID = outageID;
-		this.requestID = requestID;
-		this.incidentStatus = incidentStatus;
-		this.requestTimestamp = requestTimestamp;
-		this.systemID = systemID;
-		this.userID = userID;
-		this.incidentID = incidentID;
-		this.scheduled = scheduled;
-		this.startTime = startTime;
-		this.endTime = endTime;
-		this.duration = duration;
-		this.affectedServices = affectedServices;
-		this.impact = impact;
-		this.priority = priority;
-		this.hierarchyselected = hierarchyselected;
+		if (outageID != null)
+		{
+			this.outageID = outageID;
+		}
+		if (incidentStatus != null)
+		{
+			this.incidentStatus = incidentStatus;
+		}
+		if (requestTimestamp != null)
+		{
+			this.requestTimestamp = requestTimestamp;
+		}
+		if (systemID != null)
+		{
+			this.systemID = systemID;
+		}
+		if (userID != null)
+		{
+			this.userID = userID;
+		}
+		if (incidentID != null)
+		{
+			this.incidentID = incidentID;
+		}
+		if (scheduled != null)
+		{
+			this.scheduled = scheduled;
+		}
+
+		if (startTime != null)
+		{
+			this.startTime = startTime;
+		}
+		if (endTime != null)
+		{
+			this.endTime = endTime;
+		}
+		if (duration != null)
+		{
+			this.duration = duration;
+		}
+		if (affectedServices != null)
+		{
+			this.affectedServices = affectedServices;
+		}
+		if (impact != null)
+		{
+			this.impact = impact;
+		}
+		if (priority != null)
+		{
+			this.priority = priority;
+		}
+		if (hierarchyselected != null)
+		{
+			this.hierarchyselected = hierarchyselected;
+		}
 
 	}
 
@@ -68,17 +109,6 @@ public class ProductOfGetOutage
 	public void setoutageID(String outageID)
 	{
 		this.outageID = outageID;
-	}
-
-	@XmlElement(name = "requestID")
-	public String getrequestID()
-	{
-		return this.requestID;
-	}
-
-	public void setrequestID(String requestID)
-	{
-		this.requestID = requestID;
 	}
 
 	@XmlElement(name = "incidentStatus")

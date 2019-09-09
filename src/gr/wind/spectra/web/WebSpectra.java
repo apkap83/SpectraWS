@@ -75,159 +75,165 @@ public class WebSpectra// implements WebSpectraInterface
 		 */
 
 		WebSpectra wb = new WebSpectra();
-		List<String> ElementsList = new ArrayList<String>();
-		List<Product> prodElementsList = new ArrayList<>();
-
-		// Check if Authentication credentials are correct.
-		if (!wb.dbs.AuthenticateRequest(UserName, Password))
+		try
 		{
-			throw new InvalidInputException("User name or Password incorrect!", "Error 100");
-		}
+			List<String> ElementsList = new ArrayList<String>();
+			List<Product> prodElementsList = new ArrayList<>();
 
-		// Check if Required fields are empty
-		Help_Func.ValidateNotEmpty("RequestID", RequestID);
-		Help_Func.ValidateNotEmpty("SystemID", SystemID);
-		Help_Func.ValidateNotEmpty("UserID", UserID);
-
-		// Validate Date Formats if the fields are not empty
-		if (!Help_Func.checkIfEmpty("RequestTimestamp", RequestTimestamp))
-		{
-			Help_Func.ValidateDateTimeFormat("RequestTimestamp", RequestTimestamp);
-		}
-
-		// No Hierarchy is given - returns root elements
-		if (Hierarchy == null || Hierarchy.equals("") || Hierarchy.equals("?"))
-		{
-			ElementsList = wb.dbs.GetOneColumnUniqueResultSet("HierarchyTablePerTechnology2", "RootHierarchyNode",
-					"1 = 1");
-			String[] nodeNames = new String[] {};
-			String[] nodeValues = new String[] {};
-			Product pr = new Product(wb.dbs, new String[] {}, new String[] {}, new String[] {}, Hierarchy,
-					"rootElements", ElementsList, nodeNames, nodeValues, RequestID);
-			prodElementsList.add(pr);
-		} else
-		{
-			ArrayList<String> nodeNamesArrayList = new ArrayList<String>();
-			ArrayList<String> nodeValuesArrayList = new ArrayList<String>();
-
-			// Get root hierarchy String
-			String rootElementInHierarchy = Help_Func.GetRootHierarchyNode(Hierarchy);
-
-			// Get Hierarchy Table for that root hierarchy
-			String table = wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "HierarchyTableName",
-					"RootHierarchyNode = '" + rootElementInHierarchy + "'");
-
-			// Get Hierarchy data in style :
-			// OltElementName->OltSlot->OltPort->Onu->ElementName->Slot
-			String fullHierarchyFromDB = wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "HierarchyTableNamePath",
-					"RootHierarchyNode = '" + rootElementInHierarchy + "'");
-
-			// Check Columns of Hierarchy against fullHierarchy (avoid wrong key values in
-			// hierarchy e.g. SiteNa7me=AKADIMIAS)
-			Help_Func.CheckColumnsOfHierarchyVSFullHierarchy(Hierarchy, fullHierarchyFromDB);
-
-			// Split the hierarchy retrieved from DB into fields
-			String[] fullHierarchyFromDBSplit = fullHierarchyFromDB.split("->");
-
-			// Get Full Internet hierarchy in style :
-			// OltElementName->OltSlot->OltPort->Onu->ActiveElement->Slot
-			String fullDataSubsHierarchyFromDB = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-					"DataSubscribersTableNamePath", "RootHierarchyNode = '" + rootElementInHierarchy + "'");
-
-			// Split the Internet hierarchy retrieved from DB into fields
-			String[] fullDataSubsHierarchyFromDBSplit = fullDataSubsHierarchyFromDB.split("->");
-
-			// Get Full Voice hierarchy in style :
-			// OltElementName->OltSlot->OltPort->Onu->ActiveElement->Slot
-			String fullVoiceSubsHierarchyFromDB = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-					"VoiceSubscribersTableNamePath", "RootHierarchyNode = '" + rootElementInHierarchy + "'");
-
-			// Split the Internet hierarchy retrieved from DB into fields
-			String[] fullVoiceSubsHierarchyFromDBSplit = fullVoiceSubsHierarchyFromDB.split("->");
-
-			// Split given hierarchy
-			String[] hierItemsGiven = Hierarchy.split(hierSep);
-
-			// Check if max hierarchy level is surpassed
-			// Max hierarchy level is fullHieararchyPath.length + 1
-			int maxLevelsOfHierarchy = fullHierarchyFromDBSplit.length + 1;
-			if (hierItemsGiven.length > maxLevelsOfHierarchy)
+			// Check if Authentication credentials are correct.
+			if (!wb.dbs.AuthenticateRequest(UserName, Password))
 			{
-				throw new InvalidInputException("More hierarchy levels than expected", "Error 120");
+				throw new InvalidInputException("User name or Password incorrect!", "Error 100");
 			}
 
-			// If only root Hierarchy is given
-			if (hierItemsGiven.length == 1)
+			// Check if Required fields are empty
+			Help_Func.ValidateNotEmpty("RequestID", RequestID);
+			Help_Func.ValidateNotEmpty("SystemID", SystemID);
+			Help_Func.ValidateNotEmpty("UserID", UserID);
+
+			// Validate Date Formats if the fields are not empty
+			if (!Help_Func.checkIfEmpty("RequestTimestamp", RequestTimestamp))
 			{
-				ElementsList = wb.dbs.GetOneColumnUniqueResultSet(table, fullHierarchyFromDBSplit[0], " 1 = 1 ");
-				String[] nodeNames = new String[] { rootElementInHierarchy };
-				String[] nodeValues = new String[] { "1" };
-				Product pr = new Product(wb.dbs, fullHierarchyFromDBSplit, fullDataSubsHierarchyFromDBSplit,
-						fullVoiceSubsHierarchyFromDBSplit, Hierarchy, fullHierarchyFromDBSplit[0], ElementsList,
-						nodeNames, nodeValues, RequestID);
+				Help_Func.ValidateDateTimeFormat("RequestTimestamp", RequestTimestamp);
+			}
+
+			// No Hierarchy is given - returns root elements
+			if (Hierarchy == null || Hierarchy.equals("") || Hierarchy.equals("?"))
+			{
+				ElementsList = wb.dbs.GetOneColumnUniqueResultSet("HierarchyTablePerTechnology2", "RootHierarchyNode",
+						"1 = 1");
+				String[] nodeNames = new String[] {};
+				String[] nodeValues = new String[] {};
+				Product pr = new Product(wb.dbs, new String[] {}, new String[] {}, new String[] {}, Hierarchy,
+						"rootElements", ElementsList, nodeNames, nodeValues, RequestID);
 				prodElementsList.add(pr);
 			} else
 			{
-				// Check if Max hierarchy is used
-				// FTTX->OltElementName=LAROAKDMOLT01->OltSlot=1->OltPort=0->Onu=0->ElementName=LAROAKDMOFLND010H11->Slot=4:
-				// 7 MAX = FTTX + OltElementName->OltSlot->OltPort->Onu->ElementName->Slot
-				if (hierItemsGiven.length < fullHierarchyFromDBSplit.length + 1)
+				ArrayList<String> nodeNamesArrayList = new ArrayList<String>();
+				ArrayList<String> nodeValuesArrayList = new ArrayList<String>();
+
+				// Get root hierarchy String
+				String rootElementInHierarchy = Help_Func.GetRootHierarchyNode(Hierarchy);
+
+				// Get Hierarchy Table for that root hierarchy
+				String table = wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "HierarchyTableName",
+						"RootHierarchyNode = '" + rootElementInHierarchy + "'");
+
+				// Get Hierarchy data in style :
+				// OltElementName->OltSlot->OltPort->Onu->ElementName->Slot
+				String fullHierarchyFromDB = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
+						"HierarchyTableNamePath", "RootHierarchyNode = '" + rootElementInHierarchy + "'");
+
+				// Check Columns of Hierarchy against fullHierarchy (avoid wrong key values in
+				// hierarchy e.g. SiteNa7me=AKADIMIAS)
+				Help_Func.CheckColumnsOfHierarchyVSFullHierarchy(Hierarchy, fullHierarchyFromDB);
+
+				// Split the hierarchy retrieved from DB into fields
+				String[] fullHierarchyFromDBSplit = fullHierarchyFromDB.split("->");
+
+				// Get Full Internet hierarchy in style :
+				// OltElementName->OltSlot->OltPort->Onu->ActiveElement->Slot
+				String fullDataSubsHierarchyFromDB = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
+						"DataSubscribersTableNamePath", "RootHierarchyNode = '" + rootElementInHierarchy + "'");
+
+				// Split the Internet hierarchy retrieved from DB into fields
+				String[] fullDataSubsHierarchyFromDBSplit = fullDataSubsHierarchyFromDB.split("->");
+
+				// Get Full Voice hierarchy in style :
+				// OltElementName->OltSlot->OltPort->Onu->ActiveElement->Slot
+				String fullVoiceSubsHierarchyFromDB = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
+						"VoiceSubscribersTableNamePath", "RootHierarchyNode = '" + rootElementInHierarchy + "'");
+
+				// Split the Internet hierarchy retrieved from DB into fields
+				String[] fullVoiceSubsHierarchyFromDBSplit = fullVoiceSubsHierarchyFromDB.split("->");
+
+				// Split given hierarchy
+				String[] hierItemsGiven = Hierarchy.split(hierSep);
+
+				// Check if max hierarchy level is surpassed
+				// Max hierarchy level is fullHieararchyPath.length + 1
+				int maxLevelsOfHierarchy = fullHierarchyFromDBSplit.length + 1;
+				if (hierItemsGiven.length > maxLevelsOfHierarchy)
 				{
-					// If a full hierarchy is given
-					for (int i = 0; i < hierItemsGiven.length; i++)
-					{
-						if (i == 0)
-						{
-							nodeNamesArrayList.add(rootElementInHierarchy);
-							nodeValuesArrayList.add("1");
-							continue;
-						}
+					throw new InvalidInputException("More hierarchy levels than expected", "Error 120");
+				}
 
-						String[] keyValue = hierItemsGiven[i].split("=");
-						nodeNamesArrayList.add(keyValue[0]);
-						nodeValuesArrayList.add(keyValue[1]);
-					}
-
-					ElementsList = wb.dbs.GetOneColumnUniqueResultSet(table,
-							fullHierarchyFromDBSplit[hierItemsGiven.length - 1],
-							Help_Func.HierarchyToPredicate(Hierarchy));
-					String[] nodeNames = nodeNamesArrayList.toArray(new String[nodeNamesArrayList.size()]);
-					String[] nodeValues = nodeValuesArrayList.toArray(new String[nodeValuesArrayList.size()]);
+				// If only root Hierarchy is given
+				if (hierItemsGiven.length == 1)
+				{
+					ElementsList = wb.dbs.GetOneColumnUniqueResultSet(table, fullHierarchyFromDBSplit[0], " 1 = 1 ");
+					String[] nodeNames = new String[] { rootElementInHierarchy };
+					String[] nodeValues = new String[] { "1" };
 					Product pr = new Product(wb.dbs, fullHierarchyFromDBSplit, fullDataSubsHierarchyFromDBSplit,
-							fullVoiceSubsHierarchyFromDBSplit, Hierarchy,
-							fullHierarchyFromDBSplit[hierItemsGiven.length - 1], ElementsList, nodeNames, nodeValues,
-							RequestID);
+							fullVoiceSubsHierarchyFromDBSplit, Hierarchy, fullHierarchyFromDBSplit[0], ElementsList,
+							nodeNames, nodeValues, RequestID);
 					prodElementsList.add(pr);
 				} else
-				{ // Max Hierarchy Level
-					// If a full hierarchy is given
-					for (int i = 0; i < hierItemsGiven.length; i++)
+				{
+					// Check if Max hierarchy is used
+					// FTTX->OltElementName=LAROAKDMOLT01->OltSlot=1->OltPort=0->Onu=0->ElementName=LAROAKDMOFLND010H11->Slot=4:
+					// 7 MAX = FTTX + OltElementName->OltSlot->OltPort->Onu->ElementName->Slot
+					if (hierItemsGiven.length < fullHierarchyFromDBSplit.length + 1)
 					{
-						if (i == 0)
+						// If a full hierarchy is given
+						for (int i = 0; i < hierItemsGiven.length; i++)
 						{
-							nodeNamesArrayList.add(rootElementInHierarchy);
-							nodeValuesArrayList.add("1");
-							continue;
+							if (i == 0)
+							{
+								nodeNamesArrayList.add(rootElementInHierarchy);
+								nodeValuesArrayList.add("1");
+								continue;
+							}
+
+							String[] keyValue = hierItemsGiven[i].split("=");
+							nodeNamesArrayList.add(keyValue[0]);
+							nodeValuesArrayList.add(keyValue[1]);
 						}
 
-						String[] keyValue = hierItemsGiven[i].split("=");
-						nodeNamesArrayList.add(keyValue[0]);
-						nodeValuesArrayList.add(keyValue[1]);
-					}
+						ElementsList = wb.dbs.GetOneColumnUniqueResultSet(table,
+								fullHierarchyFromDBSplit[hierItemsGiven.length - 1],
+								Help_Func.HierarchyToPredicate(Hierarchy));
+						String[] nodeNames = nodeNamesArrayList.toArray(new String[nodeNamesArrayList.size()]);
+						String[] nodeValues = nodeValuesArrayList.toArray(new String[nodeValuesArrayList.size()]);
+						Product pr = new Product(wb.dbs, fullHierarchyFromDBSplit, fullDataSubsHierarchyFromDBSplit,
+								fullVoiceSubsHierarchyFromDBSplit, Hierarchy,
+								fullHierarchyFromDBSplit[hierItemsGiven.length - 1], ElementsList, nodeNames,
+								nodeValues, RequestID);
+						prodElementsList.add(pr);
+					} else
+					{ // Max Hierarchy Level
+						// If a full hierarchy is given
+						for (int i = 0; i < hierItemsGiven.length; i++)
+						{
+							if (i == 0)
+							{
+								nodeNamesArrayList.add(rootElementInHierarchy);
+								nodeValuesArrayList.add("1");
+								continue;
+							}
 
-					ElementsList = new ArrayList<String>();
-					String[] nodeNames = nodeNamesArrayList.toArray(new String[nodeNamesArrayList.size()]);
-					String[] nodeValues = nodeValuesArrayList.toArray(new String[nodeValuesArrayList.size()]);
-					Product pr = new Product(wb.dbs, fullHierarchyFromDBSplit, fullDataSubsHierarchyFromDBSplit,
-							fullVoiceSubsHierarchyFromDBSplit, Hierarchy, "MaxLevel", ElementsList, nodeNames,
-							nodeValues, RequestID);
-					prodElementsList.add(pr);
+							String[] keyValue = hierItemsGiven[i].split("=");
+							nodeNamesArrayList.add(keyValue[0]);
+							nodeValuesArrayList.add(keyValue[1]);
+						}
+
+						ElementsList = new ArrayList<String>();
+						String[] nodeNames = nodeNamesArrayList.toArray(new String[nodeNamesArrayList.size()]);
+						String[] nodeValues = nodeValuesArrayList.toArray(new String[nodeValuesArrayList.size()]);
+						Product pr = new Product(wb.dbs, fullHierarchyFromDBSplit, fullDataSubsHierarchyFromDBSplit,
+								fullVoiceSubsHierarchyFromDBSplit, Hierarchy, "MaxLevel", ElementsList, nodeNames,
+								nodeValues, RequestID);
+						prodElementsList.add(pr);
+					}
 				}
 			}
+
+			return prodElementsList;
+		} finally
+		{
+			wb.conObj.closeDBConnection();
 		}
 
-		wb.conObj.closeDBConnection();
-		return prodElementsList;
 	}
 
 	@WebMethod
@@ -254,255 +260,267 @@ public class WebSpectra// implements WebSpectraInterface
 			ClassNotFoundException, SQLException
 	{
 		WebSpectra wb = new WebSpectra();
-		List<ProductOfSubmission> prodElementsList = new ArrayList<>();
-		int OutageID_Integer = 0;
-		// Check if Authentication credentials are correct.
-		if (!wb.dbs.AuthenticateRequest(UserName, Password))
+
+		List<ProductOfSubmission> prodElementsList;
+		try
 		{
-			throw new InvalidInputException("User name or Password incorrect!", "Error 100");
-		}
-
-		// Check if Required fields are not empty and they contain the desired values
-		Help_Func.ValidateNotEmpty("RequestTimestamp", RequestTimestamp);
-		if (!Help_Func.checkIfEmpty("RequestTimestamp", RequestTimestamp))
-		{
-			Help_Func.ValidateDateTimeFormat("RequestTimestamp", RequestTimestamp);
-		}
-
-		Help_Func.ValidateNotEmpty("StartTime", StartTime);
-		if (!Help_Func.checkIfEmpty("StartTime", StartTime))
-		{
-			Help_Func.ValidateDateTimeFormat("StartTime", StartTime);
-		}
-		if (!Help_Func.checkIfEmpty("EndTime", EndTime))
-		{
-			Help_Func.ValidateDateTimeFormat("EndTime", EndTime);
-		}
-
-		Help_Func.ValidateNotEmpty("SystemID", SystemID);
-		Help_Func.ValidateNotEmpty("UserID", UserID);
-		Help_Func.ValidateNotEmpty("IncidentID", IncidentID);
-
-		Help_Func.ValidateNotEmpty("Scheduled", Scheduled);
-		Help_Func.ValidateAgainstPredefinedValues("Scheduled", Scheduled, new String[] { "Yes", "No" });
-
-		Help_Func.ValidateIntegerOrEmptyValue("Duration", Duration);
-
-		Help_Func.ValidateNotEmpty("AffectedServices", AffectedServices);
-		Help_Func.ValidateDelimitedValues("AffectedServices", AffectedServices, "\\|",
-				new String[] { "Voice", "Internet", "IPTV" });
-
-		Help_Func.ValidateNotEmpty("Impact", Impact);
-		Help_Func.ValidateAgainstPredefinedValues("Impact", Impact, new String[] { "QoS", "LoS" });
-
-		Help_Func.ValidateNotEmpty("Priority", Priority);
-		Help_Func.ValidateAgainstPredefinedValues("Priority", Priority, new String[] { "Critical", "Medium", "Low" });
-
-		Help_Func.ValidateNotEmpty("HierarchySelected", HierarchySelected);
-
-		// Split to % and to | the hierarchy provided
-		List<String> myHier = Help_Func.GetHierarchySelections(HierarchySelected);
-
-		// Get Max Outage ID (type int)
-		OutageID_Integer = wb.dbs.GetMaxIntegerValue("SubmittedIncidents", "OutageID");
-
-		// Services affected
-		String[] servicesAffected = AffectedServices.split("\\|");
-
-		// Calculate Total number per Indicent, of customers affected per incident
-		int incidentDataCustomersAffected = 0;
-		int incidentVoiceCustomersAffected = 0;
-		for (String service : servicesAffected)
-		{
-			for (int i = 0; i < myHier.size(); i++)
+			prodElementsList = new ArrayList<>();
+			int OutageID_Integer = 0;
+			// Check if Authentication credentials are correct.
+			if (!wb.dbs.AuthenticateRequest(UserName, Password))
 			{
-				// Check Hierarchy Format Key_Value Pairs
-				Help_Func.checkHierarchyFormatKeyValuePairs(myHier.get(i).toString());
-
-				// Firstly determine the hierarchy table that will be used based on the root
-				// hierarchy provided
-				String rootHierarchySelected = Help_Func.GetRootHierarchyNode(myHier.get(i).toString());
-
-				// Get Hierarchy data in style :
-				// OltElementName->OltSlot->OltPort->Onu->ElementName->Slot
-				String fullHierarchyFromDB = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-						"HierarchyTableNamePath", "RootHierarchyNode = '" + rootHierarchySelected + "'");
-
-				// Check Columns of Hierarchy against fullHierarchy (avoid wrong key values in
-				// hierarchy e.g. SiteNa7me=AKADIMIAS)
-				Help_Func.CheckColumnsOfHierarchyVSFullHierarchy(myHier.get(i).toString(), fullHierarchyFromDB);
-
-				// Determine Tables for Data/Voice subscribers
-				String dataSubsTable = wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "DataSubscribersTableName",
-						"RootHierarchyNode = '" + rootHierarchySelected + "'");
-				String voiceSubsTable = wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "VoiceSubscribersTableName",
-						"RootHierarchyNode = '" + rootHierarchySelected + "'");
-
-				// Get Hierarchies for Data/Voice Tables
-				String fullDataHierarchyPath = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-						"DataSubscribersTableNamePath", "RootHierarchyNode = '" + rootHierarchySelected + "'");
-				String[] fullDataHierarchyPathSplit = fullDataHierarchyPath.split("->");
-
-				String fullVoiceHierarchyPath = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-						"VoiceSubscribersTableNamePath", "RootHierarchyNode = '" + rootHierarchySelected + "'");
-				String[] fullVoiceHierarchyPathSplit = fullVoiceHierarchyPath.split("->");
-
-				// Count distinct values of Usernames or CliVlaues in the respective columns
-				String dataCustomersAffected = dbs.CountDistinctRowsForSpecificColumn(dataSubsTable, "Username",
-						Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(
-								myHier.get(i).toString(), fullDataHierarchyPathSplit)));
-				String voiceCustomersAffected = dbs.CountDistinctRowsForSpecificColumns(voiceSubsTable,
-						new String[] { "ActiveElement", "Subrack", "Slot", "Port", "PON" },
-						Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(
-								myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
-
-				// For Voice no data customers are affected and vice versa
-				if (service.equals("Voice"))
-				{
-					dataCustomersAffected = "0";
-				} else if (service.equals("Internet"))
-				{
-					voiceCustomersAffected = "0";
-				}
-
-				incidentDataCustomersAffected += Integer.parseInt(dataCustomersAffected);
-				incidentVoiceCustomersAffected += Integer.parseInt(voiceCustomersAffected);
-
-				System.out.println("incidentDataCustomersAffected = " + incidentDataCustomersAffected);
-				System.out.println("incidentVoiceCustomersAffected = " + incidentVoiceCustomersAffected);
+				throw new InvalidInputException("User name or Password incorrect!", "Error 100");
 			}
-		}
 
-		// Check if for the same Incident ID, Service & Hierarchy - We have already an
-		// entry
-		for (String service : servicesAffected)
-		{
-			for (int i = 0; i < myHier.size(); i++)
+			// Check if Required fields are not empty and they contain the desired values
+			Help_Func.ValidateNotEmpty("RequestTimestamp", RequestTimestamp);
+			if (!Help_Func.checkIfEmpty("RequestTimestamp", RequestTimestamp))
 			{
-				boolean incidentAlreadyExists = wb.dbs.CheckIfCriteriaExists("SubmittedIncidents",
-						new String[] { "IncidentStatus", "IncidentID", "AffectedServices", "HierarchySelected" },
-						"IncidentStatus='OPEN' AND IncidentID = '" + IncidentID + "' AND AffectedServices = '" + service
-								+ "' AND HierarchySelected = '" + myHier.get(i).toString() + "'");
-				if (incidentAlreadyExists)
+				Help_Func.ValidateDateTimeFormat("RequestTimestamp", RequestTimestamp);
+			}
+
+			Help_Func.ValidateNotEmpty("StartTime", StartTime);
+			if (!Help_Func.checkIfEmpty("StartTime", StartTime))
+			{
+				Help_Func.ValidateDateTimeFormat("StartTime", StartTime);
+			}
+			if (!Help_Func.checkIfEmpty("EndTime", EndTime))
+			{
+				Help_Func.ValidateDateTimeFormat("EndTime", EndTime);
+			}
+
+			Help_Func.ValidateNotEmpty("SystemID", SystemID);
+			Help_Func.ValidateNotEmpty("UserID", UserID);
+			Help_Func.ValidateNotEmpty("IncidentID", IncidentID);
+
+			Help_Func.ValidateNotEmpty("Scheduled", Scheduled);
+			Help_Func.ValidateAgainstPredefinedValues("Scheduled", Scheduled, new String[] { "Yes", "No" });
+
+			Help_Func.ValidateIntegerOrEmptyValue("Duration", Duration);
+
+			Help_Func.ValidateNotEmpty("AffectedServices", AffectedServices);
+			Help_Func.ValidateDelimitedValues("AffectedServices", AffectedServices, "\\|",
+					new String[] { "Voice", "Internet", "IPTV" });
+
+			Help_Func.ValidateNotEmpty("Impact", Impact);
+			Help_Func.ValidateAgainstPredefinedValues("Impact", Impact, new String[] { "QoS", "LoS" });
+
+			Help_Func.ValidateNotEmpty("Priority", Priority);
+			Help_Func.ValidateAgainstPredefinedValues("Priority", Priority,
+					new String[] { "Critical", "Medium", "Low" });
+
+			Help_Func.ValidateNotEmpty("HierarchySelected", HierarchySelected);
+
+			// Split to % and to | the hierarchy provided
+			List<String> myHier = Help_Func.GetHierarchySelections(HierarchySelected);
+
+			// Get Max Outage ID (type int)
+			OutageID_Integer = wb.dbs.GetMaxIntegerValue("SubmittedIncidents", "OutageID");
+
+			// Services affected
+			String[] servicesAffected = AffectedServices.split("\\|");
+
+			// Calculate Total number per Indicent, of customers affected per incident
+			int incidentDataCustomersAffected = 0;
+			int incidentVoiceCustomersAffected = 0;
+			for (String service : servicesAffected)
+			{
+				for (int i = 0; i < myHier.size(); i++)
 				{
-					throw new InvalidInputException("There is already an openned incident (" + IncidentID
-							+ ") that defines outage for AffectedService = " + service + " and HierarchySelected = "
-							+ myHier.get(i).toString(), "Error 195");
+					// Check Hierarchy Format Key_Value Pairs
+					Help_Func.checkHierarchyFormatKeyValuePairs(myHier.get(i).toString());
+
+					// Firstly determine the hierarchy table that will be used based on the root
+					// hierarchy provided
+					String rootHierarchySelected = Help_Func.GetRootHierarchyNode(myHier.get(i).toString());
+
+					// Get Hierarchy data in style :
+					// OltElementName->OltSlot->OltPort->Onu->ElementName->Slot
+					String fullHierarchyFromDB = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
+							"HierarchyTableNamePath", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+
+					// Check Columns of Hierarchy against fullHierarchy (avoid wrong key values in
+					// hierarchy e.g. SiteNa7me=AKADIMIAS)
+					Help_Func.CheckColumnsOfHierarchyVSFullHierarchy(myHier.get(i).toString(), fullHierarchyFromDB);
+
+					// Determine Tables for Data/Voice subscribers
+					String dataSubsTable = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
+							"DataSubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+					String voiceSubsTable = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
+							"VoiceSubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+
+					// Get Hierarchies for Data/Voice Tables
+					String fullDataHierarchyPath = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
+							"DataSubscribersTableNamePath", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+					String[] fullDataHierarchyPathSplit = fullDataHierarchyPath.split("->");
+
+					String fullVoiceHierarchyPath = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
+							"VoiceSubscribersTableNamePath", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+					String[] fullVoiceHierarchyPathSplit = fullVoiceHierarchyPath.split("->");
+
+					// Count distinct values of Usernames or CliVlaues in the respective columns
+					String dataCustomersAffected = dbs.CountDistinctRowsForSpecificColumn(dataSubsTable, "Username",
+							Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullDataHierarchyPathSplit)));
+					String voiceCustomersAffected = dbs.CountDistinctRowsForSpecificColumns(voiceSubsTable,
+							new String[] { "ActiveElement", "Subrack", "Slot", "Port", "PON" },
+							Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
+
+					// For Voice no data customers are affected and vice versa
+					if (service.equals("Voice"))
+					{
+						dataCustomersAffected = "0";
+					} else if (service.equals("Internet"))
+					{
+						voiceCustomersAffected = "0";
+					}
+
+					incidentDataCustomersAffected += Integer.parseInt(dataCustomersAffected);
+					incidentVoiceCustomersAffected += Integer.parseInt(voiceCustomersAffected);
+
+					System.out.println("incidentDataCustomersAffected = " + incidentDataCustomersAffected);
+					System.out.println("incidentVoiceCustomersAffected = " + incidentVoiceCustomersAffected);
 				}
 			}
-		}
 
-		// Calculate Sum of Voice/Data Customers affected for potentially already opened
-		// same incident
-		String numberOfVoiceCustAffectedFromPreviousIncidents = "0";
-		String numberOfDataCustAffectedFromPreviousIncidents = "0";
-
-		if (wb.dbs.CheckIfCriteriaExists("SubmittedIncidents", new String[] { "IncidentID" },
-				"`IncidentID` = '" + IncidentID + "'"))
-		{
-			numberOfVoiceCustAffectedFromPreviousIncidents = wb.dbs.MaxNumberOfCustomersAffected("SubmittedIncidents",
-					"IncidentAffectedVoiceCustomers", new String[] { "IncidentID" }, new String[] { IncidentID });
-			numberOfDataCustAffectedFromPreviousIncidents = wb.dbs.MaxNumberOfCustomersAffected("SubmittedIncidents",
-					"IncidentAffectedDataCustomers", new String[] { "IncidentID" }, new String[] { IncidentID });
-
-			System.out.println("numberOfVoiceCustAffectedFromPreviousIncidents = "
-					+ numberOfVoiceCustAffectedFromPreviousIncidents);
-			System.out.println(
-					"numberOfDataCustAffectedFromPreviousIncidents = " + numberOfDataCustAffectedFromPreviousIncidents);
-		}
-
-		for (String service : servicesAffected)
-		{
-			for (int i = 0; i < myHier.size(); i++)
+			// Check if for the same Incident ID, Service & Hierarchy - We have already an
+			// entry
+			for (String service : servicesAffected)
 			{
-				// Add One
-				OutageID_Integer += 1;
-
-				// Check Hierarchy Format Key_Value Pairs
-				Help_Func.checkHierarchyFormatKeyValuePairs(myHier.get(i).toString());
-
-				// Firstly determine the hierarchy table that will be used based on the root
-				// hierarchy provided
-				String rootHierarchySelected = Help_Func.GetRootHierarchyNode(myHier.get(i).toString());
-
-				// Determine Tables for Data/Voice subscribers
-				String dataSubsTable = wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "DataSubscribersTableName",
-						"RootHierarchyNode = '" + rootHierarchySelected + "'");
-				String voiceSubsTable = wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "VoiceSubscribersTableName",
-						"RootHierarchyNode = '" + rootHierarchySelected + "'");
-
-				// Get Hierarchies for Data/Voice Tables
-				String fullDataHierarchyPath = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-						"DataSubscribersTableNamePath", "RootHierarchyNode = '" + rootHierarchySelected + "'");
-				String[] fullDataHierarchyPathSplit = fullDataHierarchyPath.split("->");
-				String fullVoiceHierarchyPath = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-						"VoiceSubscribersTableNamePath", "RootHierarchyNode = '" + rootHierarchySelected + "'");
-				String[] fullVoiceHierarchyPathSplit = fullVoiceHierarchyPath.split("->");
-
-				// Count distinct values of Usernames or CliVlaues the respective columns
-				String dataCustomersAffected = dbs.CountDistinctRowsForSpecificColumn(dataSubsTable, "Username",
-						Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(
-								myHier.get(i).toString(), fullDataHierarchyPathSplit)));
-				String voiceCustomersAffected = dbs.CountDistinctRowsForSpecificColumns(voiceSubsTable,
-						new String[] { "ActiveElement", "Subrack", "Slot", "Port", "PON" },
-						Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(
-								myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
-				String CLIsAffected = dbs.CountDistinctRowsForSpecificColumn(voiceSubsTable, "CliValue",
-						Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(
-								myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
-
-				// For Voice no data customers are affected and vice versa
-				if (service.equals("Voice"))
+				for (int i = 0; i < myHier.size(); i++)
 				{
-					dataCustomersAffected = "0";
-				} else if (service.equals("Internet"))
-				{
-					voiceCustomersAffected = "0";
-					CLIsAffected = "0";
+					boolean incidentAlreadyExists = wb.dbs.CheckIfCriteriaExists("SubmittedIncidents",
+							new String[] { "IncidentStatus", "IncidentID", "AffectedServices", "HierarchySelected" },
+							"IncidentStatus='OPEN' AND IncidentID = '" + IncidentID + "' AND AffectedServices = '"
+									+ service + "' AND HierarchySelected = '" + myHier.get(i).toString() + "'");
+					if (incidentAlreadyExists)
+					{
+						throw new InvalidInputException("There is already an openned incident (" + IncidentID
+								+ ") that defines outage for AffectedService = " + service + " and HierarchySelected = "
+								+ myHier.get(i).toString(), "Error 195");
+					}
 				}
+			}
 
-				// Convert it to String (only for the sake of the below method
-				// (InsertValuesInTableGetSequence) - In the database it is still an integer
-				String OutageID_String = Integer.toString(OutageID_Integer);
+			// Calculate Sum of Voice/Data Customers affected for potentially already opened
+			// same incident
+			String numberOfVoiceCustAffectedFromPreviousIncidents = "0";
+			String numberOfDataCustAffectedFromPreviousIncidents = "0";
 
-				// Sum Customers Affected from Previous but same Incidents that were inserted in
-				// the
-				// past
-				int totalVoiceIncidentAffected = incidentVoiceCustomersAffected
-						+ Integer.parseInt(numberOfVoiceCustAffectedFromPreviousIncidents);
-				int totalDataIncidentAffected = incidentDataCustomersAffected
-						+ Integer.parseInt(numberOfDataCustAffectedFromPreviousIncidents);
+			if (wb.dbs.CheckIfCriteriaExists("SubmittedIncidents", new String[] { "IncidentID" },
+					"`IncidentID` = '" + IncidentID + "'"))
+			{
+				numberOfVoiceCustAffectedFromPreviousIncidents = wb.dbs.MaxNumberOfCustomersAffected(
+						"SubmittedIncidents", "IncidentAffectedVoiceCustomers", new String[] { "IncidentID" },
+						new String[] { IncidentID });
+				numberOfDataCustAffectedFromPreviousIncidents = wb.dbs.MaxNumberOfCustomersAffected(
+						"SubmittedIncidents", "IncidentAffectedDataCustomers", new String[] { "IncidentID" },
+						new String[] { IncidentID });
 
-				// Insert Values in Database
-				wb.dbs.InsertValuesInTable("SubmittedIncidents",
-						new String[] { "DateTime", "OutageID", "IncidentStatus", "RequestTimestamp", "SystemID",
-								"UserID", "IncidentID", "Scheduled", "StartTime", "EndTime", "Duration",
-								"AffectedServices", "Impact", "Priority", "HierarchySelected", "AffectedVoiceCustomers",
-								"AffectedDataCustomers", "AffectedCLICustomers", "IncidentAffectedVoiceCustomers",
-								"IncidentAffectedDataCustomers" },
-						new String[] { Help_Func.now(), OutageID_String, "OPEN", RequestTimestamp, SystemID, UserID,
-								IncidentID, Scheduled, StartTime, EndTime, Duration, service, Impact, Priority,
-								myHier.get(i).toString(), voiceCustomersAffected, dataCustomersAffected, CLIsAffected,
+				System.out.println("numberOfVoiceCustAffectedFromPreviousIncidents = "
+						+ numberOfVoiceCustAffectedFromPreviousIncidents);
+				System.out.println("numberOfDataCustAffectedFromPreviousIncidents = "
+						+ numberOfDataCustAffectedFromPreviousIncidents);
+			}
+
+			for (String service : servicesAffected)
+			{
+				for (int i = 0; i < myHier.size(); i++)
+				{
+					// Add One
+					OutageID_Integer += 1;
+
+					// Check Hierarchy Format Key_Value Pairs
+					Help_Func.checkHierarchyFormatKeyValuePairs(myHier.get(i).toString());
+
+					// Firstly determine the hierarchy table that will be used based on the root
+					// hierarchy provided
+					String rootHierarchySelected = Help_Func.GetRootHierarchyNode(myHier.get(i).toString());
+
+					// Determine Tables for Data/Voice subscribers
+					String dataSubsTable = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
+							"DataSubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+					String voiceSubsTable = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
+							"VoiceSubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+
+					// Get Hierarchies for Data/Voice Tables
+					String fullDataHierarchyPath = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
+							"DataSubscribersTableNamePath", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+					String[] fullDataHierarchyPathSplit = fullDataHierarchyPath.split("->");
+					String fullVoiceHierarchyPath = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
+							"VoiceSubscribersTableNamePath", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+					String[] fullVoiceHierarchyPathSplit = fullVoiceHierarchyPath.split("->");
+
+					// Count distinct values of Usernames or CliVlaues the respective columns
+					String dataCustomersAffected = dbs.CountDistinctRowsForSpecificColumn(dataSubsTable, "Username",
+							Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullDataHierarchyPathSplit)));
+					String voiceCustomersAffected = dbs.CountDistinctRowsForSpecificColumns(voiceSubsTable,
+							new String[] { "ActiveElement", "Subrack", "Slot", "Port", "PON" },
+							Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
+					String CLIsAffected = dbs.CountDistinctRowsForSpecificColumn(voiceSubsTable, "CliValue",
+							Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
+
+					// For Voice no data customers are affected and vice versa
+					if (service.equals("Voice"))
+					{
+						dataCustomersAffected = "0";
+					} else if (service.equals("Internet"))
+					{
+						voiceCustomersAffected = "0";
+						CLIsAffected = "0";
+					}
+
+					// Convert it to String (only for the sake of the below method
+					// (InsertValuesInTableGetSequence) - In the database it is still an integer
+					String OutageID_String = Integer.toString(OutageID_Integer);
+
+					// Sum Customers Affected from Previous but same Incidents that were inserted in
+					// the
+					// past
+					int totalVoiceIncidentAffected = incidentVoiceCustomersAffected
+							+ Integer.parseInt(numberOfVoiceCustAffectedFromPreviousIncidents);
+					int totalDataIncidentAffected = incidentDataCustomersAffected
+							+ Integer.parseInt(numberOfDataCustAffectedFromPreviousIncidents);
+
+					// Insert Values in Database
+					wb.dbs.InsertValuesInTable("SubmittedIncidents",
+							new String[] { "DateTime", "OutageID", "IncidentStatus", "RequestTimestamp", "SystemID",
+									"UserID", "IncidentID", "Scheduled", "StartTime", "EndTime", "Duration",
+									"AffectedServices", "Impact", "Priority", "HierarchySelected",
+									"AffectedVoiceCustomers", "AffectedDataCustomers", "AffectedCLICustomers",
+									"IncidentAffectedVoiceCustomers", "IncidentAffectedDataCustomers" },
+							new String[] { Help_Func.now(), OutageID_String, "OPEN", RequestTimestamp, SystemID, UserID,
+									IncidentID, Scheduled, StartTime, EndTime, Duration, service, Impact, Priority,
+									myHier.get(i).toString(), voiceCustomersAffected, dataCustomersAffected,
+									CLIsAffected, Integer.toString(totalVoiceIncidentAffected),
+									Integer.toString(totalDataIncidentAffected) },
+							new String[] { "DateTime", "Integer", "String", "DateTime", "String", "String", "String",
+									"String", "DateTime", "DateTime", "String", "String", "String", "String", "String",
+									"Integer", "Integer", "Integer", "Integer", "Integer" });
+
+					if (Integer.parseInt(OutageID_String) > 0)
+					{
+						ProductOfSubmission ps = new ProductOfSubmission(OutageID_String, IncidentID,
+								voiceCustomersAffected, dataCustomersAffected, CLIsAffected,
 								Integer.toString(totalVoiceIncidentAffected),
-								Integer.toString(totalDataIncidentAffected) },
-						new String[] { "DateTime", "Integer", "String", "DateTime", "String", "String", "String",
-								"String", "DateTime", "DateTime", "String", "String", "String", "String", "String",
-								"Integer", "Integer", "Integer", "Integer", "Integer" });
+								Integer.toString(totalDataIncidentAffected), "1", service, myHier.get(i).toString(),
+								"Submitted Successfully");
 
-				if (Integer.parseInt(OutageID_String) > 0)
-				{
-					ProductOfSubmission ps = new ProductOfSubmission(OutageID_String, IncidentID,
-							voiceCustomersAffected, dataCustomersAffected, CLIsAffected,
-							Integer.toString(totalVoiceIncidentAffected), Integer.toString(totalDataIncidentAffected),
-							"1", service, myHier.get(i).toString(), "Submitted Successfully");
-
-					prodElementsList.add(ps);
+						prodElementsList.add(ps);
+					}
 				}
 			}
-		}
 
-		wb.conObj.closeDBConnection();
-		return prodElementsList;
+			return prodElementsList;
+
+		} finally
+		{
+			wb.conObj.closeDBConnection();
+		}
 	}
 
 	@WebMethod
@@ -526,27 +544,26 @@ public class WebSpectra// implements WebSpectraInterface
 
 		// Number of rows that will be returned
 		String numOfRows = wb.dbs.NumberOfRowsFound("SubmittedIncidents",
-				"IncidentID = 'Incident1' AND IncidentStatus = 'OPEN'");
+				"IncidentID = '" + IncidentID + "' AND IncidentStatus = '" + IncidentStatus + "'");
 
 		ResultSet rs = wb.dbs.GetRows("SubmittedIncidents",
-				new String[] { "outageID", "requestID", "incidentStatus", "requestTimestamp", "systemID", "userID",
-						"incidentID", "scheduled", "startTime", "endTime", "duration", "affectedServices", "impact",
-						"priority", "hierarchyselected" },
+				new String[] { "OutageID", "IncidentStatus", "RequestTimestamp", "SystemID", "UserID", "IncidentID",
+						"Scheduled", "StartTime", "EndTime", "Duration", "AffectedServices", "Impact", "Priority",
+						"Hierarchyselected" },
 				"IncidentID = '" + IncidentID + "' AND " + "IncidentStatus = '" + IncidentStatus + "';");
 
 		if (Integer.parseInt(numOfRows) == 0)
 		{
-			throw new InvalidInputException("No Results found", "No Results found according to your predicates");
+			throw new InvalidInputException("No Results found", "No Results found according to your criteria");
 		} else
 		{
 			while (rs.next())
 			{
-				ProductOfGetOutage pg = new ProductOfGetOutage(rs.getString("outageID"), rs.getString("requestID"),
-						rs.getString("incidentStatus"), rs.getString("requestTimestamp"), rs.getString("systemID"),
-						rs.getString("userID"), rs.getString("incidentID"), rs.getString("scheduled"),
-						rs.getString("startTime"), rs.getString("endTime"), rs.getString("duration"),
-						rs.getString("affectedServices"), rs.getString("impact"), rs.getString("priority"),
-						rs.getString("hierarchyselected"));
+				ProductOfGetOutage pg = new ProductOfGetOutage(rs.getString("OutageID"), rs.getString("IncidentStatus"),
+						rs.getString("RequestTimestamp"), rs.getString("SystemID"), rs.getString("UserID"),
+						rs.getString("IncidentID"), rs.getString("Scheduled"), rs.getString("StartTime"),
+						rs.getString("EndTime"), rs.getString("Duration"), rs.getString("AffectedServices"),
+						rs.getString("Impact"), rs.getString("Priority"), rs.getString("Hierarchyselected"));
 				prodElementsList.add(pg);
 			}
 		}
@@ -573,140 +590,144 @@ public class WebSpectra// implements WebSpectraInterface
 			IllegalAccessException, ClassNotFoundException, SQLException, InvalidInputException, ParseException
 	{
 		WebSpectra wb = new WebSpectra();
-		new ArrayList<>();
 
-		// Check if Authentication credentials are correct.
-		if (!wb.dbs.AuthenticateRequest(UserName, Password))
+		try
 		{
-			throw new InvalidInputException("User name or Password incorrect!", "Error 100");
-		}
+			// Check if Authentication credentials are correct.
+			if (!wb.dbs.AuthenticateRequest(UserName, Password))
+			{
+				throw new InvalidInputException("User name or Password incorrect!", "Error 100");
+			}
 
-		ProductOfModify pom = null;
+			ProductOfModify pom = null;
 
-		// Check if Required fields are empty
-		Help_Func.ValidateNotEmpty("RequestTimestamp", RequestTimestamp);
-		Help_Func.ValidateDateTimeFormat("RequestTimestamp", RequestTimestamp);
-		Help_Func.ValidateNotEmpty("SystemID", SystemID);
-		Help_Func.ValidateNotEmpty("UserID", UserID);
-		Help_Func.ValidateNotEmpty("IncidentID", IncidentID);
-		Help_Func.ValidateNotEmpty("OutageID", OutageID);
+			// Check if Required fields are empty
+			Help_Func.ValidateNotEmpty("RequestTimestamp", RequestTimestamp);
+			Help_Func.ValidateDateTimeFormat("RequestTimestamp", RequestTimestamp);
+			Help_Func.ValidateNotEmpty("SystemID", SystemID);
+			Help_Func.ValidateNotEmpty("UserID", UserID);
+			Help_Func.ValidateNotEmpty("IncidentID", IncidentID);
+			Help_Func.ValidateNotEmpty("OutageID", OutageID);
 
-		// if Start Time Value Exists
-		if (!Help_Func.checkIfEmpty("StartTime", StartTime))
-		{
-			// Check if it has the appropriate format
-			Help_Func.ValidateDateTimeFormat("StartTime", StartTime);
-		}
-		// if End Time Value Exists
-		if (!Help_Func.checkIfEmpty("EndTime", EndTime))
-		{
-			// Check if it has the appropriate format
-			Help_Func.ValidateDateTimeFormat("EndTime", EndTime);
-		}
-
-		// if Impact Value Exists
-		if (!Help_Func.checkIfEmpty("Impact", Impact))
-		{
-			// Check if it has the appropriate format
-			Help_Func.ValidateAgainstPredefinedValues("Impact", Impact, new String[] { "QoS", "LoS" });
-		}
-
-		// if Duration Value Exists
-		if (!Help_Func.checkIfEmpty("Duration", Duration))
-		{
-			// Check if it has the appropriate format
-			Help_Func.ValidateIntegerOrEmptyValue("Duration", Duration);
-		}
-
-		// Check if the combination of IncidentID & OutageID exists
-		boolean incidentPlusOutageExists = wb.dbs.CheckIfCriteriaExists("SubmittedIncidents",
-				new String[] { "IncidentID", "OutageID" },
-				"`IncidentID` = '" + IncidentID + "' AND  `OutageID` = '" + OutageID + "'");
-
-		if (incidentPlusOutageExists)
-		{
-			// Check if the combination of IncidentID & OutageID refers to a scheduled
-			// Incident (Scheduled = "Yes")
-			boolean incidentIsScheduled = wb.dbs.CheckIfCriteriaExists("SubmittedIncidents",
-					new String[] { "IncidentID", "OutageID" },
-					"`IncidentID` = '" + IncidentID + "' AND  `OutageID` = '" + OutageID + "' AND `Scheduled` = 'Yes'");
-
-			// Create a new list with the updated columns - based on what is empty or not
-			List<String> listOfColumnsForUpdate = new ArrayList<>();
-			List<String> listOfValuesForUpdate = new ArrayList<>();
-			List<String> listOfDataTypesForUpdate = new ArrayList<>();
-
+			// if Start Time Value Exists
 			if (!Help_Func.checkIfEmpty("StartTime", StartTime))
 			{
-				listOfColumnsForUpdate.add("StartTime");
-				listOfValuesForUpdate.add(StartTime);
-				listOfDataTypesForUpdate.add("Date");
+				// Check if it has the appropriate format
+				Help_Func.ValidateDateTimeFormat("StartTime", StartTime);
 			}
-
+			// if End Time Value Exists
 			if (!Help_Func.checkIfEmpty("EndTime", EndTime))
 			{
-				listOfColumnsForUpdate.add("EndTime");
-				listOfValuesForUpdate.add(EndTime);
-				listOfDataTypesForUpdate.add("Date");
+				// Check if it has the appropriate format
+				Help_Func.ValidateDateTimeFormat("EndTime", EndTime);
 			}
 
+			// if Impact Value Exists
 			if (!Help_Func.checkIfEmpty("Impact", Impact))
 			{
-				listOfColumnsForUpdate.add("Impact");
-				listOfValuesForUpdate.add(Impact);
-				listOfDataTypesForUpdate.add("String");
+				// Check if it has the appropriate format
+				Help_Func.ValidateAgainstPredefinedValues("Impact", Impact, new String[] { "QoS", "LoS" });
 			}
 
+			// if Duration Value Exists
 			if (!Help_Func.checkIfEmpty("Duration", Duration))
 			{
-				listOfColumnsForUpdate.add("Duration");
-				listOfValuesForUpdate.add(Duration);
-				listOfDataTypesForUpdate.add("Integer");
+				// Check if it has the appropriate format
+				Help_Func.ValidateIntegerOrEmptyValue("Duration", Duration);
 			}
 
-			String[] arrayOfColumnsForUpdate = listOfColumnsForUpdate
-					.toArray(new String[listOfColumnsForUpdate.size()]);
-			String[] arrayOfValuesForUpdate = listOfValuesForUpdate.toArray(new String[listOfValuesForUpdate.size()]);
-			String[] arrayOfDataTypesForUpdate = listOfDataTypesForUpdate
-					.toArray(new String[listOfDataTypesForUpdate.size()]);
+			// Check if the combination of IncidentID & OutageID exists
+			boolean incidentPlusOutageExists = wb.dbs.CheckIfCriteriaExists("SubmittedIncidents",
+					new String[] { "IncidentID", "OutageID" },
+					"`IncidentID` = '" + IncidentID + "' AND  `OutageID` = '" + OutageID + "'");
 
-			System.out.println("incidentIsScheduled = " + incidentIsScheduled);
-
-			// Update Start/End Times ONLY for Scheduled Incidents
-			if (!incidentIsScheduled && (!Help_Func.checkIfEmpty("StartTime", StartTime)
-					|| (!Help_Func.checkIfEmpty("EndTime", EndTime))))
+			if (incidentPlusOutageExists)
 			{
-				throw new InvalidInputException(
-						"The fields of 'Star Time'/'End Time' cannot be modified on non scheduled Outages (Incident: "
-								+ IncidentID + ", OutageID " + OutageID + " is not a scheduled incident)",
-						"Error 385");
-			}
+				// Check if the combination of IncidentID & OutageID refers to a scheduled
+				// Incident (Scheduled = "Yes")
+				boolean incidentIsScheduled = wb.dbs.CheckIfCriteriaExists("SubmittedIncidents",
+						new String[] { "IncidentID", "OutageID" }, "`IncidentID` = '" + IncidentID
+								+ "' AND  `OutageID` = '" + OutageID + "' AND `Scheduled` = 'Yes'");
 
-			// Update Operation
-			int numOfRowsUpdated = wb.dbs.UpdateColumnOnSpecificCriteria("SubmittedIncidents", arrayOfColumnsForUpdate,
-					arrayOfValuesForUpdate, arrayOfDataTypesForUpdate, new String[] { "IncidentID", "OutageID" },
-					new String[] { IncidentID, OutageID }, new String[] { "String", "Integer" });
+				// Create a new list with the updated columns - based on what is empty or not
+				List<String> listOfColumnsForUpdate = new ArrayList<>();
+				List<String> listOfValuesForUpdate = new ArrayList<>();
+				List<String> listOfDataTypesForUpdate = new ArrayList<>();
 
-			if (numOfRowsUpdated == 1)
-			{
-				pom = new ProductOfModify(
-						"Successfully Modified Incident: " + IncidentID + " - Outage ID: " + OutageID);
+				if (!Help_Func.checkIfEmpty("StartTime", StartTime))
+				{
+					listOfColumnsForUpdate.add("StartTime");
+					listOfValuesForUpdate.add(StartTime);
+					listOfDataTypesForUpdate.add("Date");
+				}
+
+				if (!Help_Func.checkIfEmpty("EndTime", EndTime))
+				{
+					listOfColumnsForUpdate.add("EndTime");
+					listOfValuesForUpdate.add(EndTime);
+					listOfDataTypesForUpdate.add("Date");
+				}
+
+				if (!Help_Func.checkIfEmpty("Impact", Impact))
+				{
+					listOfColumnsForUpdate.add("Impact");
+					listOfValuesForUpdate.add(Impact);
+					listOfDataTypesForUpdate.add("String");
+				}
+
+				if (!Help_Func.checkIfEmpty("Duration", Duration))
+				{
+					listOfColumnsForUpdate.add("Duration");
+					listOfValuesForUpdate.add(Duration);
+					listOfDataTypesForUpdate.add("Integer");
+				}
+
+				String[] arrayOfColumnsForUpdate = listOfColumnsForUpdate
+						.toArray(new String[listOfColumnsForUpdate.size()]);
+				String[] arrayOfValuesForUpdate = listOfValuesForUpdate
+						.toArray(new String[listOfValuesForUpdate.size()]);
+				String[] arrayOfDataTypesForUpdate = listOfDataTypesForUpdate
+						.toArray(new String[listOfDataTypesForUpdate.size()]);
+
+				System.out.println("incidentIsScheduled = " + incidentIsScheduled);
+
+				// Update Start/End Times ONLY for Scheduled Incidents
+				if (!incidentIsScheduled && (!Help_Func.checkIfEmpty("StartTime", StartTime)
+						|| (!Help_Func.checkIfEmpty("EndTime", EndTime))))
+				{
+					throw new InvalidInputException(
+							"The fields of 'Star Time'/'End Time' cannot be modified on non scheduled Outages (Incident: "
+									+ IncidentID + ", OutageID " + OutageID + " is not a scheduled incident)",
+							"Error 385");
+				}
+
+				// Update Operation
+				int numOfRowsUpdated = wb.dbs.UpdateColumnOnSpecificCriteria("SubmittedIncidents",
+						arrayOfColumnsForUpdate, arrayOfValuesForUpdate, arrayOfDataTypesForUpdate,
+						new String[] { "IncidentID", "OutageID" }, new String[] { IncidentID, OutageID },
+						new String[] { "String", "Integer" });
+
+				if (numOfRowsUpdated == 1)
+				{
+					pom = new ProductOfModify(
+							"Successfully Modified Incident: " + IncidentID + " - Outage ID: " + OutageID);
+				} else
+				{
+					pom = new ProductOfModify("Error modifying incident!");
+				}
 			} else
 			{
-				pom = new ProductOfModify("Error modifying incident!");
+				throw new InvalidInputException("The combination of IncidentID: " + IncidentID + " and OutageID: "
+						+ OutageID + " does not exist!", "Error 550");
 			}
-		} else
+
+			// Return instance of class ProductOfModify
+			return pom;
+		} finally
 		{
-			throw new InvalidInputException(
-					"The combination of IncidentID: " + IncidentID + " and OutageID: " + OutageID + " does not exist!",
-					"Error 550");
+			// Close DB Connection
+			wb.conObj.closeDBConnection();
 		}
-
-		// Close DB Connection
-		wb.conObj.closeDBConnection();
-
-		// Return instance of class ProductOfModify
-		return pom;
 	}
 
 	@WebMethod
