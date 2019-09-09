@@ -536,6 +536,10 @@ public class WebSpectra// implements WebSpectraInterface
 		WebSpectra wb = new WebSpectra();
 		List<ProductOfGetOutage> prodElementsList = new ArrayList<>();
 
+		// Check if fields are empty
+		Help_Func.ValidateNotEmpty("IncidentID", IncidentID);
+		Help_Func.ValidateNotEmpty("IncidentStatus", IncidentStatus);
+
 		// Check if Authentication credentials are correct.
 		if (!wb.dbs.AuthenticateRequest(UserName, Password))
 		{
