@@ -11,7 +11,8 @@ import gr.wind.spectra.web.InvalidInputException;
 @XmlRootElement(name = "Element")
 @XmlType(name = "basicStruct3", propOrder = { "outageID", "incidentStatus", "requestTimestamp", "systemID", "userID",
 		"incidentID", "scheduled", "startTime", "endTime", "duration", "affectedServices", "impact", "priority",
-		"hierarchyselected" })
+		"hierarchyselected", "affectedVoiceCustomers", "affectedDataCustomers", "affectedCLICustomers",
+		"incidentAffectedVoiceCustomers", "incidentAffectedDataCustomers" })
 public class ProductOfGetOutage
 {
 
@@ -29,6 +30,11 @@ public class ProductOfGetOutage
 	private String impact = "NULL";
 	private String priority = "NULL";
 	private String hierarchyselected = "NULL";
+	private String AffectedVoiceCustomers = "NULL";
+	private String AffectedDataCustomers = "NULL";
+	private String AffectedCLICustomers = "NULL";
+	private String IncidentAffectedVoiceCustomers = "NULL";
+	private String IncidentAffectedDataCustomers = "NULL";
 
 	// Empty constructor requirement of JAXB (Java Architecture for XML Binding)
 	public ProductOfGetOutage()
@@ -37,7 +43,9 @@ public class ProductOfGetOutage
 
 	public ProductOfGetOutage(String outageID, String incidentStatus, String requestTimestamp, String systemID,
 			String userID, String incidentID, String scheduled, String startTime, String endTime, String duration,
-			String affectedServices, String impact, String priority, String hierarchyselected)
+			String affectedServices, String impact, String priority, String hierarchyselected,
+			String AffectedVoiceCustomers, String AffectedDataCustomers, String AffectedCLICustomers,
+			String IncidentAffectedVoiceCustomers, String IncidentAffectedDataCustomers)
 			throws SQLException, InvalidInputException
 	{
 		if (outageID != null)
@@ -98,6 +106,82 @@ public class ProductOfGetOutage
 			this.hierarchyselected = hierarchyselected;
 		}
 
+		if (AffectedVoiceCustomers != null)
+		{
+			this.AffectedVoiceCustomers = AffectedVoiceCustomers;
+		}
+		if (AffectedDataCustomers != null)
+		{
+			this.AffectedDataCustomers = AffectedDataCustomers;
+		}
+		if (AffectedCLICustomers != null)
+		{
+			this.AffectedCLICustomers = AffectedCLICustomers;
+		}
+		if (IncidentAffectedVoiceCustomers != null)
+		{
+			this.IncidentAffectedVoiceCustomers = IncidentAffectedVoiceCustomers;
+		}
+		if (IncidentAffectedDataCustomers != null)
+		{
+			this.IncidentAffectedDataCustomers = IncidentAffectedDataCustomers;
+		}
+
+	}
+
+	@XmlElement(name = "affectedVoiceCustomers")
+	public String getAffectedVoiceCustomers()
+	{
+		return AffectedVoiceCustomers;
+	}
+
+	public void setAffectedVoiceCustomers(String affectedVoiceCustomers)
+	{
+		this.AffectedVoiceCustomers = affectedVoiceCustomers;
+	}
+
+	@XmlElement(name = "affectedDataCustomers")
+	public String getAffectedDataCustomers()
+	{
+		return AffectedDataCustomers;
+	}
+
+	public void setAffectedDataCustomers(String affectedDataCustomers)
+	{
+		this.AffectedDataCustomers = affectedDataCustomers;
+	}
+
+	@XmlElement(name = "affectedCLICustomers")
+	public String getAffectedCLICustomers()
+	{
+		return AffectedCLICustomers;
+	}
+
+	public void setAffectedCLICustomers(String affectedCLICustomers)
+	{
+		this.AffectedCLICustomers = affectedCLICustomers;
+	}
+
+	@XmlElement(name = "incidentAffectedVoiceCustomers")
+	public String getIncidentAffectedVoiceCustomers()
+	{
+		return IncidentAffectedVoiceCustomers;
+	}
+
+	public void setIncidentAffectedVoiceCustomers(String incidentAffectedVoiceCustomers)
+	{
+		this.IncidentAffectedVoiceCustomers = incidentAffectedVoiceCustomers;
+	}
+
+	@XmlElement(name = "incidentAffectedDataCustomers")
+	public String getIncidentAffectedDataCustomers()
+	{
+		return IncidentAffectedDataCustomers;
+	}
+
+	public void setIncidentAffectedDataCustomers(String incidentAffectedDataCustomers)
+	{
+		this.IncidentAffectedDataCustomers = incidentAffectedDataCustomers;
 	}
 
 	@XmlElement(name = "outageID")

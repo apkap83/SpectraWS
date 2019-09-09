@@ -546,16 +546,31 @@ public class WebSpectra// implements WebSpectraInterface
 			throw new InvalidInputException("User name or Password incorrect!", "Error 100");
 		}
 
-		// Number of rows that will be returned
-		String numOfRows = wb.dbs.NumberOfRowsFound("SubmittedIncidents",
-				"IncidentID = '" + IncidentID + "' AND IncidentStatus = '" + IncidentStatus + "'");
+		String numOfRows = "0";
+		ResultSet rs = null;
+		if (IncidentID.equals("*"))
+		{
+			// Number of rows that will be returned
+			numOfRows = wb.dbs.NumberOfRowsFound("SubmittedIncidents", "IncidentStatus = '" + IncidentStatus + "'");
 
-		ResultSet rs = wb.dbs.GetRows("SubmittedIncidents",
-				new String[] { "OutageID", "IncidentStatus", "RequestTimestamp", "SystemID", "UserID", "IncidentID",
-						"Scheduled", "StartTime", "EndTime", "Duration", "AffectedServices", "Impact", "Priority",
-						"Hierarchyselected" },
-				"IncidentID = '" + IncidentID + "' AND " + "IncidentStatus = '" + IncidentStatus + "';");
+			rs = wb.dbs.GetRows("SubmittedIncidents",
+					new String[] { "OutageID", "IncidentStatus", "RequestTimestamp", "SystemID", "UserID", "IncidentID",
+							"Scheduled", "StartTime", "EndTime", "Duration", "AffectedServices", "Impact", "Priority",
+							"Hierarchyselected", "AffectedVoiceCustomers", "AffectedDataCustomers",
+							"AffectedCLICustomers", "IncidentAffectedVoiceCustomers", "IncidentAffectedDataCustomers" },
+					"IncidentStatus = '" + IncidentStatus + "';");
+		} else
+		{
+			numOfRows = wb.dbs.NumberOfRowsFound("SubmittedIncidents",
+					"IncidentID = '" + IncidentID + "' AND IncidentStatus = '" + IncidentStatus + "'");
 
+			rs = wb.dbs.GetRows("SubmittedIncidents",
+					new String[] { "OutageID", "IncidentStatus", "RequestTimestamp", "SystemID", "UserID", "IncidentID",
+							"Scheduled", "StartTime", "EndTime", "Duration", "AffectedServices", "Impact", "Priority",
+							"Hierarchyselected", "AffectedVoiceCustomers", "AffectedDataCustomers",
+							"AffectedCLICustomers", "IncidentAffectedVoiceCustomers", "IncidentAffectedDataCustomers" },
+					"IncidentID = '" + IncidentID + "' AND " + "IncidentStatus = '" + IncidentStatus + "';");
+		}
 		if (Integer.parseInt(numOfRows) == 0)
 		{
 			throw new InvalidInputException("No Results found", "No Results found according to your criteria");
@@ -567,7 +582,12 @@ public class WebSpectra// implements WebSpectraInterface
 						rs.getString("RequestTimestamp"), rs.getString("SystemID"), rs.getString("UserID"),
 						rs.getString("IncidentID"), rs.getString("Scheduled"), rs.getString("StartTime"),
 						rs.getString("EndTime"), rs.getString("Duration"), rs.getString("AffectedServices"),
-						rs.getString("Impact"), rs.getString("Priority"), rs.getString("Hierarchyselected"));
+						rs.getString("Impact"), rs.getString("Priority"), rs.getString("Hierarchyselected"),
+						rs.getString("AffectedVoiceCustomers"), rs.getString("AffectedDataCustomers"),
+						rs.getString("AffectedCLICustomers"), rs.getString("IncidentAffectedVoiceCustomers"),
+						rs.getString("IncidentAffectedDataCustomers")
+
+				);
 				prodElementsList.add(pg);
 			}
 		}
