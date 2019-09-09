@@ -84,8 +84,8 @@ public class DB_Connection
 
 	public void closeDBConnection() throws SQLException
 	{
-		conn.close();
 		logger.info("Closing DB Connection");
+		conn.close();
 	}
 
 	public static void main(String[] args) throws SQLException, InvalidInputException, InstantiationException,

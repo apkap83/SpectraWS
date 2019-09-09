@@ -225,6 +225,8 @@ public class WebSpectra// implements WebSpectraInterface
 				}
 			}
 		}
+
+		wb.conObj.closeDBConnection();
 		return prodElementsList;
 	}
 

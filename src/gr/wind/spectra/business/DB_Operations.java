@@ -364,10 +364,10 @@ public class DB_Operations
 	{
 		boolean found = false;
 		String table = "WSAccounts";
-		String sqlString = "SELECT * FROM `" + table + "` WHERE `UserName` = ? AND `Password` = ?";
+		String sqlString = "SELECT * FROM `" + table + "`"; // + "` WHERE `UserName` = ? AND `Password` = ?";
 		PreparedStatement pst = conn.prepareStatement(sqlString);
-		pst.setString(1, userName);
-		pst.setString(2, password);
+		// pst.setString(1, userName);
+		// pst.setString(2, password);
 		pst.execute();
 
 		ResultSet rs = pst.executeQuery();
@@ -377,9 +377,36 @@ public class DB_Operations
 			String r_userName = rs.getString("UserName");
 			String r_password = rs.getString("Password");
 
-			if (r_userName.equals(userName) && r_password.equals(password))
+			if (r_userName.equals(userName))
 			{
-				found = true;
+				boolean passwordIsCorrect = false;
+				try
+				{
+					/**
+					 * Complete Implementation of Password hashing
+					 * https://stackoverflow.com/questions/2860943/how-can-i-hash-a-password-in-java
+					 * We are storing 'salt$iterated_hash(password, salt)'. The salt are 32 random
+					 * bytes and it's purpose is that if two different people choose the same
+					 * password, the stored passwords will still look different.
+					 */
+					passwordIsCorrect = Password.check(password, r_password);
+
+//					System.out.println("password " + password);
+//					System.out.println("r_password " + r_password);
+//					System.out.println("passwordIsCorrect " + passwordIsCorrect);
+				} catch (Exception e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				if (passwordIsCorrect)
+				{
+					found = true;
+				} else
+				{
+					found = false;
+				}
 			}
 		}
 		return found;
