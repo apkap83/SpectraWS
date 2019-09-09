@@ -30,7 +30,12 @@ public class WebSpectra// implements WebSpectraInterface
 	Connection conn;
 	DB_Operations dbs;
 
-	public WebSpectra() throws InstantiationException, IllegalAccessException, ClassNotFoundException
+	public WebSpectra()
+	{
+
+	}
+
+	public void EstablishConnection() throws InstantiationException, IllegalAccessException, ClassNotFoundException
 	{
 		if (conObj == null || dbs == null)
 		{
@@ -77,6 +82,7 @@ public class WebSpectra// implements WebSpectraInterface
 		WebSpectra wb = new WebSpectra();
 		try
 		{
+			EstablishConnection();
 			List<String> ElementsList = new ArrayList<String>();
 			List<Product> prodElementsList = new ArrayList<>();
 
@@ -261,9 +267,10 @@ public class WebSpectra// implements WebSpectraInterface
 	{
 		WebSpectra wb = new WebSpectra();
 
-		List<ProductOfSubmission> prodElementsList;
 		try
 		{
+			EstablishConnection();
+			List<ProductOfSubmission> prodElementsList;
 			prodElementsList = new ArrayList<>();
 			int OutageID_Integer = 0;
 			// Check if Authentication credentials are correct.
@@ -359,10 +366,10 @@ public class WebSpectra// implements WebSpectraInterface
 					String[] fullVoiceHierarchyPathSplit = fullVoiceHierarchyPath.split("->");
 
 					// Count distinct values of Usernames or CliVlaues in the respective columns
-					String dataCustomersAffected = dbs.CountDistinctRowsForSpecificColumn(dataSubsTable, "Username",
+					String dataCustomersAffected = wb.dbs.CountDistinctRowsForSpecificColumn(dataSubsTable, "Username",
 							Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullDataHierarchyPathSplit)));
-					String voiceCustomersAffected = dbs.CountDistinctRowsForSpecificColumns(voiceSubsTable,
+					String voiceCustomersAffected = wb.dbs.CountDistinctRowsForSpecificColumns(voiceSubsTable,
 							new String[] { "ActiveElement", "Subrack", "Slot", "Port", "PON" },
 							Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
@@ -453,14 +460,14 @@ public class WebSpectra// implements WebSpectraInterface
 					String[] fullVoiceHierarchyPathSplit = fullVoiceHierarchyPath.split("->");
 
 					// Count distinct values of Usernames or CliVlaues the respective columns
-					String dataCustomersAffected = dbs.CountDistinctRowsForSpecificColumn(dataSubsTable, "Username",
+					String dataCustomersAffected = wb.dbs.CountDistinctRowsForSpecificColumn(dataSubsTable, "Username",
 							Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullDataHierarchyPathSplit)));
-					String voiceCustomersAffected = dbs.CountDistinctRowsForSpecificColumns(voiceSubsTable,
+					String voiceCustomersAffected = wb.dbs.CountDistinctRowsForSpecificColumns(voiceSubsTable,
 							new String[] { "ActiveElement", "Subrack", "Slot", "Port", "PON" },
 							Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
-					String CLIsAffected = dbs.CountDistinctRowsForSpecificColumn(voiceSubsTable, "CliValue",
+					String CLIsAffected = wb.dbs.CountDistinctRowsForSpecificColumn(voiceSubsTable, "CliValue",
 							Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
 
@@ -534,67 +541,76 @@ public class WebSpectra// implements WebSpectraInterface
 			InvalidInputException, InstantiationException, IllegalAccessException, ClassNotFoundException
 	{
 		WebSpectra wb = new WebSpectra();
-		List<ProductOfGetOutage> prodElementsList = new ArrayList<>();
 
-		// Check if fields are empty
-		Help_Func.ValidateNotEmpty("IncidentID", IncidentID);
-		Help_Func.ValidateNotEmpty("IncidentStatus", IncidentStatus);
+		try
+		{
+			wb.EstablishConnection();
+			List<ProductOfGetOutage> prodElementsList;
+			prodElementsList = new ArrayList<>();
 
-		// Check if Authentication credentials are correct.
-		if (!wb.dbs.AuthenticateRequest(UserName, Password))
-		{
-			throw new InvalidInputException("User name or Password incorrect!", "Error 100");
-		}
+			// Check if fields are empty
+			Help_Func.ValidateNotEmpty("IncidentID", IncidentID);
+			Help_Func.ValidateNotEmpty("IncidentStatus", IncidentStatus);
 
-		String numOfRows = "0";
-		ResultSet rs = null;
-		if (IncidentID.equals("*"))
-		{
-			// Number of rows that will be returned
-			numOfRows = wb.dbs.NumberOfRowsFound("SubmittedIncidents", "IncidentStatus = '" + IncidentStatus + "'");
-
-			rs = wb.dbs.GetRows("SubmittedIncidents",
-					new String[] { "OutageID", "IncidentStatus", "RequestTimestamp", "SystemID", "UserID", "IncidentID",
-							"Scheduled", "StartTime", "EndTime", "Duration", "AffectedServices", "Impact", "Priority",
-							"Hierarchyselected", "AffectedVoiceCustomers", "AffectedDataCustomers",
-							"AffectedCLICustomers", "IncidentAffectedVoiceCustomers", "IncidentAffectedDataCustomers" },
-					"IncidentStatus = '" + IncidentStatus + "';");
-		} else
-		{
-			numOfRows = wb.dbs.NumberOfRowsFound("SubmittedIncidents",
-					"IncidentID = '" + IncidentID + "' AND IncidentStatus = '" + IncidentStatus + "'");
-
-			rs = wb.dbs.GetRows("SubmittedIncidents",
-					new String[] { "OutageID", "IncidentStatus", "RequestTimestamp", "SystemID", "UserID", "IncidentID",
-							"Scheduled", "StartTime", "EndTime", "Duration", "AffectedServices", "Impact", "Priority",
-							"Hierarchyselected", "AffectedVoiceCustomers", "AffectedDataCustomers",
-							"AffectedCLICustomers", "IncidentAffectedVoiceCustomers", "IncidentAffectedDataCustomers" },
-					"IncidentID = '" + IncidentID + "' AND " + "IncidentStatus = '" + IncidentStatus + "';");
-		}
-		if (Integer.parseInt(numOfRows) == 0)
-		{
-			throw new InvalidInputException("No Results found", "No Results found according to your criteria");
-		} else
-		{
-			while (rs.next())
+			// Check if Authentication credentials are correct.
+			if (!wb.dbs.AuthenticateRequest(UserName, Password))
 			{
-				ProductOfGetOutage pg = new ProductOfGetOutage(rs.getString("OutageID"), rs.getString("IncidentStatus"),
-						rs.getString("RequestTimestamp"), rs.getString("SystemID"), rs.getString("UserID"),
-						rs.getString("IncidentID"), rs.getString("Scheduled"), rs.getString("StartTime"),
-						rs.getString("EndTime"), rs.getString("Duration"), rs.getString("AffectedServices"),
-						rs.getString("Impact"), rs.getString("Priority"), rs.getString("Hierarchyselected"),
-						rs.getString("AffectedVoiceCustomers"), rs.getString("AffectedDataCustomers"),
-						rs.getString("AffectedCLICustomers"), rs.getString("IncidentAffectedVoiceCustomers"),
-						rs.getString("IncidentAffectedDataCustomers")
-
-				);
-				prodElementsList.add(pg);
+				throw new InvalidInputException("User name or Password incorrect!", "Error 100");
 			}
+
+			String numOfRows = "0";
+			ResultSet rs = null;
+			if (IncidentID.equals("*"))
+			{
+				// Number of rows that will be returned
+				numOfRows = wb.dbs.NumberOfRowsFound("SubmittedIncidents", "IncidentStatus = '" + IncidentStatus + "'");
+
+				rs = wb.dbs.GetRows("SubmittedIncidents",
+						new String[] { "OutageID", "IncidentStatus", "RequestTimestamp", "SystemID", "UserID",
+								"IncidentID", "Scheduled", "StartTime", "EndTime", "Duration", "AffectedServices",
+								"Impact", "Priority", "Hierarchyselected", "AffectedVoiceCustomers",
+								"AffectedDataCustomers", "AffectedCLICustomers", "IncidentAffectedVoiceCustomers",
+								"IncidentAffectedDataCustomers" },
+						"IncidentStatus = '" + IncidentStatus + "';");
+			} else
+			{
+				numOfRows = wb.dbs.NumberOfRowsFound("SubmittedIncidents",
+						"IncidentID = '" + IncidentID + "' AND IncidentStatus = '" + IncidentStatus + "'");
+
+				rs = wb.dbs.GetRows("SubmittedIncidents",
+						new String[] { "OutageID", "IncidentStatus", "RequestTimestamp", "SystemID", "UserID",
+								"IncidentID", "Scheduled", "StartTime", "EndTime", "Duration", "AffectedServices",
+								"Impact", "Priority", "Hierarchyselected", "AffectedVoiceCustomers",
+								"AffectedDataCustomers", "AffectedCLICustomers", "IncidentAffectedVoiceCustomers",
+								"IncidentAffectedDataCustomers" },
+						"IncidentID = '" + IncidentID + "' AND " + "IncidentStatus = '" + IncidentStatus + "';");
+			}
+			if (Integer.parseInt(numOfRows) == 0)
+			{
+				throw new InvalidInputException("No Results found", "No Results found according to your criteria");
+			} else
+			{
+				while (rs.next())
+				{
+					ProductOfGetOutage pg = new ProductOfGetOutage(rs.getString("OutageID"),
+							rs.getString("IncidentStatus"), rs.getString("RequestTimestamp"), rs.getString("SystemID"),
+							rs.getString("UserID"), rs.getString("IncidentID"), rs.getString("Scheduled"),
+							rs.getString("StartTime"), rs.getString("EndTime"), rs.getString("Duration"),
+							rs.getString("AffectedServices"), rs.getString("Impact"), rs.getString("Priority"),
+							rs.getString("Hierarchyselected"), rs.getString("AffectedVoiceCustomers"),
+							rs.getString("AffectedDataCustomers"), rs.getString("AffectedCLICustomers"),
+							rs.getString("IncidentAffectedVoiceCustomers"),
+							rs.getString("IncidentAffectedDataCustomers")
+
+					);
+					prodElementsList.add(pg);
+				}
+			}
+			return prodElementsList;
+		} finally
+		{
+			wb.conObj.closeDBConnection();
 		}
-
-		wb.conObj.closeDBConnection();
-
-		return prodElementsList;
 	}
 
 	@WebMethod
@@ -617,6 +633,7 @@ public class WebSpectra// implements WebSpectraInterface
 
 		try
 		{
+			wb.EstablishConnection();
 			// Check if Authentication credentials are correct.
 			if (!wb.dbs.AuthenticateRequest(UserName, Password))
 			{
@@ -766,20 +783,8 @@ public class WebSpectra// implements WebSpectraInterface
 
 			// Defines Uniquely The Incident
 			@WebParam(name = "IncidentID") @XmlElement(required = true) String IncidentID,
-			// @WebParam(name="Scheduled") @XmlElement( required = true ) String Scheduled,
-			// @WebParam(name="StartTime") @XmlElement( required = true ) String StartTime,
 			@WebParam(name = "EndTime") @XmlElement(required = false) String EndTime
-	// @WebParam(name="Duration") @XmlElement( required = false ) String Duration,
-	// TV, VOICE, DATA
-	// @WebParam(name="AffectedServices") @XmlElement( required = false ) String
-	// AffectedServices,
-	// Quality, Loss
-	// @WebParam(name="Impact") @XmlElement( required = false ) String Impact,
-	// @WebParam(name="Priority") @XmlElement( required = true ) String Priority,
-	// @WebParam(name="Type") @XmlElement( required = true ) String Type,
-	// LLU||Elementname||/slot||3##4$$
-	// @WebParam(name="HieararchySelected") @XmlElement( required = true ) String
-	// HieararchySelected
+
 	) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, InvalidInputException
 	{
 		// try {
