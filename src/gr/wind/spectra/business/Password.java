@@ -70,7 +70,7 @@ public class Password
 		// String getSaltedHash(String password);
 		// boolean checkPassword(String password, String stored);
 
-		System.out.println(Password.getSaltedHash("1234"));
+		// System.out.println(Password.getSaltedHash("1234"));
 
 		System.out.println(Password.check("1234",
 				"0AEPAfgSNcl0ek4APoDj+7YnXB1AYLwIt/BnCGW9/9A=$CltC0npEjplLnkGvVvpnSaf4qyaYv/gZgn+AE3FZIaA="));
