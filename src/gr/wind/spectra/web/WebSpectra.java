@@ -82,7 +82,7 @@ public class WebSpectra// implements WebSpectraInterface
 		WebSpectra wb = new WebSpectra();
 		try
 		{
-			EstablishConnection();
+			wb.EstablishConnection();
 			List<String> ElementsList = new ArrayList<String>();
 			List<Product> prodElementsList = new ArrayList<>();
 
@@ -269,7 +269,7 @@ public class WebSpectra// implements WebSpectraInterface
 
 		try
 		{
-			EstablishConnection();
+			wb.EstablishConnection();
 			List<ProductOfSubmission> prodElementsList;
 			prodElementsList = new ArrayList<>();
 			int OutageID_Integer = 0;
