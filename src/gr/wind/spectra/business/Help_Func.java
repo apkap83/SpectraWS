@@ -103,7 +103,6 @@ public class Help_Func
 			new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateInput);
 		} catch (ParseException e)
 		{
-			e.printStackTrace();
 			throw new InvalidInputException(
 					"The date field " + fieldName + " is not in expected format \"YYYY-MM-dd HH:mm:ss\"", "Error 208");
 		}

@@ -48,7 +48,7 @@ public class DB_Connection
 			conn = DriverManager.getConnection(DATABASE_URL + "user=" + USERNAME + "&" + "password=" + PASSWORD + "&"
 					+ "useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Europe/Athens&autoReconnect=true");
 
-			logger.info("Connection established!");
+			logger.info("DB Connection established!");
 			// Do something with the Connection
 
 		} catch (SQLException ex)

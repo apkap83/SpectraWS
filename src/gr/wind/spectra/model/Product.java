@@ -13,7 +13,8 @@ import gr.wind.spectra.web.InvalidInputException;
 
 @XmlRootElement(name = "Element")
 @XmlType(name = "basicStruct", propOrder = { "requestID", "type", "item", "hierarchySelected",
-		"internetCustomersAffected", "voiceCustomersAffected", "clisAffected" })
+		"internetCustomersAffected", "voiceCustomersAffected", "clisAffected", "activeDataCustomersAffected",
+		"tvCustomersAffected" })
 public class Product
 {
 
@@ -22,6 +23,10 @@ public class Product
 	private String internetCustomersAffected = "none";
 	private String voiceCustomersAffected = "none";
 	private String CLIsAffected = "none";
+
+	private String activeDataCustomersAffected = "none";
+	private String tvCustomersAffected = "none";
+
 	private String requestID;
 	private String hierarchyProvided;
 	private String[] nodeNames;
@@ -48,11 +53,7 @@ public class Product
 		this.nodeNames = nodeNames;
 		this.nodeValues = nodeValues;
 		this.requestID = requestID;
-
-		// this.fullDataHierarchyPath = fullDataHierarchyPath;
-		// this.fullVoiceHierarchyPath = fullVoiceHierarchyPath;
 		this.hierarchyFullPathList = hierarchyFullPathList;
-
 		this.hierElements = hierarchyProvided.split("->");
 
 		// If hierarchyProvided is null then return only values provided
@@ -96,8 +97,34 @@ public class Product
 						Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(
 								this.hierarchyProvided, fullVoiceHierarchyPath)));
 				this.CLIsAffected = CLIsAffected;
+
+				// Calculate this
+				this.activeDataCustomersAffected = "0";
+				this.tvCustomersAffected = "0";
 			}
 		}
+	}
+
+	@XmlElement(name = "activeDataCustomersAffected")
+	public String getactiveDataCustomersAffected()
+	{
+		return activeDataCustomersAffected;
+	}
+
+	public void setactiveDataCustomersAffected(String activeDataCustomersAffected)
+	{
+		this.activeDataCustomersAffected = activeDataCustomersAffected;
+	}
+
+	@XmlElement(name = "tvCustomersAffected")
+	public String gettvCustomersAffected()
+	{
+		return tvCustomersAffected;
+	}
+
+	public void settvCustomersAffected(String tvCustomersAffected)
+	{
+		this.tvCustomersAffected = tvCustomersAffected;
 	}
 
 	@XmlElement(name = "elementType")

@@ -3,7 +3,6 @@ package gr.wind.spectra.web;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,21 +34,17 @@ public class WebSpectra// implements WebSpectraInterface
 
 	}
 
-	public void EstablishConnection() throws InstantiationException, IllegalAccessException, ClassNotFoundException
+	@WebMethod(exclude = true)
+	public void establishDBConnection() throws Exception
 	{
-		if (conObj == null || dbs == null)
+		try
 		{
-			conObj = new DB_Connection();
-			try
-			{
-				this.conn = conObj.Connect();
-			} catch (InvalidInputException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			this.conObj = new DB_Connection();
+			this.conn = this.conObj.Connect();
 			this.dbs = new DB_Operations(conn);
-
+		} catch (Exception ex)
+		{
+			throw new Exception(ex.getMessage());
 		}
 	}
 
@@ -67,8 +62,7 @@ public class WebSpectra// implements WebSpectraInterface
 			@WebParam(name = "RequestTimestamp") @XmlElement(required = true) String RequestTimestamp,
 			@WebParam(name = "SystemID") @XmlElement(required = true) String SystemID,
 			@WebParam(name = "UserID") @XmlElement(required = true) String UserID,
-			@WebParam(name = "Hierarchy") String Hierarchy) throws SQLException, InstantiationException,
-			IllegalAccessException, ClassNotFoundException, InvalidInputException, ParseException
+			@WebParam(name = "Hierarchy") String Hierarchy) throws Exception
 	{
 
 		/*
@@ -82,7 +76,7 @@ public class WebSpectra// implements WebSpectraInterface
 		WebSpectra wb = new WebSpectra();
 		try
 		{
-			wb.EstablishConnection();
+			wb.establishDBConnection();
 			List<String> ElementsList = new ArrayList<String>();
 			List<Product> prodElementsList = new ArrayList<>();
 
@@ -262,14 +256,13 @@ public class WebSpectra// implements WebSpectraInterface
 			@WebParam(name = "Impact") @XmlElement(required = true) String Impact,
 			@WebParam(name = "Priority") @XmlElement(required = true) String Priority,
 			@WebParam(name = "HierarchySelected") @XmlElement(required = true) String HierarchySelected)
-			throws InvalidInputException, ParseException, InstantiationException, IllegalAccessException,
-			ClassNotFoundException, SQLException
+			throws Exception
 	{
 		WebSpectra wb = new WebSpectra();
 
 		try
 		{
-			wb.EstablishConnection();
+			wb.establishDBConnection();
 			List<ProductOfSubmission> prodElementsList;
 			prodElementsList = new ArrayList<>();
 			int OutageID_Integer = 0;
@@ -499,15 +492,16 @@ public class WebSpectra// implements WebSpectraInterface
 									"UserID", "IncidentID", "Scheduled", "StartTime", "EndTime", "Duration",
 									"AffectedServices", "Impact", "Priority", "HierarchySelected",
 									"AffectedVoiceCustomers", "AffectedDataCustomers", "AffectedCLICustomers",
+									"ActiveDataCustomersAffected", "TVCustomersAffected",
 									"IncidentAffectedVoiceCustomers", "IncidentAffectedDataCustomers" },
 							new String[] { Help_Func.now(), OutageID_String, "OPEN", RequestTimestamp, SystemID, UserID,
 									IncidentID, Scheduled, StartTime, EndTime, Duration, service, Impact, Priority,
 									myHier.get(i).toString(), voiceCustomersAffected, dataCustomersAffected,
-									CLIsAffected, Integer.toString(totalVoiceIncidentAffected),
+									CLIsAffected, "0", "0", Integer.toString(totalVoiceIncidentAffected),
 									Integer.toString(totalDataIncidentAffected) },
 							new String[] { "DateTime", "Integer", "String", "DateTime", "String", "String", "String",
 									"String", "DateTime", "DateTime", "String", "String", "String", "String", "String",
-									"Integer", "Integer", "Integer", "Integer", "Integer" });
+									"Integer", "Integer", "Integer", "Integer", "Integer", "Integer", "Integer" });
 
 					if (Integer.parseInt(OutageID_String) > 0)
 					{
@@ -537,14 +531,13 @@ public class WebSpectra// implements WebSpectraInterface
 			@WebParam(name = "Password", header = true, mode = Mode.IN) String Password,
 			// Defines Uniquely The Incident
 			@WebParam(name = "IncidentID") @XmlElement(required = true) String IncidentID,
-			@WebParam(name = "IncidentStatus") @XmlElement(required = true) String IncidentStatus) throws SQLException,
-			InvalidInputException, InstantiationException, IllegalAccessException, ClassNotFoundException
+			@WebParam(name = "IncidentStatus") @XmlElement(required = true) String IncidentStatus) throws Exception
 	{
 		WebSpectra wb = new WebSpectra();
 
 		try
 		{
-			wb.EstablishConnection();
+			wb.establishDBConnection();
 			List<ProductOfGetOutage> prodElementsList;
 			prodElementsList = new ArrayList<>();
 
@@ -569,7 +562,8 @@ public class WebSpectra// implements WebSpectraInterface
 						new String[] { "OutageID", "IncidentStatus", "RequestTimestamp", "SystemID", "UserID",
 								"IncidentID", "Scheduled", "StartTime", "EndTime", "Duration", "AffectedServices",
 								"Impact", "Priority", "Hierarchyselected", "AffectedVoiceCustomers",
-								"AffectedDataCustomers", "AffectedCLICustomers", "IncidentAffectedVoiceCustomers",
+								"AffectedDataCustomers", "AffectedCLICustomers", "ActiveDataCustomersAffected",
+								"TVCustomersAffected", "IncidentAffectedVoiceCustomers",
 								"IncidentAffectedDataCustomers" },
 						"IncidentStatus = '" + IncidentStatus + "';");
 			} else
@@ -581,7 +575,8 @@ public class WebSpectra// implements WebSpectraInterface
 						new String[] { "OutageID", "IncidentStatus", "RequestTimestamp", "SystemID", "UserID",
 								"IncidentID", "Scheduled", "StartTime", "EndTime", "Duration", "AffectedServices",
 								"Impact", "Priority", "Hierarchyselected", "AffectedVoiceCustomers",
-								"AffectedDataCustomers", "AffectedCLICustomers", "IncidentAffectedVoiceCustomers",
+								"AffectedDataCustomers", "AffectedCLICustomers", "ActiveDataCustomersAffected",
+								"TVCustomersAffected", "IncidentAffectedVoiceCustomers",
 								"IncidentAffectedDataCustomers" },
 						"IncidentID = '" + IncidentID + "' AND " + "IncidentStatus = '" + IncidentStatus + "';");
 			}
@@ -599,6 +594,7 @@ public class WebSpectra// implements WebSpectraInterface
 							rs.getString("AffectedServices"), rs.getString("Impact"), rs.getString("Priority"),
 							rs.getString("Hierarchyselected"), rs.getString("AffectedVoiceCustomers"),
 							rs.getString("AffectedDataCustomers"), rs.getString("AffectedCLICustomers"),
+							rs.getString("ActiveDataCustomersAffected"), rs.getString("TVCustomersAffected"),
 							rs.getString("IncidentAffectedVoiceCustomers"),
 							rs.getString("IncidentAffectedDataCustomers")
 
@@ -626,14 +622,13 @@ public class WebSpectra// implements WebSpectraInterface
 			@WebParam(name = "EndTime") @XmlElement(required = false) String EndTime,
 			@WebParam(name = "Duration") @XmlElement(required = false) String Duration,
 			// Quality, Loss
-			@WebParam(name = "Impact") @XmlElement(required = false) String Impact) throws InstantiationException,
-			IllegalAccessException, ClassNotFoundException, SQLException, InvalidInputException, ParseException
+			@WebParam(name = "Impact") @XmlElement(required = false) String Impact) throws Exception
 	{
 		WebSpectra wb = new WebSpectra();
 
 		try
 		{
-			wb.EstablishConnection();
+			wb.establishDBConnection();
 			// Check if Authentication credentials are correct.
 			if (!wb.dbs.AuthenticateRequest(UserName, Password))
 			{

@@ -7,7 +7,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "Element")
 @XmlType(name = "basicStruct2", propOrder = { "outageID", "incidentID", "serviceAffected", "hierarchySelected",
 		"voiceCustomersAffected", "dataCustomersAffected", "CLIsAffected", "incidentVoiceCustomersAffected",
-		"incidentDataCustomersAffected", "statusCode", "description" })
+		"incidentDataCustomersAffected", "activeDataCustomersAffected", "tvCustomersAffected", "statusCode",
+		"description" })
 
 public class ProductOfSubmission
 {
@@ -23,6 +24,9 @@ public class ProductOfSubmission
 	private String description;
 	private String serviceAffected;
 	private String hierarchySelected;
+
+	private String activeDataCustomersAffected;
+	private String tvCustomersAffected;
 
 	// Empty constructor requirement of JAXB (Java Architecture for XML Binding)
 	public ProductOfSubmission()
@@ -46,6 +50,31 @@ public class ProductOfSubmission
 		this.description = description;
 		this.serviceAffected = serviceAffected;
 		this.hierarchySelected = hierarchySelected;
+
+		this.activeDataCustomersAffected = "0";
+		this.tvCustomersAffected = "0";
+	}
+
+	@XmlElement(name = "activeDataCustomersAffected")
+	public String getactiveDataCustomersAffected()
+	{
+		return activeDataCustomersAffected;
+	}
+
+	public void setactiveDataCustomersAffected(String activeDataCustomersAffected)
+	{
+		this.activeDataCustomersAffected = activeDataCustomersAffected;
+	}
+
+	@XmlElement(name = "tvCustomersAffected")
+	public String gettvCustomersAffected()
+	{
+		return tvCustomersAffected;
+	}
+
+	public void settvCustomersAffected(String tvCustomersAffected)
+	{
+		this.tvCustomersAffected = tvCustomersAffected;
 	}
 
 	@XmlElement(name = "serviceAffected")

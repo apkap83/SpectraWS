@@ -12,7 +12,8 @@ import gr.wind.spectra.web.InvalidInputException;
 @XmlType(name = "basicStruct3", propOrder = { "outageID", "incidentStatus", "requestTimestamp", "systemID", "userID",
 		"incidentID", "scheduled", "startTime", "endTime", "duration", "affectedServices", "impact", "priority",
 		"hierarchyselected", "affectedVoiceCustomers", "affectedDataCustomers", "affectedCLICustomers",
-		"incidentAffectedVoiceCustomers", "incidentAffectedDataCustomers" })
+		"activeDataCustomersAffected", "tvCustomersAffected", "incidentAffectedVoiceCustomers",
+		"incidentAffectedDataCustomers" })
 public class ProductOfGetOutage
 {
 
@@ -33,6 +34,8 @@ public class ProductOfGetOutage
 	private String AffectedVoiceCustomers = "NULL";
 	private String AffectedDataCustomers = "NULL";
 	private String AffectedCLICustomers = "NULL";
+	private String activeDataCustomersAffected = "NULL";
+	private String tvCustomersAffected = "NULL";
 	private String IncidentAffectedVoiceCustomers = "NULL";
 	private String IncidentAffectedDataCustomers = "NULL";
 
@@ -45,8 +48,8 @@ public class ProductOfGetOutage
 			String userID, String incidentID, String scheduled, String startTime, String endTime, String duration,
 			String affectedServices, String impact, String priority, String hierarchyselected,
 			String AffectedVoiceCustomers, String AffectedDataCustomers, String AffectedCLICustomers,
-			String IncidentAffectedVoiceCustomers, String IncidentAffectedDataCustomers)
-			throws SQLException, InvalidInputException
+			String activeDataCustomersAffected, String tvCustomersAffected, String IncidentAffectedVoiceCustomers,
+			String IncidentAffectedDataCustomers) throws SQLException, InvalidInputException
 	{
 		if (outageID != null)
 		{
@@ -126,7 +129,37 @@ public class ProductOfGetOutage
 		{
 			this.IncidentAffectedDataCustomers = IncidentAffectedDataCustomers;
 		}
+		if (activeDataCustomersAffected != null)
+		{
+			this.activeDataCustomersAffected = activeDataCustomersAffected;
+		}
+		if (tvCustomersAffected != null)
+		{
+			this.tvCustomersAffected = tvCustomersAffected;
+		}
 
+	}
+
+	@XmlElement(name = "activeDataCustomersAffected")
+	public String getactiveDataCustomersAffected()
+	{
+		return activeDataCustomersAffected;
+	}
+
+	public void setactiveDataCustomersAffected(String activeDataCustomersAffected)
+	{
+		this.activeDataCustomersAffected = activeDataCustomersAffected;
+	}
+
+	@XmlElement(name = "tvCustomersAffected")
+	public String gettvCustomersAffected()
+	{
+		return tvCustomersAffected;
+	}
+
+	public void settvCustomersAffected(String tvCustomersAffected)
+	{
+		this.tvCustomersAffected = tvCustomersAffected;
 	}
 
 	@XmlElement(name = "affectedVoiceCustomers")

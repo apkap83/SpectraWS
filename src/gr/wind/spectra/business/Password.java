@@ -70,10 +70,13 @@ public class Password
 		// String getSaltedHash(String password);
 		// boolean checkPassword(String password, String stored);
 
-		// System.out.println(Password.getSaltedHash("1234"));
+		System.out.println(Password.getSaltedHash("1234")); // Lw9HiROpB27ORsrAC3ZgERejYO7XQERVyXTCnU9aqVw=$EkWO1U+82gyO/KmMpSZG19A45XmzApEYA+8wcCFs+F4=
+															// J+l1pMaP6LeCgk9usune5QrL0oFRHpOel4H7DXPK5jc=$ugw0RoIXLH5uOnOGhPoQwU2VOdm52VEGUsNlKAkjWsE=
+		// System.out.println(Password.check("1234",
+		// "0AEPAfgSNcl0ek4APoDj+7YnXB1AYLwIt/BnCGW9/9A=$CltC0npEjplLnkGvVvpnSaf4qyaYv/gZgn+AE3FZIaA="));
 
-		System.out.println(Password.check("1234",
-				"0AEPAfgSNcl0ek4APoDj+7YnXB1AYLwIt/BnCGW9/9A=$CltC0npEjplLnkGvVvpnSaf4qyaYv/gZgn+AE3FZIaA="));
+		System.out.println(check("12134",
+				"Lw9HiROpB27ORsrAC3ZgERejYO7XQERVyXTCnU9aqVw=$EkWO1U+82gyO/KmMpSZG19A45XmzApEYA+8wcCFs+F4="));
 	}
 
 }
