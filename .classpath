@@ -13,11 +13,6 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/mysql-connector-java-8.0.16.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/log4j2">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
@@ -39,22 +34,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/cdi-api-2.0.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/javax.el-api-3.0.0.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/javax.inject-1.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/javax.interceptor-api-1.2.jar">
+	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/mysql-connector-java-8.0.16.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>

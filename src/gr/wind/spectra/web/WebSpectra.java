@@ -2,7 +2,6 @@ package gr.wind.spectra.web;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -780,12 +779,12 @@ public class WebSpectra// implements WebSpectraInterface
 			@WebParam(name = "IncidentID") @XmlElement(required = true) String IncidentID,
 			@WebParam(name = "EndTime") @XmlElement(required = false) String EndTime
 
-	) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, InvalidInputException
+	) throws InstantiationException, IllegalAccessException, ClassNotFoundException, Exception, InvalidInputException
 	{
 		// try {
 		// boolean result = wb.dbs.InsertValuesInTable("SubmittedIncidents", new
 		// String[] {"RequestID", "UserID"}, new String[] {RequestID, UserID});
-		// } catch (SQLException e) {
+		// } catch (Exception e) {
 		// // TODO Auto-generated catch block
 		// e.printStackTrace();
 		// }
@@ -802,9 +801,8 @@ public class WebSpectra// implements WebSpectraInterface
 	}
 
 	/*
-	 * public static void main(String args[]) throws SQLException {
-	 * WebSpectraInterface ws = new WebSpectra(); List<String> myList = new
-	 * ArrayList<String>();
+	 * public static void main(String args[]) throws Exception { WebSpectraInterface
+	 * ws = new WebSpectra(); List<String> myList = new ArrayList<String>();
 	 *
 	 * myList = ws.getFTTXHierarchy("ATHOARTMBOLT01", null, null, null, null);
 	 *

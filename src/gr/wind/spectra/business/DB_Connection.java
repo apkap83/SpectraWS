@@ -2,7 +2,6 @@ package gr.wind.spectra.business;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
@@ -51,19 +50,10 @@ public class DB_Connection
 			logger.info("DB Connection established!");
 			// Do something with the Connection
 
-		} catch (SQLException ex)
+		} catch (Exception ex)
 		{
-			// handle any errors
-			System.out.println("SQLException: " + ex.getMessage());
-			System.out.println("SQLState: " + ex.getSQLState());
-			System.out.println("VendorError: " + ex.getErrorCode());
 			conn = null;
-
 			logger.error("Could not open connection with database!");
-			logger.error("SQLException: " + ex.getMessage());
-			logger.error("SQLState: " + ex.getSQLState());
-			logger.error("VendorError: " + ex.getErrorCode());
-
 			throw new InvalidInputException("DB Connection Error", "Could not connect to database!");
 
 		}
@@ -71,7 +61,7 @@ public class DB_Connection
 
 	}
 
-	public boolean IsActive() throws SQLException
+	public boolean IsActive() throws Exception
 	{
 		if (conn.isValid(0))
 		{
@@ -82,13 +72,13 @@ public class DB_Connection
 		}
 	}
 
-	public void closeDBConnection() throws SQLException
+	public void closeDBConnection() throws Exception
 	{
 		logger.info("Closing DB Connection");
 		conn.close();
 	}
 
-	public static void main(String[] args) throws SQLException, InvalidInputException, InstantiationException,
+	public static void main(String[] args) throws Exception, InvalidInputException, InstantiationException,
 			IllegalAccessException, ClassNotFoundException
 	{
 
