@@ -1,9 +1,11 @@
 package gr.wind.spectra.business;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
 
 import org.apache.logging.log4j.LogManager;
 //Import log4j classes.
@@ -43,9 +45,25 @@ public class DB_Connection
 
 		try
 		{
-			Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
-			conn = DriverManager.getConnection(DATABASE_URL + "user=" + USERNAME + "&" + "password=" + PASSWORD + "&"
-					+ "useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Europe/Athens&autoReconnect=true");
+			/**
+			 * Direct Connection to MySQL
+			 */
+			/*
+			 * Class.forName("com.mysql.cj.jdbc.Driver").newInstance(); conn =
+			 * DriverManager.getConnection(DATABASE_URL + "user=" + USERNAME + "&" +
+			 * "password=" + PASSWORD + "&" +
+			 * "useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Europe/Athens&autoReconnect=true"
+			 * );
+			 */
+
+			/**
+			 * Implemented Connection Pooling! Requires Glassfish configuration (JDBC
+			 * Connection Pool + JDBC Resource)
+			 */
+			InitialContext ctx = new InitialContext();
+			// The JDBC Data source that we just created
+			DataSource ds = (DataSource) ctx.lookup("mySQLJDBCResource");
+			conn = ds.getConnection();
 
 			logger.info("DB Connection established!");
 			// Do something with the Connection
