@@ -2,10 +2,6 @@ package gr.wind.spectra.business;
 
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.ResourceBundle;
-
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
 
 import org.apache.logging.log4j.LogManager;
 //Import log4j classes.
@@ -18,9 +14,6 @@ import gr.wind.spectra.web.InvalidInputException;
 
 public class DB_Connection
 {
-	private static String DATABASE_URL;// = "jdbc:mysql://172.16.142.124:3306/SmartOutageDB?";
-	private static String USERNAME;// = "root";
-	private static String PASSWORD;// = "vQaSx4iVipDPLKfmdVDc";
 	java.sql.Connection conn = null;
 
 	// Define a static logger variable so that it references the
@@ -39,9 +32,6 @@ public class DB_Connection
 		 * and they will be accessible from within your applications via the
 		 * ResourceBundle class.
 		 */
-		DATABASE_URL = ResourceBundle.getBundle("database").getString("DATABASE_URL");
-		USERNAME = ResourceBundle.getBundle("database").getString("USERNAME");
-		PASSWORD = ResourceBundle.getBundle("database").getString("PASSWORD");
 
 		try
 		{
@@ -56,14 +46,16 @@ public class DB_Connection
 			 * );
 			 */
 
+			// Using HikariCP Datasource (fastest Java JDBC datasource!)
+			conn = MyDataSource.getConnection();
 			/**
 			 * Implemented Connection Pooling! Requires Glassfish configuration (JDBC
 			 * Connection Pool + JDBC Resource)
 			 */
-			InitialContext ctx = new InitialContext();
+			// InitialContext ctx = new InitialContext();
 			// The JDBC Data source that we just created
-			DataSource ds = (DataSource) ctx.lookup("mySQLJDBCResource");
-			conn = ds.getConnection();
+			// DataSource ds = (DataSource) ctx.lookup("mySQLJDBCResource");
+			// conn = ds.getConnection();
 
 			logger.info("DB Connection established!");
 			// Do something with the Connection
