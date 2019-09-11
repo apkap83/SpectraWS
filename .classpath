@@ -34,7 +34,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/HikariCP-3.3.1.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/HikariCP-3.3.1.jar" sourcepath="WebContent/WEB-INF/lib/HikariCP-dev/src"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/slf4j-api-2.0.0-alpha0.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/mysql-connector-java-5.1.48.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
