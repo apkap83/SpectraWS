@@ -85,6 +85,8 @@ public class WebSpectra// implements WebSpectraInterface
 				throw new InvalidInputException("User name or Password incorrect!", "Error 100");
 			}
 
+			wb.dbs.start();
+
 			// Check if Required fields are empty
 			Help_Func.ValidateNotEmpty("RequestID", RequestID);
 			Help_Func.ValidateNotEmpty("SystemID", SystemID);
@@ -391,8 +393,9 @@ public class WebSpectra// implements WebSpectraInterface
 				{
 					boolean incidentAlreadyExists = wb.dbs.CheckIfCriteriaExists("SubmittedIncidents",
 							new String[] { "IncidentStatus", "IncidentID", "AffectedServices", "HierarchySelected" },
-							"IncidentStatus='OPEN' AND IncidentID = '" + IncidentID + "' AND AffectedServices = '"
-									+ service + "' AND HierarchySelected = '" + myHier.get(i).toString() + "'");
+							new String[] { "OPEN", IncidentID, service, myHier.get(i).toString() },
+							new String[] { "String", "String", "String", "String" });
+
 					if (incidentAlreadyExists)
 					{
 						throw new InvalidInputException("There is already an openned incident (" + IncidentID
@@ -408,7 +411,7 @@ public class WebSpectra// implements WebSpectraInterface
 			String numberOfDataCustAffectedFromPreviousIncidents = "0";
 
 			if (wb.dbs.CheckIfCriteriaExists("SubmittedIncidents", new String[] { "IncidentID" },
-					"`IncidentID` = '" + IncidentID + "'"))
+					new String[] { IncidentID }, new String[] { "String" }))
 			{
 				numberOfVoiceCustAffectedFromPreviousIncidents = wb.dbs.MaxNumberOfCustomersAffected(
 						"SubmittedIncidents", "IncidentAffectedVoiceCustomers", new String[] { "IncidentID" },
@@ -564,7 +567,7 @@ public class WebSpectra// implements WebSpectraInterface
 								"AffectedDataCustomers", "AffectedCLICustomers", "ActiveDataCustomersAffected",
 								"TVCustomersAffected", "IncidentAffectedVoiceCustomers",
 								"IncidentAffectedDataCustomers" },
-						"IncidentStatus = '" + IncidentStatus + "';");
+						new String[] { "IncidentStatus" }, new String[] { IncidentStatus }, new String[] { "String" });
 			} else
 			{
 				numOfRows = wb.dbs.NumberOfRowsFound("SubmittedIncidents",
@@ -577,7 +580,8 @@ public class WebSpectra// implements WebSpectraInterface
 								"AffectedDataCustomers", "AffectedCLICustomers", "ActiveDataCustomersAffected",
 								"TVCustomersAffected", "IncidentAffectedVoiceCustomers",
 								"IncidentAffectedDataCustomers" },
-						"IncidentID = '" + IncidentID + "' AND " + "IncidentStatus = '" + IncidentStatus + "';");
+						new String[] { "IncidentID", "IncidentStatus" }, new String[] { IncidentID, IncidentStatus },
+						new String[] { "String", "String" });
 			}
 			if (Integer.parseInt(numOfRows) == 0)
 			{
@@ -673,17 +677,16 @@ public class WebSpectra// implements WebSpectraInterface
 
 			// Check if the combination of IncidentID & OutageID exists
 			boolean incidentPlusOutageExists = wb.dbs.CheckIfCriteriaExists("SubmittedIncidents",
-					new String[] { "IncidentID", "OutageID" },
-					"`IncidentID` = '" + IncidentID + "' AND  `OutageID` = '" + OutageID + "'");
+					new String[] { "IncidentID", "OutageID" }, new String[] { IncidentID, OutageID },
+					new String[] { "String", "String" });
 
 			if (incidentPlusOutageExists)
 			{
 				// Check if the combination of IncidentID & OutageID refers to a scheduled
 				// Incident (Scheduled = "Yes")
 				boolean incidentIsScheduled = wb.dbs.CheckIfCriteriaExists("SubmittedIncidents",
-						new String[] { "IncidentID", "OutageID" }, "`IncidentID` = '" + IncidentID
-								+ "' AND  `OutageID` = '" + OutageID + "' AND `Scheduled` = 'Yes'");
-
+						new String[] { "IncidentID", "OutageID", "Scheduled" },
+						new String[] { IncidentID, OutageID, "Yes" }, new String[] { "String", "String", "String" });
 				// Create a new list with the updated columns - based on what is empty or not
 				List<String> listOfColumnsForUpdate = new ArrayList<>();
 				List<String> listOfValuesForUpdate = new ArrayList<>();

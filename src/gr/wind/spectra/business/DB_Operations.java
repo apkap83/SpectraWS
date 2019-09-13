@@ -1,5 +1,11 @@
 package gr.wind.spectra.business;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,11 +16,12 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import gr.wind.spectra.web.InvalidInputException;
 
-public class DB_Operations
+public class DB_Operations extends Thread
 {
 	Connection conn;
 	Statement stmt = null;
@@ -23,6 +30,22 @@ public class DB_Operations
 	public DB_Operations(Connection conn)
 	{
 		this.conn = conn;
+	}
+
+	@Override
+	public void run()
+	{
+		System.out.println("New Thread is created here!");
+		Charset utf8 = StandardCharsets.UTF_8;
+		List<String> lines = Arrays.asList("1st line", "2nd line");
+		try
+		{
+			Files.write(Paths.get("MyExportFile.txt"), lines, utf8, StandardOpenOption.CREATE,
+					StandardOpenOption.APPEND);
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	public boolean checkIfStringExistsInSpecificColumn(String table, String columnName, String searchValue)
@@ -115,74 +138,32 @@ public class DB_Operations
 		return returnValue;
 	}
 
-	public List<String> GetOneColumnResultSet(String table, String columnName, String predicate) throws SQLException
-	{
-		// Example: select ID from table where a = 2 and b = 3
-
-		List<String> myList = new ArrayList<String>();
-
-		String sqlString = "SELECT `" + columnName + "` FROM `" + table + "` WHERE " + predicate;
-		System.out.println(sqlString);
-		PreparedStatement pst = conn.prepareStatement(sqlString);
-		pst.execute();
-		ResultSet rs = pst.executeQuery();
-
-		while (rs.next())
-		{
-			String current = rs.getString(columnName);
-			myList.add(current);
-		}
-
-		return myList;
-	}
-
-	public List<String> GetOneLineResultSet(String table, String[] columnNames, String predicate) throws SQLException
-	{
-		List<String> myList = new ArrayList<String>();
-		int numOfColumns = columnNames.length;
-
-		String sqlQuery = "SELECT " + Help_Func.columnsWithCommas(columnNames) + " FROM " + table + " WHERE "
-				+ predicate + ";";
-		System.out.println(sqlQuery);
-		PreparedStatement pst = conn.prepareStatement(sqlQuery);
-		pst.execute();
-
-		ResultSet rs = pst.executeQuery();
-
-		while (rs.next())
-		{
-			for (int i = 0; i < numOfColumns; i++)
-			{
-				myList.add(rs.getString(columnNames[i]));
-			}
-		}
-
-		return myList;
-	}
-
-	public boolean CheckIfCriteriaExists(String table, String[] columnNames, String predicate) throws SQLException
+	public boolean CheckIfCriteriaExists(String table, String[] predicateKeys, String[] predicateValues,
+			String[] predicateTypes) throws SQLException
 	{
 		boolean criteriaIfExists = false;
-		List<String> myList = new ArrayList<String>();
-		int numOfColumns = columnNames.length;
 
-		String sqlQuery = "SELECT " + Help_Func.columnsWithCommas(columnNames) + " FROM " + table + " WHERE "
-				+ predicate + ";";
+		String sqlQuery = "SELECT COUNT(*) as Result FROM " + table + " WHERE "
+				+ Help_Func.GenerateANDPredicateQuestionMarks(predicateKeys);
 		System.out.println(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
-		pst.execute();
-
-		ResultSet rs = pst.executeQuery();
-
-		while (rs.next())
+		ResultSet rs = null;
+		for (int i = 0; i < predicateKeys.length; i++)
 		{
-			for (int i = 0; i < numOfColumns; i++)
+			if (predicateTypes[i].equals("String"))
 			{
-				myList.add(rs.getString(columnNames[i]));
+				pst.setString(i + 1, predicateValues[i]);
+			} else if (predicateTypes[i].equals("Integer"))
+			{
+				pst.setInt(i + 1, Integer.parseInt(predicateValues[i]));
 			}
 		}
 
-		if (myList.size() > 0)
+		rs = pst.executeQuery();
+		rs.next();
+		String numOfRowsFound = rs.getString("Result");
+
+		if (!numOfRowsFound.equals("0"))
 		{
 			criteriaIfExists = true;
 		}
@@ -349,12 +330,26 @@ public class DB_Operations
 		return numOfRows;
 	}
 
-	public ResultSet GetRows(String table, String[] columnNames, String predicate) throws SQLException
+	public ResultSet GetRows(String table, String[] columnNames, String[] predicateKeys, String[] predicateValues,
+			String[] predicateTypes) throws SQLException
 	{
 		String sqlQuery = "SELECT " + Help_Func.columnsWithCommas(columnNames) + " FROM " + table + " WHERE "
-				+ predicate + ";";
-		System.out.println(sqlQuery);
+				+ Help_Func.GenerateANDPredicateQuestionMarks(predicateKeys);
+
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
+		for (int i = 0; i < predicateKeys.length; i++)
+		{
+			if (predicateTypes[i].equals("String"))
+			{
+				pst.setString(i + 1, predicateValues[i]);
+			} else if (predicateTypes[i].equals("Integer"))
+			{
+				pst.setInt(i + 1, Integer.parseInt(predicateValues[i]));
+			}
+		}
+
+		System.out.println(sqlQuery);
+
 		pst.execute();
 		ResultSet rs = pst.executeQuery();
 		return rs;
