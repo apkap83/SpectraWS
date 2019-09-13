@@ -25,6 +25,7 @@ public class MyDataSource
 		config.setDriverClassName("com.mysql.cj.jdbc.Driver");
 		config.setUsername(USERNAME);
 		config.setPassword(PASSWORD);
+		config.setMaxLifetime(0);
 		config.addDataSourceProperty("cachePrepStmts", "true");
 		config.addDataSourceProperty("prepStmtCacheSize", "250");
 		config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
