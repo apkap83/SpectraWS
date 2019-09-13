@@ -171,17 +171,28 @@ public class DB_Operations extends Thread
 		return criteriaIfExists;
 	}
 
-	public String GetOneValue(String table, String columnName, String predicate) throws SQLException
+	public String GetOneValue(String table, String columnName, String[] predicateKeys, String[] predicateValues,
+			String[] predicateTypes) throws SQLException
 	{
-		String valueFound = "";
-		String sqlQuery = "SELECT " + columnName + " FROM " + table + " WHERE " + predicate + ";";
+		String sqlQuery = "SELECT " + columnName + " FROM " + table + " WHERE "
+				+ Help_Func.GenerateANDPredicateQuestionMarks(predicateKeys);
 		System.out.println(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
+
+		for (int i = 0; i < predicateKeys.length; i++)
+		{
+			if (predicateTypes[i].equals("String"))
+			{
+				pst.setString(i + 1, predicateValues[i]);
+			} else if (predicateTypes[i].equals("Integer"))
+			{
+				pst.setInt(i + 1, Integer.parseInt(predicateValues[i]));
+			}
+		}
 		pst.execute();
 		ResultSet rs = pst.executeQuery();
 		rs.next();
-		valueFound = rs.getString(columnName);
-		return valueFound;
+		return rs.getString(columnName);
 	}
 
 	public List<String> GetOneColumnUniqueResultSet(String table, String columnName, String predicate)

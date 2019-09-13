@@ -546,17 +546,23 @@ public class Help_Func
 	public static String GenerateANDPredicateQuestionMarks(String predicateColumns[])
 	{
 		String output = "";
-		for (int i = 0; i < predicateColumns.length; i++)
-		{
-			if (i < predicateColumns.length - 1)
-			{
-				output = output + "`" + predicateColumns[i] + "` = ? AND ";
-			} else
-			{
-				output = output + "`" + predicateColumns[i] + "` = ?";
-			}
-		}
 
+		if (predicateColumns.length != 0)
+		{
+			for (int i = 0; i < predicateColumns.length; i++)
+			{
+				if (i < predicateColumns.length - 1)
+				{
+					output = output + "`" + predicateColumns[i] + "` = ? AND ";
+				} else
+				{
+					output = output + "`" + predicateColumns[i] + "` = ?";
+				}
+			}
+		} else
+		{
+			output = "1 = 1";
+		}
 		return output;
 	}
 

@@ -118,12 +118,14 @@ public class WebSpectra// implements WebSpectraInterface
 
 				// Get Hierarchy Table for that root hierarchy
 				String table = wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "HierarchyTableName",
-						"RootHierarchyNode = '" + rootElementInHierarchy + "'");
+						new String[] { "RootHierarchyNode" }, new String[] { rootElementInHierarchy },
+						new String[] { "String" });
 
 				// Get Hierarchy data in style :
 				// OltElementName->OltSlot->OltPort->Onu->ElementName->Slot
 				String fullHierarchyFromDB = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-						"HierarchyTableNamePath", "RootHierarchyNode = '" + rootElementInHierarchy + "'");
+						"HierarchyTableNamePath", new String[] { "RootHierarchyNode" },
+						new String[] { rootElementInHierarchy }, new String[] { "String" });
 
 				// Check Columns of Hierarchy against fullHierarchy (avoid wrong key values in
 				// hierarchy e.g. SiteNa7me=AKADIMIAS)
@@ -135,7 +137,8 @@ public class WebSpectra// implements WebSpectraInterface
 				// Get Full Internet hierarchy in style :
 				// OltElementName->OltSlot->OltPort->Onu->ActiveElement->Slot
 				String fullDataSubsHierarchyFromDB = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-						"DataSubscribersTableNamePath", "RootHierarchyNode = '" + rootElementInHierarchy + "'");
+						"DataSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
+						new String[] { rootElementInHierarchy }, new String[] { "String" });
 
 				// Split the Internet hierarchy retrieved from DB into fields
 				String[] fullDataSubsHierarchyFromDBSplit = fullDataSubsHierarchyFromDB.split("->");
@@ -143,7 +146,8 @@ public class WebSpectra// implements WebSpectraInterface
 				// Get Full Voice hierarchy in style :
 				// OltElementName->OltSlot->OltPort->Onu->ActiveElement->Slot
 				String fullVoiceSubsHierarchyFromDB = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-						"VoiceSubscribersTableNamePath", "RootHierarchyNode = '" + rootElementInHierarchy + "'");
+						"VoiceSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
+						new String[] { rootElementInHierarchy }, new String[] { "String" });
 
 				// Split the Internet hierarchy retrieved from DB into fields
 				String[] fullVoiceSubsHierarchyFromDBSplit = fullVoiceSubsHierarchyFromDB.split("->");
@@ -338,7 +342,8 @@ public class WebSpectra// implements WebSpectraInterface
 					// Get Hierarchy data in style :
 					// OltElementName->OltSlot->OltPort->Onu->ElementName->Slot
 					String fullHierarchyFromDB = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-							"HierarchyTableNamePath", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+							"HierarchyTableNamePath", new String[] { "RootHierarchyNode" },
+							new String[] { rootHierarchySelected }, new String[] { "String" });
 
 					// Check Columns of Hierarchy against fullHierarchy (avoid wrong key values in
 					// hierarchy e.g. SiteNa7me=AKADIMIAS)
@@ -346,17 +351,24 @@ public class WebSpectra// implements WebSpectraInterface
 
 					// Determine Tables for Data/Voice subscribers
 					String dataSubsTable = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-							"DataSubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+							"DataSubscribersTableName", new String[] { "RootHierarchyNode" },
+							new String[] { rootHierarchySelected }, new String[] { "String" });
+
 					String voiceSubsTable = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-							"VoiceSubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+							"VoiceSubscribersTableName", new String[] { "RootHierarchyNode" },
+							new String[] { rootHierarchySelected }, new String[] { "String" });
 
 					// Get Hierarchies for Data/Voice Tables
 					String fullDataHierarchyPath = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-							"DataSubscribersTableNamePath", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+							"DataSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
+							new String[] { rootHierarchySelected }, new String[] { "String" });
+
 					String[] fullDataHierarchyPathSplit = fullDataHierarchyPath.split("->");
 
 					String fullVoiceHierarchyPath = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-							"VoiceSubscribersTableNamePath", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+							"VoiceSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
+							new String[] { rootHierarchySelected }, new String[] { "String" });
+
 					String[] fullVoiceHierarchyPathSplit = fullVoiceHierarchyPath.split("->");
 
 					// Count distinct values of Usernames or CliVlaues in the respective columns
@@ -442,16 +454,23 @@ public class WebSpectra// implements WebSpectraInterface
 
 					// Determine Tables for Data/Voice subscribers
 					String dataSubsTable = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-							"DataSubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+							"DataSubscribersTableName", new String[] { "RootHierarchyNode" },
+							new String[] { rootHierarchySelected }, new String[] { "String" });
+
 					String voiceSubsTable = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-							"VoiceSubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+							"VoiceSubscribersTableName", new String[] { "RootHierarchyNode" },
+							new String[] { rootHierarchySelected }, new String[] { "String" });
 
 					// Get Hierarchies for Data/Voice Tables
 					String fullDataHierarchyPath = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-							"DataSubscribersTableNamePath", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+							"DataSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
+							new String[] { rootHierarchySelected }, new String[] { "String" });
+
 					String[] fullDataHierarchyPathSplit = fullDataHierarchyPath.split("->");
 					String fullVoiceHierarchyPath = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-							"VoiceSubscribersTableNamePath", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+							"VoiceSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
+							new String[] { rootHierarchySelected }, new String[] { "String" });
+
 					String[] fullVoiceHierarchyPathSplit = fullVoiceHierarchyPath.split("->");
 
 					// Count distinct values of Usernames or CliVlaues the respective columns

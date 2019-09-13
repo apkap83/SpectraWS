@@ -72,9 +72,10 @@ public class Product
 				// Firstly determine the hierarchy table that will be used based on the root
 				// hierarchy provided
 				String dataSubsTable = dbs.GetOneValue("HierarchyTablePerTechnology2", "DataSubscribersTableName",
-						"RootHierarchyNode = '" + rootElement + "'");
+						new String[] { "RootHierarchyNode" }, new String[] { rootElement }, new String[] { "String" });
+
 				String voiceSubsTable = dbs.GetOneValue("HierarchyTablePerTechnology2", "VoiceSubscribersTableName",
-						"RootHierarchyNode = '" + rootElement + "'");
+						new String[] { "RootHierarchyNode" }, new String[] { rootElement }, new String[] { "String" });
 
 				// Calculate Internet Customers Affected but replace column names in order to
 				// search table for customers affected
