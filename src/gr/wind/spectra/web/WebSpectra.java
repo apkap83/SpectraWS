@@ -522,7 +522,7 @@ public class WebSpectra// implements WebSpectraInterface
 
 		} finally
 		{
-			wb.conObj.closeDBConnection();
+			// wb.conObj.closeDBConnection();
 		}
 	}
 
