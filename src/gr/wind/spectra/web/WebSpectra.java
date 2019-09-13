@@ -326,6 +326,13 @@ public class WebSpectra// implements WebSpectraInterface
 			{
 				for (int i = 0; i < myHier.size(); i++)
 				{
+					// If the sumbission contains only root hierarchy then STOP submission
+					if (!myHier.get(i).contains("="))
+					{
+						throw new InvalidInputException("Cannot submit Incident for an invalid/root only hierarchy",
+								"Error 900");
+					}
+
 					// Check Hierarchy Format Key_Value Pairs
 					Help_Func.checkHierarchyFormatKeyValuePairs(myHier.get(i).toString());
 
