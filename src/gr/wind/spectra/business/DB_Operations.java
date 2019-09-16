@@ -252,6 +252,55 @@ public class DB_Operations extends Thread
 		return myList;
 	}
 
+	public List<String> GetOneColumnUniqueResultSet2(String table, String columnName, String[] predicateKeys,
+			String[] predicateValues, String[] predicateTypes) throws SQLException
+	{
+		// Example: select DISTINCT ID from table where a = 2 and b = 3
+
+		List<String> myList = new ArrayList<String>();
+
+		String sqlString = "SELECT DISTINCT `" + columnName + "` FROM `" + table + "` WHERE "
+				+ Help_Func.GenerateANDPredicateQuestionMarks(predicateKeys);
+		System.out.println(sqlString);
+		PreparedStatement pst = conn.prepareStatement(sqlString);
+
+		for (int i = 0; i < predicateKeys.length; i++)
+		{
+			if (predicateTypes[0].equals("String"))
+			{
+				pst.setString(i + 1, predicateValues[i]);
+			} else if (predicateTypes[1].equals("Integer"))
+			{
+				pst.setString(i + 1, predicateValues[i]);
+			}
+		}
+
+		pst.execute();
+		ResultSet rs = null;
+		rs = pst.executeQuery();
+
+		try
+		{
+			while (rs.next())
+			{
+				String current = rs.getString(columnName);
+				if (!(current == null || current.isEmpty()))
+				{
+					myList.add(current);
+				}
+			}
+		} catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// Sort list alphabetically
+		java.util.Collections.sort(myList);
+
+		return myList;
+	}
+
 	public int UpdateValuesForOneColumn(String table, String setColumnName, String newValue, String predicate)
 			throws SQLException
 	{

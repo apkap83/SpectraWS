@@ -101,8 +101,14 @@ public class WebSpectra// implements WebSpectraInterface
 			// No Hierarchy is given - returns root elements
 			if (Hierarchy == null || Hierarchy.equals("") || Hierarchy.equals("?"))
 			{
-				ElementsList = wb.dbs.GetOneColumnUniqueResultSet("HierarchyTablePerTechnology2", "RootHierarchyNode",
-						"1 = 1");
+				// ElementsList =
+				// wb.dbs.GetOneColumnUniqueResultSet("HierarchyTablePerTechnology2",
+				// "RootHierarchyNode",
+				// "1 = 1");
+
+				ElementsList = wb.dbs.GetOneColumnUniqueResultSet2("HierarchyTablePerTechnology2", "RootHierarchyNode",
+						new String[] {}, new String[] {}, new String[] {});
+
 				String[] nodeNames = new String[] {};
 				String[] nodeValues = new String[] {};
 				Product pr = new Product(wb.dbs, new String[] {}, new String[] {}, new String[] {}, Hierarchy,
@@ -166,7 +172,12 @@ public class WebSpectra// implements WebSpectraInterface
 				// If only root Hierarchy is given
 				if (hierItemsGiven.length == 1)
 				{
-					ElementsList = wb.dbs.GetOneColumnUniqueResultSet(table, fullHierarchyFromDBSplit[0], " 1 = 1 ");
+					// ElementsList = wb.dbs.GetOneColumnUniqueResultSet(table,
+					// fullHierarchyFromDBSplit[0], " 1 = 1 ");
+
+					ElementsList = wb.dbs.GetOneColumnUniqueResultSet2(table, fullHierarchyFromDBSplit[0],
+							new String[] {}, new String[] {}, new String[] {});
+
 					String[] nodeNames = new String[] { rootElementInHierarchy };
 					String[] nodeValues = new String[] { "1" };
 					Product pr = new Product(wb.dbs, fullHierarchyFromDBSplit, fullDataSubsHierarchyFromDBSplit,
@@ -195,9 +206,16 @@ public class WebSpectra// implements WebSpectraInterface
 							nodeValuesArrayList.add(keyValue[1]);
 						}
 
-						ElementsList = wb.dbs.GetOneColumnUniqueResultSet(table,
+						// ElementsList = wb.dbs.GetOneColumnUniqueResultSet(table,
+						// fullHierarchyFromDBSplit[hierItemsGiven.length - 1],
+						// Help_Func.HierarchyToPredicate(Hierarchy));
+
+						ElementsList = wb.dbs.GetOneColumnUniqueResultSet2(table,
 								fullHierarchyFromDBSplit[hierItemsGiven.length - 1],
-								Help_Func.HierarchyToPredicate(Hierarchy));
+								Help_Func.HierarchyKeys(fullHierarchyFromDBSplit[hierItemsGiven.length - 1]),
+								Help_Func.HierarchyValues(fullHierarchyFromDBSplit[hierItemsGiven.length - 1]),
+								Help_Func.HierarchyStringTypes(fullHierarchyFromDBSplit[hierItemsGiven.length - 1]));
+
 						String[] nodeNames = nodeNamesArrayList.toArray(new String[nodeNamesArrayList.size()]);
 						String[] nodeValues = nodeValuesArrayList.toArray(new String[nodeValuesArrayList.size()]);
 						Product pr = new Product(wb.dbs, fullHierarchyFromDBSplit, fullDataSubsHierarchyFromDBSplit,
