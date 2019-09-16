@@ -34,6 +34,7 @@ public class WebSpectra implements InterfaceWebSpectra
 
 	}
 
+	@Override
 	@WebMethod(exclude = true)
 	public void establishDBConnection() throws Exception
 	{
@@ -63,7 +64,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			@WebParam(name = "RequestTimestamp") @XmlElement(required = true) String RequestTimestamp,
 			@WebParam(name = "SystemID") @XmlElement(required = true) String SystemID,
 			@WebParam(name = "UserID") @XmlElement(required = true) String UserID,
-			@WebParam(name = "Hierarchy") String Hierarchy) throws Exception
+			@WebParam(name = "Hierarchy") String Hierarchy) throws Exception, InvalidInputException
 	{
 
 		/*
@@ -282,7 +283,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			@WebParam(name = "Impact") @XmlElement(required = true) String Impact,
 			@WebParam(name = "Priority") @XmlElement(required = true) String Priority,
 			@WebParam(name = "HierarchySelected") @XmlElement(required = true) String HierarchySelected)
-			throws Exception
+			throws Exception, InvalidInputException
 	{
 		WebSpectra wb = new WebSpectra();
 
@@ -605,7 +606,8 @@ public class WebSpectra implements InterfaceWebSpectra
 			@WebParam(name = "Password", header = true, mode = Mode.IN) String Password,
 			// Defines Uniquely The Incident
 			@WebParam(name = "IncidentID") @XmlElement(required = true) String IncidentID,
-			@WebParam(name = "IncidentStatus") @XmlElement(required = true) String IncidentStatus) throws Exception
+			@WebParam(name = "IncidentStatus") @XmlElement(required = true) String IncidentStatus)
+			throws Exception, InvalidInputException
 	{
 		WebSpectra wb = new WebSpectra();
 
@@ -703,7 +705,8 @@ public class WebSpectra implements InterfaceWebSpectra
 			@WebParam(name = "EndTime") @XmlElement(required = false) String EndTime,
 			@WebParam(name = "Duration") @XmlElement(required = false) String Duration,
 			// Quality, Loss
-			@WebParam(name = "Impact") @XmlElement(required = false) String Impact) throws Exception
+			@WebParam(name = "Impact") @XmlElement(required = false) String Impact)
+			throws Exception, InvalidInputException
 	{
 		WebSpectra wb = new WebSpectra();
 
@@ -854,8 +857,8 @@ public class WebSpectra implements InterfaceWebSpectra
 			@WebParam(name = "SystemID") @XmlElement(required = true) String SystemID,
 			@WebParam(name = "UserID") @XmlElement(required = true) String UserID,
 			@WebParam(name = "IncidentID") @XmlElement(required = true) String IncidentID,
-			@WebParam(name = "OutageID") @XmlElement(required = true) String OutageID) throws InstantiationException,
-			IllegalAccessException, ClassNotFoundException, Exception, InvalidInputException
+			@WebParam(name = "OutageID") @XmlElement(required = true) String OutageID)
+			throws Exception, InvalidInputException
 	{
 		WebSpectra wb = new WebSpectra();
 
