@@ -195,64 +195,7 @@ public class DB_Operations extends Thread
 		return rs.getString(columnName);
 	}
 
-	public List<String> GetOneColumnUniqueResultSet(String table, String columnName, String predicate)
-	{
-		// Example: select DISTINCT ID from table where a = 2 and b = 3
-
-		List<String> myList = new ArrayList<String>();
-
-		String sqlString = "SELECT DISTINCT `" + columnName + "` FROM `" + table + "` WHERE " + predicate;
-		System.out.println(sqlString);
-		PreparedStatement pst = null;
-		try
-		{
-			pst = conn.prepareStatement(sqlString);
-		} catch (SQLException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try
-		{
-			pst.execute();
-		} catch (SQLException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		ResultSet rs = null;
-		try
-		{
-			rs = pst.executeQuery();
-		} catch (SQLException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		try
-		{
-			while (rs.next())
-			{
-				String current = rs.getString(columnName);
-				if (!(current == null || current.isEmpty()))
-				{
-					myList.add(current);
-				}
-			}
-		} catch (SQLException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		// Sort list alphabetically
-		java.util.Collections.sort(myList);
-
-		return myList;
-	}
-
-	public List<String> GetOneColumnUniqueResultSet2(String table, String columnName, String[] predicateKeys,
+	public List<String> GetOneColumnUniqueResultSet(String table, String columnName, String[] predicateKeys,
 			String[] predicateValues, String[] predicateTypes) throws SQLException
 	{
 		// Example: select DISTINCT ID from table where a = 2 and b = 3
@@ -315,12 +258,53 @@ public class DB_Operations extends Thread
 
 	}
 
-	public String NumberOfRowsFound(String table, String predicate) throws SQLException
+	public int UpdateValuesForOneColumn2(String table, String setColumnName, String newValue, String[] predicateKeys,
+			String[] predicateValues, String[] predicateTypes) throws SQLException
+	{
+		// Example: update TestTable set `Name` = 100 where Surname = "Kapetanios";
+
+		String sqlString = "update `" + table + "` set `" + setColumnName + "` = '" + newValue + "' WHERE "
+				+ Help_Func.GenerateANDPredicateQuestionMarks(predicateKeys);
+		System.out.println(sqlString);
+		PreparedStatement pst = conn.prepareStatement(sqlString);
+
+		for (int i = 0; i < predicateKeys.length; i++)
+		{
+			if (predicateTypes[i].equals("String"))
+			{
+				pst.setString(i + 1, predicateValues[i]);
+			} else if (predicateTypes[i].equals("Integer"))
+			{
+				pst.setInt(i + 1, Integer.parseInt(predicateValues[i]));
+			}
+		}
+
+		int rowsAffected = pst.executeUpdate();
+
+		return rowsAffected;
+
+	}
+
+	public String NumberOfRowsFound(String table, String[] predicateKeys, String[] predicateValues,
+			String[] predicateTypes) throws SQLException
 	{
 		int numOfRows = 0;
-		String sqlQuery = "SELECT *" + " FROM " + table + " WHERE " + predicate + ";";
+		String sqlQuery = "SELECT *" + " FROM " + table + " WHERE "
+				+ Help_Func.GenerateANDPredicateQuestionMarks(predicateKeys);
 		System.out.println(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
+
+		for (int i = 0; i < predicateKeys.length; i++)
+		{
+			if (predicateTypes[i].equals("String"))
+			{
+				pst.setString(i + 1, predicateValues[i]);
+			} else if (predicateTypes[i].equals("Integer"))
+			{
+				pst.setInt(i + 1, Integer.parseInt(predicateValues[i]));
+			}
+		}
+
 		pst.execute();
 		ResultSet rs = pst.executeQuery();
 
@@ -332,13 +316,26 @@ public class DB_Operations extends Thread
 		return Integer.toString(numOfRows);
 	}
 
-	public String CountDistinctRowsForSpecificColumn(String table, String column, String predicate) throws SQLException
+	public String CountDistinctRowsForSpecificColumn(String table, String column, String[] predicateKeys,
+			String[] predicateValues, String[] predicateTypes) throws SQLException
 	{
 		String numOfRows = "";
 		String sqlQuery = "SELECT COUNT(DISTINCT(" + column + ")) as " + column + " FROM " + table + " WHERE "
-				+ predicate + ";";
+				+ Help_Func.GenerateANDPredicateQuestionMarks(predicateKeys);
 		System.out.println(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
+
+		for (int i = 0; i < predicateKeys.length; i++)
+		{
+			if (predicateTypes[i].equals("String"))
+			{
+				pst.setString(i + 1, predicateValues[i]);
+			} else if (predicateTypes[i].equals("String"))
+			{
+				pst.setString(i + 1, predicateValues[i]);
+			}
+		}
+
 		pst.execute();
 		ResultSet rs = pst.executeQuery();
 

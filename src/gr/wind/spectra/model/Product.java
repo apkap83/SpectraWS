@@ -79,9 +79,18 @@ public class Product
 
 				// Calculate Internet Customers Affected but replace column names in order to
 				// search table for customers affected
+//				String internetCustomersAffected = dbs.CountDistinctRowsForSpecificColumn(dataSubsTable, "Username",
+//						Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(
+//								this.hierarchyProvided, fullDataHierarchyPath)));
+
 				String internetCustomersAffected = dbs.CountDistinctRowsForSpecificColumn(dataSubsTable, "Username",
-						Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(
+						Help_Func.HierarchyKeys(Help_Func.ReplaceHierarchyForSubscribersAffected(this.hierarchyProvided,
+								fullDataHierarchyPath)),
+						Help_Func.HierarchyValues(Help_Func
+								.ReplaceHierarchyForSubscribersAffected(this.hierarchyProvided, fullDataHierarchyPath)),
+						Help_Func.HierarchyStringTypes(Help_Func.ReplaceHierarchyForSubscribersAffected(
 								this.hierarchyProvided, fullDataHierarchyPath)));
+
 				this.internetCustomersAffected = internetCustomersAffected;
 
 				// Calculate Voice Customers Affected but replace column names in order to
@@ -95,7 +104,11 @@ public class Product
 				// Calculate CLIs Affected but replace column names in order to search table for
 				// customers affected
 				String CLIsAffected = dbs.CountDistinctRowsForSpecificColumn(voiceSubsTable, "CliValue",
-						Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(
+						Help_Func.HierarchyKeys(Help_Func.ReplaceHierarchyForSubscribersAffected(this.hierarchyProvided,
+								fullVoiceHierarchyPath)),
+						Help_Func.HierarchyValues(Help_Func.ReplaceHierarchyForSubscribersAffected(
+								this.hierarchyProvided, fullVoiceHierarchyPath)),
+						Help_Func.HierarchyStringTypes(Help_Func.ReplaceHierarchyForSubscribersAffected(
 								this.hierarchyProvided, fullVoiceHierarchyPath)));
 				this.CLIsAffected = CLIsAffected;
 
