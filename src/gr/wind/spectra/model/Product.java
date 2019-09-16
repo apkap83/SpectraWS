@@ -97,8 +97,13 @@ public class Product
 				// search table for customers affected
 				String voiceCustomersAffected = dbs.CountDistinctRowsForSpecificColumns(voiceSubsTable,
 						new String[] { "ActiveElement", "Subrack", "Slot", "Port", "PON" },
-						Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(
+						Help_Func.HierarchyKeys(Help_Func.ReplaceHierarchyForSubscribersAffected(this.hierarchyProvided,
+								fullVoiceHierarchyPath)),
+						Help_Func.HierarchyValues(Help_Func.ReplaceHierarchyForSubscribersAffected(
+								this.hierarchyProvided, fullVoiceHierarchyPath)),
+						Help_Func.HierarchyStringTypes(Help_Func.ReplaceHierarchyForSubscribersAffected(
 								this.hierarchyProvided, fullVoiceHierarchyPath)));
+
 				this.voiceCustomersAffected = voiceCustomersAffected;
 
 				// Calculate CLIs Affected but replace column names in order to search table for

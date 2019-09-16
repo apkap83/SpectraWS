@@ -355,8 +355,8 @@ public class DB_Operations extends Thread
 	 *
 	 */
 
-	public String CountDistinctRowsForSpecificColumns(String table, String[] columns, String predicate)
-			throws SQLException
+	public String CountDistinctRowsForSpecificColumns(String table, String[] columns, String[] predicateKeys,
+			String[] predicateValues, String[] predicateTypes) throws SQLException
 	{
 		String numOfRows = "";
 		String sqlQuery = "SELECT COUNT(*) AS Result FROM(SELECT DISTINCT ";
@@ -372,11 +372,23 @@ public class DB_Operations extends Thread
 			}
 		}
 
-		sqlQuery += " FROM " + table + " WHERE " + predicate + ") as AK ";
+		sqlQuery += " FROM " + table + " WHERE " + Help_Func.GenerateANDPredicateQuestionMarks(predicateKeys)
+				+ ") as AK ";
 
-		System.out.println("SQL Query: " + sqlQuery);
-
+		System.out.println(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
+
+		for (int i = 0; i < predicateKeys.length; i++)
+		{
+			if (predicateTypes[i].equals("String"))
+			{
+				pst.setString(i + 1, predicateValues[i]);
+			} else if (predicateTypes[i].equals("Integer"))
+			{
+				pst.setInt(i + 1, Integer.parseInt(predicateValues[i]));
+			}
+		}
+
 		pst.execute();
 		ResultSet rs = pst.executeQuery();
 
@@ -416,9 +428,9 @@ public class DB_Operations extends Thread
 	{
 		boolean found = false;
 		String table = "WSAccounts";
-		String sqlString = "SELECT * FROM `" + table + "`"; // + "` WHERE `UserName` = ? AND `Password` = ?";
+		String sqlString = "SELECT * FROM `" + table + "` WHERE `UserName` = ?";
 		PreparedStatement pst = conn.prepareStatement(sqlString);
-		// pst.setString(1, userName);
+		pst.setString(1, userName);
 		// pst.setString(2, password);
 		pst.execute();
 
@@ -426,39 +438,36 @@ public class DB_Operations extends Thread
 
 		while (rs.next())
 		{
-			String r_userName = rs.getString("UserName");
+			rs.getString("UserName");
 			String r_password = rs.getString("Password");
 
-			if (r_userName.equals(userName))
+			boolean passwordIsCorrect = false;
+			try
 			{
-				boolean passwordIsCorrect = false;
-				try
-				{
-					/**
-					 * Complete Implementation of Password hashing
-					 * https://stackoverflow.com/questions/2860943/how-can-i-hash-a-password-in-java
-					 * We are storing 'salt$iterated_hash(password, salt)'. The salt are 32 random
-					 * bytes and it's purpose is that if two different people choose the same
-					 * password, the stored passwords will still look different.
-					 */
-					passwordIsCorrect = Password.check(password, r_password);
+				/**
+				 * Complete Implementation of Password hashing
+				 * https://stackoverflow.com/questions/2860943/how-can-i-hash-a-password-in-java
+				 * We are storing 'salt$iterated_hash(password, salt)'. The salt are 32 random
+				 * bytes and it's purpose is that if two different people choose the same
+				 * password, the stored passwords will still look different.
+				 */
+				passwordIsCorrect = Password.check(password, r_password);
 
 //					System.out.println("password " + password);
 //					System.out.println("r_password " + r_password);
 //					System.out.println("passwordIsCorrect " + passwordIsCorrect);
-				} catch (Exception e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+			} catch (Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-				if (passwordIsCorrect)
-				{
-					found = true;
-				} else
-				{
-					found = false;
-				}
+			if (passwordIsCorrect)
+			{
+				found = true;
+			} else
+			{
+				found = false;
 			}
 		}
 		return found;

@@ -407,7 +407,11 @@ public class WebSpectra// implements WebSpectraInterface
 
 					String voiceCustomersAffected = wb.dbs.CountDistinctRowsForSpecificColumns(voiceSubsTable,
 							new String[] { "ActiveElement", "Subrack", "Slot", "Port", "PON" },
-							Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(
+							Help_Func.HierarchyKeys(Help_Func.ReplaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
+							Help_Func.HierarchyValues(Help_Func.ReplaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
+							Help_Func.HierarchyStringTypes(Help_Func.ReplaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
 
 					// For Voice no data customers are affected and vice versa
@@ -515,7 +519,11 @@ public class WebSpectra// implements WebSpectraInterface
 
 					String voiceCustomersAffected = wb.dbs.CountDistinctRowsForSpecificColumns(voiceSubsTable,
 							new String[] { "ActiveElement", "Subrack", "Slot", "Port", "PON" },
-							Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(
+							Help_Func.HierarchyKeys(Help_Func.ReplaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
+							Help_Func.HierarchyValues(Help_Func.ReplaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
+							Help_Func.HierarchyStringTypes(Help_Func.ReplaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
 
 					String CLIsAffected = wb.dbs.CountDistinctRowsForSpecificColumn(voiceSubsTable, "CliValue",
