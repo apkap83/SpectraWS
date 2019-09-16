@@ -86,7 +86,6 @@ public interface InterfaceWebSpectra
 			@WebParam(name = "SystemID") @XmlElement(required = true) String SystemID,
 			@WebParam(name = "UserID") @XmlElement(required = true) String UserID,
 			@WebParam(name = "IncidentID") @XmlElement(required = true) String IncidentID,
-			@WebParam(name = "OutageID") @XmlElement(required = true) String OutageID) throws InstantiationException,
-			IllegalAccessException, ClassNotFoundException, Exception, InvalidInputException;
+			@WebParam(name = "OutageID") @XmlElement(required = true) String OutageID) throws Exception;
 
 }
