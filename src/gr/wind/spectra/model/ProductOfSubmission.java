@@ -5,14 +5,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name = "Element")
-@XmlType(name = "basicStruct2", propOrder = { "outageID", "incidentID", "serviceAffected", "hierarchySelected",
-		"voiceCustomersAffected", "dataCustomersAffected", "CLIsAffected", "incidentVoiceCustomersAffected",
-		"incidentDataCustomersAffected", "activeDataCustomersAffected", "tvCustomersAffected", "statusCode",
-		"description" })
+@XmlType(name = "basicStruct2", propOrder = { "requestID", "outageID", "incidentID", "serviceAffected",
+		"hierarchySelected", "voiceCustomersAffected", "dataCustomersAffected", "CLIsAffected",
+		"incidentVoiceCustomersAffected", "incidentDataCustomersAffected", "activeDataCustomersAffected",
+		"tvCustomersAffected", "statusCode", "description" })
 
 public class ProductOfSubmission
 {
 
+	private String requestID;
 	private String outageID;
 	private String incidentID;
 	private String voiceCustomersAffected;
@@ -33,11 +34,12 @@ public class ProductOfSubmission
 	{
 	}
 
-	public ProductOfSubmission(String outageID, String incidentID, String voiceCustomersAffected,
+	public ProductOfSubmission(String requestID, String outageID, String incidentID, String voiceCustomersAffected,
 			String dataCustomersAffected, String CLIsAffected, String incidentVoiceCustomersAffected,
 			String incidentDataCustomersAffected, String statusCode, String serviceAffected, String hierarchySelected,
 			String description)
 	{
+		this.requestID = requestID;
 		this.incidentID = incidentID;
 		this.outageID = outageID;
 		this.voiceCustomersAffected = voiceCustomersAffected;
@@ -53,6 +55,17 @@ public class ProductOfSubmission
 
 		this.activeDataCustomersAffected = "0";
 		this.tvCustomersAffected = "0";
+	}
+
+	@XmlElement(name = "requestID")
+	public String getrequestID()
+	{
+		return this.requestID;
+	}
+
+	public void setrequestID(String requestID)
+	{
+		this.requestID = requestID;
 	}
 
 	@XmlElement(name = "activeDataCustomersAffected")

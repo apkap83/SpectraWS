@@ -37,10 +37,10 @@ public interface InterfaceWebSpectra
 	@WebResult(name = "Result")
 	List<ProductOfSubmission> submitOutage(@WebParam(name = "UserName", header = true, mode = Mode.IN) String UserName,
 			@WebParam(name = "Password", header = true, mode = Mode.IN) String Password,
+			@WebParam(name = "RequestID") @XmlElement(required = true) String RequestID,
 			@WebParam(name = "RequestTimestamp") @XmlElement(required = true) String RequestTimestamp,
 			@WebParam(name = "SystemID") @XmlElement(required = true) String SystemID,
 			@WebParam(name = "UserID") @XmlElement(required = true) String UserID,
-			// Defines Uniquely The Incident
 			@WebParam(name = "IncidentID") @XmlElement(required = true) String IncidentID,
 			@WebParam(name = "Scheduled") @XmlElement(required = true) String Scheduled,
 			@WebParam(name = "StartTime") @XmlElement(required = true) String StartTime,
@@ -59,7 +59,7 @@ public interface InterfaceWebSpectra
 	List<ProductOfGetOutage> getOutageStatus(
 			@WebParam(name = "UserName", header = true, mode = Mode.IN) String UserName,
 			@WebParam(name = "Password", header = true, mode = Mode.IN) String Password,
-			// Defines Uniquely The Incident
+			@WebParam(name = "RequestID") @XmlElement(required = true) String RequestID,
 			@WebParam(name = "IncidentID") @XmlElement(required = true) String IncidentID,
 			@WebParam(name = "IncidentStatus") @XmlElement(required = true) String IncidentStatus)
 			throws Exception, InvalidInputException;
@@ -68,6 +68,7 @@ public interface InterfaceWebSpectra
 	@WebResult(name = "Result")
 	ProductOfModify modifyOutage(@WebParam(name = "UserName", header = true, mode = Mode.IN) String UserName,
 			@WebParam(name = "Password", header = true, mode = Mode.IN) String Password,
+			@WebParam(name = "RequestID") @XmlElement(required = true) String RequestID,
 			@WebParam(name = "RequestTimestamp") @XmlElement(required = true) String RequestTimestamp,
 			@WebParam(name = "SystemID") @XmlElement(required = true) String SystemID,
 			@WebParam(name = "UserID") @XmlElement(required = true) String UserID,
@@ -84,6 +85,7 @@ public interface InterfaceWebSpectra
 	@WebResult(name = "Result")
 	ProductOfCloseOutage closeOutage(@WebParam(name = "UserName", header = true, mode = Mode.IN) String UserName,
 			@WebParam(name = "Password", header = true, mode = Mode.IN) String Password,
+			@WebParam(name = "RequestID") @XmlElement(required = true) String RequestID,
 			@WebParam(name = "RequestTimestamp") @XmlElement(required = true) String RequestTimestamp,
 			@WebParam(name = "SystemID") @XmlElement(required = true) String SystemID,
 			@WebParam(name = "UserID") @XmlElement(required = true) String UserID,

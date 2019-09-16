@@ -9,14 +9,14 @@ import javax.xml.bind.annotation.XmlType;
 import gr.wind.spectra.web.InvalidInputException;
 
 @XmlRootElement(name = "Element")
-@XmlType(name = "basicStruct3", propOrder = { "outageID", "incidentStatus", "requestTimestamp", "systemID", "userID",
-		"incidentID", "scheduled", "startTime", "endTime", "duration", "affectedServices", "impact", "priority",
-		"hierarchyselected", "affectedVoiceCustomers", "affectedDataCustomers", "affectedCLICustomers",
+@XmlType(name = "basicStruct3", propOrder = { "requestID", "outageID", "incidentStatus", "requestTimestamp", "systemID",
+		"userID", "incidentID", "scheduled", "startTime", "endTime", "duration", "affectedServices", "impact",
+		"priority", "hierarchyselected", "affectedVoiceCustomers", "affectedDataCustomers", "affectedCLICustomers",
 		"activeDataCustomersAffected", "tvCustomersAffected", "incidentAffectedVoiceCustomers",
 		"incidentAffectedDataCustomers" })
 public class ProductOfGetOutage
 {
-
+	private String requestID = "NULL";
 	private String outageID = "NULL";
 	private String incidentStatus = "NULL";
 	private String requestTimestamp = "NULL";
@@ -44,13 +44,17 @@ public class ProductOfGetOutage
 	{
 	}
 
-	public ProductOfGetOutage(String outageID, String incidentStatus, String requestTimestamp, String systemID,
-			String userID, String incidentID, String scheduled, String startTime, String endTime, String duration,
-			String affectedServices, String impact, String priority, String hierarchyselected,
+	public ProductOfGetOutage(String requestID, String outageID, String incidentStatus, String requestTimestamp,
+			String systemID, String userID, String incidentID, String scheduled, String startTime, String endTime,
+			String duration, String affectedServices, String impact, String priority, String hierarchyselected,
 			String AffectedVoiceCustomers, String AffectedDataCustomers, String AffectedCLICustomers,
 			String activeDataCustomersAffected, String tvCustomersAffected, String IncidentAffectedVoiceCustomers,
 			String IncidentAffectedDataCustomers) throws SQLException, InvalidInputException
 	{
+		if (requestID != null)
+		{
+			this.requestID = requestID;
+		}
 		if (outageID != null)
 		{
 			this.outageID = outageID;
@@ -138,6 +142,17 @@ public class ProductOfGetOutage
 			this.tvCustomersAffected = tvCustomersAffected;
 		}
 
+	}
+
+	@XmlElement(name = "requestID")
+	public String getrequestID()
+	{
+		return this.requestID;
+	}
+
+	public void setrequestID(String requestID)
+	{
+		this.requestID = requestID;
 	}
 
 	@XmlElement(name = "activeDataCustomersAffected")

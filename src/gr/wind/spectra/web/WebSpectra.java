@@ -53,11 +53,6 @@ public class WebSpectra implements InterfaceWebSpectra
 	@WebMethod()
 	@WebResult(name = "Result")
 	public List<ProductOfGetHierarchy> getHierarchy(
-			// @WebParam(targetNamespace="http://spectra.wind.gr/handler/", name="UserName",
-			// header = true, mode = Mode.IN) @XmlElement( required = true ) String
-			// UserName,
-			// @WebParam(targetNamespace="http://spectra.wind.gr/handler/", name="Password",
-			// header = true) @XmlElement( required = true ) String Password,
 			@WebParam(name = "UserName", header = true, mode = Mode.IN) String UserName,
 			@WebParam(name = "Password", header = true, mode = Mode.IN) String Password,
 			@WebParam(name = "RequestID") @XmlElement(required = true) String RequestID,
@@ -268,10 +263,10 @@ public class WebSpectra implements InterfaceWebSpectra
 	public List<ProductOfSubmission> submitOutage(
 			@WebParam(name = "UserName", header = true, mode = Mode.IN) String UserName,
 			@WebParam(name = "Password", header = true, mode = Mode.IN) String Password,
+			@WebParam(name = "RequestID") @XmlElement(required = true) String RequestID,
 			@WebParam(name = "RequestTimestamp") @XmlElement(required = true) String RequestTimestamp,
 			@WebParam(name = "SystemID") @XmlElement(required = true) String SystemID,
 			@WebParam(name = "UserID") @XmlElement(required = true) String UserID,
-			// Defines Uniquely The Incident
 			@WebParam(name = "IncidentID") @XmlElement(required = true) String IncidentID,
 			@WebParam(name = "Scheduled") @XmlElement(required = true) String Scheduled,
 			@WebParam(name = "StartTime") @XmlElement(required = true) String StartTime,
@@ -300,6 +295,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			}
 
 			// Check if Required fields are not empty and they contain the desired values
+			Help_Func.validateNotEmpty("RequestID", RequestID);
 			Help_Func.validateNotEmpty("RequestTimestamp", RequestTimestamp);
 			if (!Help_Func.checkIfEmpty("RequestTimestamp", RequestTimestamp))
 			{
@@ -579,7 +575,7 @@ public class WebSpectra implements InterfaceWebSpectra
 
 					if (Integer.parseInt(OutageID_String) > 0)
 					{
-						ProductOfSubmission ps = new ProductOfSubmission(OutageID_String, IncidentID,
+						ProductOfSubmission ps = new ProductOfSubmission(RequestID, OutageID_String, IncidentID,
 								voiceCustomersAffected, dataCustomersAffected, CLIsAffected,
 								Integer.toString(totalVoiceIncidentAffected),
 								Integer.toString(totalDataIncidentAffected), "1", service, myHier.get(i).toString(),
@@ -604,7 +600,7 @@ public class WebSpectra implements InterfaceWebSpectra
 	public List<ProductOfGetOutage> getOutageStatus(
 			@WebParam(name = "UserName", header = true, mode = Mode.IN) String UserName,
 			@WebParam(name = "Password", header = true, mode = Mode.IN) String Password,
-			// Defines Uniquely The Incident
+			@WebParam(name = "RequestID") @XmlElement(required = true) String RequestID,
 			@WebParam(name = "IncidentID") @XmlElement(required = true) String IncidentID,
 			@WebParam(name = "IncidentStatus") @XmlElement(required = true) String IncidentStatus)
 			throws Exception, InvalidInputException
@@ -669,7 +665,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			{
 				while (rs.next())
 				{
-					ProductOfGetOutage pg = new ProductOfGetOutage(rs.getString("OutageID"),
+					ProductOfGetOutage pg = new ProductOfGetOutage(RequestID, rs.getString("OutageID"),
 							rs.getString("IncidentStatus"), rs.getString("RequestTimestamp"), rs.getString("SystemID"),
 							rs.getString("UserID"), rs.getString("IncidentID"), rs.getString("Scheduled"),
 							rs.getString("StartTime"), rs.getString("EndTime"), rs.getString("Duration"),
@@ -696,6 +692,7 @@ public class WebSpectra implements InterfaceWebSpectra
 	@WebResult(name = "Result")
 	public ProductOfModify modifyOutage(@WebParam(name = "UserName", header = true, mode = Mode.IN) String UserName,
 			@WebParam(name = "Password", header = true, mode = Mode.IN) String Password,
+			@WebParam(name = "RequestID") @XmlElement(required = true) String RequestID,
 			@WebParam(name = "RequestTimestamp") @XmlElement(required = true) String RequestTimestamp,
 			@WebParam(name = "SystemID") @XmlElement(required = true) String SystemID,
 			@WebParam(name = "UserID") @XmlElement(required = true) String UserID,
@@ -722,6 +719,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			ProductOfModify pom = null;
 
 			// Check if Required fields are empty
+			Help_Func.validateNotEmpty("RequestID", RequestID);
 			Help_Func.validateNotEmpty("RequestTimestamp", RequestTimestamp);
 			Help_Func.validateDateTimeFormat("RequestTimestamp", RequestTimestamp);
 			Help_Func.validateNotEmpty("SystemID", SystemID);
@@ -828,10 +826,10 @@ public class WebSpectra implements InterfaceWebSpectra
 
 				if (numOfRowsUpdated == 1)
 				{
-					pom = new ProductOfModify(IncidentID, OutageID, "930", "Successfully Modified Incident");
+					pom = new ProductOfModify(RequestID, IncidentID, OutageID, "930", "Successfully Modified Incident");
 				} else
 				{
-					pom = new ProductOfModify(IncidentID, OutageID, "980", "Error modifying incident!");
+					pom = new ProductOfModify(RequestID, IncidentID, OutageID, "980", "Error modifying incident!");
 				}
 			} else
 			{
@@ -853,6 +851,7 @@ public class WebSpectra implements InterfaceWebSpectra
 	@WebResult(name = "Result")
 	public ProductOfCloseOutage closeOutage(@WebParam(name = "UserName", header = true, mode = Mode.IN) String UserName,
 			@WebParam(name = "Password", header = true, mode = Mode.IN) String Password,
+			@WebParam(name = "RequestID") @XmlElement(required = true) String RequestID,
 			@WebParam(name = "RequestTimestamp") @XmlElement(required = true) String RequestTimestamp,
 			@WebParam(name = "SystemID") @XmlElement(required = true) String SystemID,
 			@WebParam(name = "UserID") @XmlElement(required = true) String UserID,
@@ -874,6 +873,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			ProductOfCloseOutage poca = null;
 
 			// Check if Required fields are empty
+			Help_Func.validateNotEmpty("RequestID", RequestID);
 			Help_Func.validateNotEmpty("RequestTimestamp", RequestTimestamp);
 			Help_Func.validateDateTimeFormat("RequestTimestamp", RequestTimestamp);
 			Help_Func.validateNotEmpty("SystemID", SystemID);
@@ -905,10 +905,12 @@ public class WebSpectra implements InterfaceWebSpectra
 
 					if (numOfRowsUpdated == 1)
 					{
-						poca = new ProductOfCloseOutage(IncidentID, OutageID, "990", "Successfully Closed Incident");
+						poca = new ProductOfCloseOutage(RequestID, IncidentID, OutageID, "990",
+								"Successfully Closed Incident");
 					} else
 					{
-						poca = new ProductOfCloseOutage(IncidentID, OutageID, "423", "Error Closing Incident");
+						poca = new ProductOfCloseOutage(RequestID, IncidentID, OutageID, "423",
+								"Error Closing Incident");
 					}
 				} else // If incident is not in status OPEN
 				{
@@ -932,14 +934,17 @@ public class WebSpectra implements InterfaceWebSpectra
 		}
 	}
 
-	/*
-	 * public static void main(String args[]) throws Exception { WebSpectraInterface
-	 * ws = new WebSpectra(); List<String> myList = new ArrayList<String>();
-	 *
-	 * myList = ws.getFTTXHierarchy("ATHOARTMBOLT01", null, null, null, null);
-	 *
-	 * for (String item : myList) { System.out.println(item); }
-	 *
-	 * }
-	 */
+	public void NLU_Request(@WebParam(name = "UserName", header = true, mode = Mode.IN) String UserName,
+			@WebParam(name = "Password", header = true, mode = Mode.IN) String Password,
+			@WebParam(name = "SystemID") @XmlElement(required = true) String SystemID,
+			@WebParam(name = "RequestID") @XmlElement(required = true) String RequestID,
+			@WebParam(name = "RequestTimestamp") @XmlElement(required = true) String RequestTimestamp,
+			@WebParam(name = "CLI") @XmlElement(required = true) String CLI,
+			@WebParam(name = "Service") @XmlElement(required = true) String Service,
+			@WebParam(name = "ServiceL2") @XmlElement(required = true) String ServiceL2,
+			@WebParam(name = "ServiceL3") @XmlElement(required = true) String ServiceL3)
+	{
+
+	}
+
 }

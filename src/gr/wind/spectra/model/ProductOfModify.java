@@ -5,9 +5,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name = "Element")
-@XmlType(name = "basicStruct5", propOrder = { "incidentID", "outageID", "statusCode", "description" })
+@XmlType(name = "basicStruct5", propOrder = { "requestID", "incidentID", "outageID", "statusCode", "description" })
 public class ProductOfModify
 {
+	private String requestID;
 	private String incidentID;
 	private String outageID;
 	private String statusCode;
@@ -18,12 +19,24 @@ public class ProductOfModify
 
 	}
 
-	public ProductOfModify(String incidentID, String outageID, String statusCode, String description)
+	public ProductOfModify(String requestID, String incidentID, String outageID, String statusCode, String description)
 	{
+		this.requestID = requestID;
 		this.incidentID = incidentID;
 		this.outageID = outageID;
 		this.statusCode = statusCode;
 		this.description = description;
+	}
+
+	@XmlElement(name = "requestID")
+	public String getrequestID()
+	{
+		return this.requestID;
+	}
+
+	public void setrequestID(String requestID)
+	{
+		this.requestID = requestID;
 	}
 
 	@XmlElement(name = "incidentID")
