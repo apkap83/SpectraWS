@@ -20,7 +20,7 @@ public class DB_Connection
 	// Logger instance named "DB_Connection".
 	private static final Logger logger = LogManager.getLogger(DB_Connection.class);
 
-	public Connection Connect()
+	public Connection connect()
 			throws InvalidInputException, InstantiationException, IllegalAccessException, ClassNotFoundException
 	{
 		System.setProperty("javax.xml.soap.SAAJMetaFactory", "com.sun.xml.messaging.saaj.soap.SAAJMetaFactoryImpl");
@@ -71,7 +71,7 @@ public class DB_Connection
 
 	}
 
-	public boolean IsActive() throws Exception
+	public boolean isActive() throws Exception
 	{
 		if (conn.isValid(0))
 		{
@@ -96,7 +96,7 @@ public class DB_Connection
 		new ArrayList<String>();
 
 		DB_Connection conObj = new DB_Connection();
-		Connection conn = conObj.Connect();
+		Connection conn = conObj.connect();
 		new DB_Operations(conn);
 
 		// O P E R A T I O N S

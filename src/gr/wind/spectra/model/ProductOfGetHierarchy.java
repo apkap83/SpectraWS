@@ -67,14 +67,14 @@ public class ProductOfGetHierarchy
 			if (this.hierElements.length > 1)
 			{
 				// Get Root element from hierarchy
-				String rootElement = Help_Func.GetRootHierarchyNode(this.hierarchyProvided);
+				String rootElement = Help_Func.getRootHierarchyNode(this.hierarchyProvided);
 
 				// Firstly determine the hierarchy table that will be used based on the root
 				// hierarchy provided
-				String dataSubsTable = dbs.GetOneValue("HierarchyTablePerTechnology2", "DataSubscribersTableName",
+				String dataSubsTable = dbs.getOneValue("HierarchyTablePerTechnology2", "DataSubscribersTableName",
 						new String[] { "RootHierarchyNode" }, new String[] { rootElement }, new String[] { "String" });
 
-				String voiceSubsTable = dbs.GetOneValue("HierarchyTablePerTechnology2", "VoiceSubscribersTableName",
+				String voiceSubsTable = dbs.getOneValue("HierarchyTablePerTechnology2", "VoiceSubscribersTableName",
 						new String[] { "RootHierarchyNode" }, new String[] { rootElement }, new String[] { "String" });
 
 				// Calculate Internet Customers Affected but replace column names in order to
@@ -83,37 +83,37 @@ public class ProductOfGetHierarchy
 //						Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(
 //								this.hierarchyProvided, fullDataHierarchyPath)));
 
-				String internetCustomersAffected = dbs.CountDistinctRowsForSpecificColumn(dataSubsTable, "Username",
-						Help_Func.HierarchyKeys(Help_Func.ReplaceHierarchyForSubscribersAffected(this.hierarchyProvided,
+				String internetCustomersAffected = dbs.countDistinctRowsForSpecificColumn(dataSubsTable, "Username",
+						Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
 								fullDataHierarchyPath)),
-						Help_Func.HierarchyValues(Help_Func
-								.ReplaceHierarchyForSubscribersAffected(this.hierarchyProvided, fullDataHierarchyPath)),
-						Help_Func.HierarchyStringTypes(Help_Func.ReplaceHierarchyForSubscribersAffected(
+						Help_Func.hierarchyValues(Help_Func
+								.replaceHierarchyForSubscribersAffected(this.hierarchyProvided, fullDataHierarchyPath)),
+						Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
 								this.hierarchyProvided, fullDataHierarchyPath)));
 
 				this.internetCustomersAffected = internetCustomersAffected;
 
 				// Calculate Voice Customers Affected but replace column names in order to
 				// search table for customers affected
-				String voiceCustomersAffected = dbs.CountDistinctRowsForSpecificColumns(voiceSubsTable,
+				String voiceCustomersAffected = dbs.countDistinctRowsForSpecificColumns(voiceSubsTable,
 						new String[] { "ActiveElement", "Subrack", "Slot", "Port", "PON" },
-						Help_Func.HierarchyKeys(Help_Func.ReplaceHierarchyForSubscribersAffected(this.hierarchyProvided,
+						Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
 								fullVoiceHierarchyPath)),
-						Help_Func.HierarchyValues(Help_Func.ReplaceHierarchyForSubscribersAffected(
+						Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
 								this.hierarchyProvided, fullVoiceHierarchyPath)),
-						Help_Func.HierarchyStringTypes(Help_Func.ReplaceHierarchyForSubscribersAffected(
+						Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
 								this.hierarchyProvided, fullVoiceHierarchyPath)));
 
 				this.voiceCustomersAffected = voiceCustomersAffected;
 
 				// Calculate CLIs Affected but replace column names in order to search table for
 				// customers affected
-				String CLIsAffected = dbs.CountDistinctRowsForSpecificColumn(voiceSubsTable, "CliValue",
-						Help_Func.HierarchyKeys(Help_Func.ReplaceHierarchyForSubscribersAffected(this.hierarchyProvided,
+				String CLIsAffected = dbs.countDistinctRowsForSpecificColumn(voiceSubsTable, "CliValue",
+						Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
 								fullVoiceHierarchyPath)),
-						Help_Func.HierarchyValues(Help_Func.ReplaceHierarchyForSubscribersAffected(
+						Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
 								this.hierarchyProvided, fullVoiceHierarchyPath)),
-						Help_Func.HierarchyStringTypes(Help_Func.ReplaceHierarchyForSubscribersAffected(
+						Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
 								this.hierarchyProvided, fullVoiceHierarchyPath)));
 				this.CLIsAffected = CLIsAffected;
 
@@ -227,7 +227,7 @@ public class ProductOfGetHierarchy
 			} else if (this.hierElements.length >= 1)
 			{
 				// return this.hierarchyProvided + "->" + this.hierarchyFullPathList[0] + "=";
-				output = Help_Func.ConCatHierarchy(nodeNames, nodeValues, this.hierarchyFullPathList);
+				output = Help_Func.conCatHierarchy(nodeNames, nodeValues, this.hierarchyFullPathList);
 			}
 		}
 

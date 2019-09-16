@@ -20,7 +20,7 @@ public class Help_Func
 		return sdf.format(cal.getTime());
 	}
 
-	public static String ColumnsToInsertStatement(String[] columns)
+	public static String columnsToInsertStatement(String[] columns)
 	{
 		int numOfFields = columns.length;
 
@@ -42,7 +42,7 @@ public class Help_Func
 		return mystring;
 	}
 
-	public static String ValuesToInsertStatement(String[] values)
+	public static String valuesToInsertStatement(String[] values)
 
 	{
 		int numOfFields = values.length;
@@ -65,7 +65,7 @@ public class Help_Func
 		return mystring;
 	}
 
-	public static String GetTimeStamp()
+	public static String getTimeStamp()
 	{
 		Date date = new Date();
 		long time = date.getTime();
@@ -75,7 +75,7 @@ public class Help_Func
 		return Output;
 	}
 
-	public static String AssignSimilarANDPredicates(String[] predicates, String[] values)
+	public static String assignSimilarANDPredicates(String[] predicates, String[] values)
 	{
 
 		int numOfFields = predicates.length;
@@ -95,7 +95,7 @@ public class Help_Func
 		return mystring;
 	}
 
-	public static void ValidateDateTimeFormat(String fieldName, String dateInput)
+	public static void validateDateTimeFormat(String fieldName, String dateInput)
 			throws ParseException, InvalidInputException
 	{
 		try
@@ -109,7 +109,7 @@ public class Help_Func
 
 	}
 
-	public static void ValidateAgainstPredefinedValues(String fieldName, String fieldValue, String[] values)
+	public static void validateAgainstPredefinedValues(String fieldName, String fieldValue, String[] values)
 			throws InvalidInputException
 	{
 		boolean found = false;
@@ -129,7 +129,7 @@ public class Help_Func
 
 	}
 
-	public static void ValidateDelimitedValues(String fieldName, String fieldValue, String delimiter,
+	public static void validateDelimitedValues(String fieldName, String fieldValue, String delimiter,
 			String[] acceptedValues) throws InvalidInputException
 	{
 		// Split with pipe (|) delimiter
@@ -158,7 +158,7 @@ public class Help_Func
 		}
 	}
 
-	public static void ValidateIntegerOrEmptyValue(String fieldName, String valueOfField) throws InvalidInputException
+	public static void validateIntegerOrEmptyValue(String fieldName, String valueOfField) throws InvalidInputException
 	{
 		if (valueOfField.equals(""))
 		{
@@ -177,7 +177,7 @@ public class Help_Func
 
 	}
 
-	public static ArrayList<String> HierarchyStringToANDPredicates(String hierarchySelected)
+	public static ArrayList<String> hierarchyStringToANDPredicates(String hierarchySelected)
 	{
 		// hierarchySelected = FTTX=1|OLTElementName=Tolis
 
@@ -238,7 +238,7 @@ public class Help_Func
 		return myString;
 	}
 
-	public static boolean HierarchyHasMultipleSelections(String Hierarchy)
+	public static boolean hierarchyHasMultipleSelections(String Hierarchy)
 	{
 		String[] initialParts = Hierarchy.split("\\|");
 		if (initialParts.length > 1)
@@ -251,7 +251,7 @@ public class Help_Func
 	}
 
 	// FTTX=1->OLTElementName=ATHOKRDLOLT01->OltSlot=1|OltSlot=2&&OLT=1->OLTElementName=ATHOKRDLOLT01->OltSlot=3|OltSlot=4
-	public static java.util.List<String> GetHierarchySelections(String Hierarchy)
+	public static java.util.List<String> getHierarchySelections(String Hierarchy)
 	{
 
 		java.util.List<String> myList = new ArrayList<String>();
@@ -330,7 +330,7 @@ public class Help_Func
 		return myList;
 	}
 
-	public static String HierarchyToPredicate(String input)
+	public static String hierarchyToPredicate(String input)
 	{
 		String myPredicate = "";
 		String[] initialParts = input.split("->");
@@ -355,7 +355,7 @@ public class Help_Func
 		return myPredicate;
 	}
 
-	public static String[] HierarchyKeys(String input)
+	public static String[] hierarchyKeys(String input)
 	{
 		String[] initialParts = input.split("->");
 
@@ -376,7 +376,7 @@ public class Help_Func
 		return myArrayList.toArray(new String[0]);
 	}
 
-	public static String[] HierarchyValues(String input)
+	public static String[] hierarchyValues(String input)
 	{
 		String[] initialParts = input.split("->");
 
@@ -397,7 +397,7 @@ public class Help_Func
 		return myArrayList.toArray(new String[0]);
 	}
 
-	public static String[] HierarchyStringTypes(String input)
+	public static String[] hierarchyStringTypes(String input)
 	{
 		String[] initialParts = input.split("->");
 
@@ -418,7 +418,7 @@ public class Help_Func
 		return myArrayList.toArray(new String[0]);
 	}
 
-	public static String GetRootHierarchyNode(String input)
+	public static String getRootHierarchyNode(String input)
 	{
 		String[] initialParts = input.split("->");
 
@@ -433,13 +433,13 @@ public class Help_Func
 		}
 	}
 
-	public static ArrayList<String> SplitHierarchy(String Hierarchy)
+	public static ArrayList<String> splitHierarchy(String Hierarchy)
 	{
 
 		return null;
 	}
 
-	public static String ConCatHierarchy(String[] nodeNames, String[] nodeValues, String[] hierarchyFullPathList)
+	public static String conCatHierarchy(String[] nodeNames, String[] nodeValues, String[] hierarchyFullPathList)
 	{
 		String UniqueCharSequence = "->";
 		int numOfFields = nodeNames.length;
@@ -503,7 +503,7 @@ public class Help_Func
 		}
 	}
 
-	public static String ReplaceHierarchyForSubscribersAffected(String hierarchy, String[] subsHierarchy)
+	public static String replaceHierarchyForSubscribersAffected(String hierarchy, String[] subsHierarchy)
 			throws InvalidInputException
 	{
 		String[] hierarchyItems = hierarchy.split("->");
@@ -554,7 +554,7 @@ public class Help_Func
 		return outputHierarchy;
 	}
 
-	public static void ValidateNotEmpty(String fieldName, String value) throws InvalidInputException
+	public static void validateNotEmpty(String fieldName, String value) throws InvalidInputException
 	{
 		if (value.isEmpty() || value.equals("?"))
 		{
@@ -576,7 +576,7 @@ public class Help_Func
 		return emptiness;
 	}
 
-	public static void CheckColumnsOfHierarchyVSFullHierarchy(String hierarchy, String fullHierarchyFromDB)
+	public static void checkColumnsOfHierarchyVSFullHierarchy(String hierarchy, String fullHierarchyFromDB)
 			throws InvalidInputException
 	{
 		String[] hierarchyItems = hierarchy.split("->");
@@ -606,7 +606,7 @@ public class Help_Func
 		}
 	}
 
-	public static String GenerateANDPredicateQuestionMarks(String predicateColumns[])
+	public static String generateANDPredicateQuestionMarks(String predicateColumns[])
 	{
 		String output = "";
 
@@ -629,7 +629,7 @@ public class Help_Func
 		return output;
 	}
 
-	public static String GenerateCommaPredicateQuestionMarks(String predicateColumns[])
+	public static String generateCommaPredicateQuestionMarks(String predicateColumns[])
 	{
 		String output = "";
 		for (int i = 0; i < predicateColumns.length; i++)
@@ -683,7 +683,7 @@ public class Help_Func
 		// System.out.println(Help_Func.ConCatHierarchy(nodeNamesArrayList,
 		// nodeValuesArrayList, hierarchyFullPathList));
 
-		System.out.println(GenerateANDPredicateQuestionMarks(new String[] { "a", "b", "c", "d" }));
+		System.out.println(generateANDPredicateQuestionMarks(new String[] { "a", "b", "c", "d" }));
 	}
 
 }

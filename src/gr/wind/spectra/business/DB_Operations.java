@@ -72,12 +72,12 @@ public class DB_Operations extends Thread
 		return found;
 	}
 
-	public boolean InsertValuesInTable(String table, String[] columnNames, String[] columnValues, String[] types)
+	public boolean insertValuesInTable(String table, String[] columnNames, String[] columnValues, String[] types)
 			throws SQLException, ParseException
 	{
 		boolean statusOfOperation = false;
-		String sqlString = "INSERT INTO " + table + Help_Func.ColumnsToInsertStatement(columnNames)
-				+ Help_Func.ValuesToInsertStatement(columnValues);
+		String sqlString = "INSERT INTO " + table + Help_Func.columnsToInsertStatement(columnNames)
+				+ Help_Func.valuesToInsertStatement(columnValues);
 		System.out.println(sqlString);
 		PreparedStatement pst = conn.prepareStatement(sqlString, Statement.RETURN_GENERATED_KEYS);
 
@@ -122,7 +122,7 @@ public class DB_Operations extends Thread
 		return statusOfOperation;
 	}
 
-	public int GetMaxIntegerValue(String table, String columnName) throws SQLException
+	public int getMaxIntegerValue(String table, String columnName) throws SQLException
 	{
 		int returnValue = 0;
 		String sqlString = "SELECT MAX(" + columnName + ") FROM " + table;
@@ -138,13 +138,13 @@ public class DB_Operations extends Thread
 		return returnValue;
 	}
 
-	public boolean CheckIfCriteriaExists(String table, String[] predicateKeys, String[] predicateValues,
+	public boolean checkIfCriteriaExists(String table, String[] predicateKeys, String[] predicateValues,
 			String[] predicateTypes) throws SQLException
 	{
 		boolean criteriaIfExists = false;
 
 		String sqlQuery = "SELECT COUNT(*) as Result FROM " + table + " WHERE "
-				+ Help_Func.GenerateANDPredicateQuestionMarks(predicateKeys);
+				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
 		System.out.println(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 		ResultSet rs = null;
@@ -171,11 +171,11 @@ public class DB_Operations extends Thread
 		return criteriaIfExists;
 	}
 
-	public String GetOneValue(String table, String columnName, String[] predicateKeys, String[] predicateValues,
+	public String getOneValue(String table, String columnName, String[] predicateKeys, String[] predicateValues,
 			String[] predicateTypes) throws SQLException
 	{
 		String sqlQuery = "SELECT " + columnName + " FROM " + table + " WHERE "
-				+ Help_Func.GenerateANDPredicateQuestionMarks(predicateKeys);
+				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
 		System.out.println(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 
@@ -195,7 +195,7 @@ public class DB_Operations extends Thread
 		return rs.getString(columnName);
 	}
 
-	public List<String> GetOneColumnUniqueResultSet(String table, String columnName, String[] predicateKeys,
+	public List<String> getOneColumnUniqueResultSet(String table, String columnName, String[] predicateKeys,
 			String[] predicateValues, String[] predicateTypes) throws SQLException
 	{
 		// Example: select DISTINCT ID from table where a = 2 and b = 3
@@ -203,7 +203,7 @@ public class DB_Operations extends Thread
 		List<String> myList = new ArrayList<String>();
 
 		String sqlString = "SELECT DISTINCT `" + columnName + "` FROM `" + table + "` WHERE "
-				+ Help_Func.GenerateANDPredicateQuestionMarks(predicateKeys);
+				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
 		System.out.println(sqlString);
 		PreparedStatement pst = conn.prepareStatement(sqlString);
 
@@ -244,13 +244,13 @@ public class DB_Operations extends Thread
 		return myList;
 	}
 
-	public int UpdateValuesForOneColumn(String table, String setColumnName, String newValue, String[] predicateKeys,
+	public int updateValuesForOneColumn(String table, String setColumnName, String newValue, String[] predicateKeys,
 			String[] predicateValues, String[] predicateTypes) throws SQLException
 	{
 		// Example: update TestTable set `Name` = 100 where Surname = "Kapetanios";
 
 		String sqlString = "update `" + table + "` set `" + setColumnName + "` = '" + newValue + "' WHERE "
-				+ Help_Func.GenerateANDPredicateQuestionMarks(predicateKeys);
+				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
 		System.out.println(sqlString);
 		PreparedStatement pst = conn.prepareStatement(sqlString);
 
@@ -271,12 +271,12 @@ public class DB_Operations extends Thread
 
 	}
 
-	public String NumberOfRowsFound(String table, String[] predicateKeys, String[] predicateValues,
+	public String numberOfRowsFound(String table, String[] predicateKeys, String[] predicateValues,
 			String[] predicateTypes) throws SQLException
 	{
 		int numOfRows = 0;
 		String sqlQuery = "SELECT *" + " FROM " + table + " WHERE "
-				+ Help_Func.GenerateANDPredicateQuestionMarks(predicateKeys);
+				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
 		System.out.println(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 
@@ -302,12 +302,12 @@ public class DB_Operations extends Thread
 		return Integer.toString(numOfRows);
 	}
 
-	public String CountDistinctRowsForSpecificColumn(String table, String column, String[] predicateKeys,
+	public String countDistinctRowsForSpecificColumn(String table, String column, String[] predicateKeys,
 			String[] predicateValues, String[] predicateTypes) throws SQLException
 	{
 		String numOfRows = "";
 		String sqlQuery = "SELECT COUNT(DISTINCT(" + column + ")) as " + column + " FROM " + table + " WHERE "
-				+ Help_Func.GenerateANDPredicateQuestionMarks(predicateKeys);
+				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
 		System.out.println(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 
@@ -341,7 +341,7 @@ public class DB_Operations extends Thread
 	 *
 	 */
 
-	public String CountDistinctRowsForSpecificColumns(String table, String[] columns, String[] predicateKeys,
+	public String countDistinctRowsForSpecificColumns(String table, String[] columns, String[] predicateKeys,
 			String[] predicateValues, String[] predicateTypes) throws SQLException
 	{
 		String numOfRows = "";
@@ -358,7 +358,7 @@ public class DB_Operations extends Thread
 			}
 		}
 
-		sqlQuery += " FROM " + table + " WHERE " + Help_Func.GenerateANDPredicateQuestionMarks(predicateKeys)
+		sqlQuery += " FROM " + table + " WHERE " + Help_Func.generateANDPredicateQuestionMarks(predicateKeys)
 				+ ") as AK ";
 
 		System.out.println(sqlQuery);
@@ -385,11 +385,11 @@ public class DB_Operations extends Thread
 		return numOfRows;
 	}
 
-	public ResultSet GetRows(String table, String[] columnNames, String[] predicateKeys, String[] predicateValues,
+	public ResultSet getRows(String table, String[] columnNames, String[] predicateKeys, String[] predicateValues,
 			String[] predicateTypes) throws SQLException
 	{
 		String sqlQuery = "SELECT " + Help_Func.columnsWithCommas(columnNames) + " FROM " + table + " WHERE "
-				+ Help_Func.GenerateANDPredicateQuestionMarks(predicateKeys);
+				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
 
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 		for (int i = 0; i < predicateKeys.length; i++)
@@ -410,7 +410,7 @@ public class DB_Operations extends Thread
 		return rs;
 	}
 
-	public boolean AuthenticateRequest(String userName, String password) throws SQLException
+	public boolean authenticateRequest(String userName, String password) throws SQLException
 	{
 		boolean found = false;
 		String table = "WSAccounts";
@@ -459,12 +459,12 @@ public class DB_Operations extends Thread
 		return found;
 	}
 
-	public String MaxNumberOfCustomersAffected(String table, String SumOfColumn, String[] predicateColumns,
+	public String maxNumberOfCustomersAffected(String table, String SumOfColumn, String[] predicateColumns,
 			String[] predicateValues) throws SQLException
 	{
 		String numOfRows = "";
 		String sqlQuery = "SELECT MAX(" + SumOfColumn + ") as Result FROM " + table + " WHERE "
-				+ Help_Func.GenerateANDPredicateQuestionMarks(predicateColumns);
+				+ Help_Func.generateANDPredicateQuestionMarks(predicateColumns);
 		System.out.println(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 
@@ -483,7 +483,7 @@ public class DB_Operations extends Thread
 		return numOfRows;
 	}
 
-	public int UpdateColumnOnSpecificCriteria(String tableName, String[] columnNamesForUpdate,
+	public int updateColumnOnSpecificCriteria(String tableName, String[] columnNamesForUpdate,
 			String[] columnValuesForUpdate, String[] setColumnDataTypes, String[] predicateColumns,
 			String[] predicateValues, String[] predicateColumnsDataTypes) throws SQLException, InvalidInputException
 	{
@@ -491,8 +491,8 @@ public class DB_Operations extends Thread
 		// update SmartOutageDB.SubmittedIncidents set Duration = '2' where OutageID =
 		// '5' and IncidentID = 'INC1';
 		String sqlQuery = "UPDATE " + tableName + " SET "
-				+ Help_Func.GenerateCommaPredicateQuestionMarks(columnNamesForUpdate) + " WHERE "
-				+ Help_Func.GenerateANDPredicateQuestionMarks(predicateColumns);
+				+ Help_Func.generateCommaPredicateQuestionMarks(columnNamesForUpdate) + " WHERE "
+				+ Help_Func.generateANDPredicateQuestionMarks(predicateColumns);
 		System.out.println(sqlQuery);
 
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
