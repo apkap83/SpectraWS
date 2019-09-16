@@ -21,8 +21,8 @@ import gr.wind.spectra.model.ProductOfGetOutage;
 import gr.wind.spectra.model.ProductOfModify;
 import gr.wind.spectra.model.ProductOfSubmission;
 
-@WebService // (endpointInterface = "gr.wind.spectra.web.WebSpectraInterface")
-public class WebSpectra// implements WebSpectraInterface
+@WebService(endpointInterface = "gr.wind.spectra.web.InterfaceWebSpectra")
+public class WebSpectra implements InterfaceWebSpectra
 {
 	private static final String hierSep = "->";
 	DB_Connection conObj;
@@ -48,6 +48,7 @@ public class WebSpectra// implements WebSpectraInterface
 		}
 	}
 
+	@Override
 	@WebMethod()
 	@WebResult(name = "Result")
 	public List<ProductOfGetHierarchy> getHierarchy(
@@ -260,6 +261,7 @@ public class WebSpectra// implements WebSpectraInterface
 
 	}
 
+	@Override
 	@WebMethod
 	@WebResult(name = "Result")
 	public List<ProductOfSubmission> submitOutage(
@@ -595,6 +597,7 @@ public class WebSpectra// implements WebSpectraInterface
 		}
 	}
 
+	@Override
 	@WebMethod
 	@WebResult(name = "Result")
 	public List<ProductOfGetOutage> getOutageStatus(
@@ -686,6 +689,7 @@ public class WebSpectra// implements WebSpectraInterface
 		}
 	}
 
+	@Override
 	@WebMethod
 	@WebResult(name = "Result")
 	public ProductOfModify modifyOutage(@WebParam(name = "UserName", header = true, mode = Mode.IN) String UserName,
@@ -841,6 +845,7 @@ public class WebSpectra// implements WebSpectraInterface
 		}
 	}
 
+	@Override
 	@WebMethod
 	@WebResult(name = "Result")
 	public ProductOfCloseOutage closeOutage(@WebParam(name = "UserName", header = true, mode = Mode.IN) String UserName,

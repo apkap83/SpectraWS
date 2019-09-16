@@ -12,15 +12,14 @@ import gr.wind.spectra.business.Help_Func;
 import gr.wind.spectra.web.InvalidInputException;
 
 @XmlRootElement(name = "Element")
-@XmlType(name = "basicStruct", propOrder = { "requestID", "type", "item", "hierarchySelected",
-		"internetCustomersAffected", "voiceCustomersAffected", "clisAffected", "activeDataCustomersAffected",
-		"tvCustomersAffected" })
+@XmlType(name = "basicStruct", propOrder = { "requestID", "type", "item", "hierarchySelected", "dataCustomersAffected",
+		"voiceCustomersAffected", "clisAffected", "activeDataCustomersAffected", "tvCustomersAffected" })
 public class ProductOfGetHierarchy
 {
 
 	private String type;
 	private List<String> items;
-	private String internetCustomersAffected = "none";
+	private String dataCustomersAffected = "none";
 	private String voiceCustomersAffected = "none";
 	private String CLIsAffected = "none";
 
@@ -77,13 +76,10 @@ public class ProductOfGetHierarchy
 				String voiceSubsTable = dbs.getOneValue("HierarchyTablePerTechnology2", "VoiceSubscribersTableName",
 						new String[] { "RootHierarchyNode" }, new String[] { rootElement }, new String[] { "String" });
 
-				// Calculate Internet Customers Affected but replace column names in order to
+				// Calculate data Customers Affected but replace column names in order to
 				// search table for customers affected
-//				String internetCustomersAffected = dbs.CountDistinctRowsForSpecificColumn(dataSubsTable, "Username",
-//						Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(
-//								this.hierarchyProvided, fullDataHierarchyPath)));
 
-				String internetCustomersAffected = dbs.countDistinctRowsForSpecificColumn(dataSubsTable, "Username",
+				String dataCustomersAffected = dbs.countDistinctRowsForSpecificColumn(dataSubsTable, "Username",
 						Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
 								fullDataHierarchyPath)),
 						Help_Func.hierarchyValues(Help_Func
@@ -91,7 +87,7 @@ public class ProductOfGetHierarchy
 						Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
 								this.hierarchyProvided, fullDataHierarchyPath)));
 
-				this.internetCustomersAffected = internetCustomersAffected;
+				this.dataCustomersAffected = dataCustomersAffected;
 
 				// Calculate Voice Customers Affected but replace column names in order to
 				// search table for customers affected
@@ -168,15 +164,15 @@ public class ProductOfGetHierarchy
 		this.requestID = requestID;
 	}
 
-	@XmlElement(name = "internetCustomersAffected")
-	public String getinternetCustomersAffected()
+	@XmlElement(name = "dataCustomersAffected")
+	public String getdataCustomersAffected()
 	{
-		return internetCustomersAffected;
+		return dataCustomersAffected;
 	}
 
-	public void setinternetCustomersAffected(String internetCustomersAffected)
+	public void setdataCustomersAffected(String dataCustomersAffected)
 	{
-		this.internetCustomersAffected = internetCustomersAffected;
+		this.dataCustomersAffected = dataCustomersAffected;
 	}
 
 	@XmlElement(name = "voiceCustomersAffected")
