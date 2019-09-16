@@ -355,6 +355,69 @@ public class Help_Func
 		return myPredicate;
 	}
 
+	public static String[] HierarchyKeys(String input)
+	{
+		String[] initialParts = input.split("->");
+
+		ArrayList<String> myArrayList = new ArrayList<String>();
+
+		if (initialParts.length == 1)
+		{
+			return new String[] {};
+		}
+
+		for (int i = 1; i < initialParts.length; i++)
+		{
+			String[] secondaryParts = initialParts[i].split("=");
+
+			myArrayList.add(secondaryParts[0]);
+		}
+
+		return myArrayList.toArray(new String[0]);
+	}
+
+	public static String[] HierarchyValues(String input)
+	{
+		String[] initialParts = input.split("->");
+
+		ArrayList<String> myArrayList = new ArrayList<String>();
+
+		if (initialParts.length == 1)
+		{
+			return new String[] {};
+		}
+
+		for (int i = 1; i < initialParts.length; i++)
+		{
+			String[] secondaryParts = initialParts[i].split("=");
+
+			myArrayList.add(secondaryParts[1]);
+		}
+
+		return myArrayList.toArray(new String[0]);
+	}
+
+	public static String[] HierarchyStringTypes(String input)
+	{
+		String[] initialParts = input.split("->");
+
+		ArrayList<String> myArrayList = new ArrayList<String>();
+
+		if (initialParts.length == 1)
+		{
+			return new String[] {};
+		}
+
+		for (int i = 1; i < initialParts.length; i++)
+		{
+			initialParts[i].split("=");
+
+			myArrayList.add("String");
+		}
+
+		return myArrayList.toArray(new String[0]);
+	}
+
 	public static String GetRootHierarchyNode(String input)
 	{
 		String[] initialParts = input.split("->");
@@ -546,17 +609,23 @@ public class Help_Func
 	public static String GenerateANDPredicateQuestionMarks(String predicateColumns[])
 	{
 		String output = "";
-		for (int i = 0; i < predicateColumns.length; i++)
-		{
-			if (i < predicateColumns.length - 1)
-			{
-				output = output + "`" + predicateColumns[i] + "` = ? AND ";
-			} else
-			{
-				output = output + "`" + predicateColumns[i] + "` = ?";
-			}
-		}
 
+		if (predicateColumns.length != 0)
+		{
+			for (int i = 0; i < predicateColumns.length; i++)
+			{
+				if (i < predicateColumns.length - 1)
+				{
+					output = output + "`" + predicateColumns[i] + "` = ? AND ";
+				} else
+				{
+					output = output + "`" + predicateColumns[i] + "` = ?";
+				}
+			}
+		} else
+		{
+			output = "1 = 1";
+		}
 		return output;
 	}
 

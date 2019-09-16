@@ -85,6 +85,8 @@ public class WebSpectra// implements WebSpectraInterface
 				throw new InvalidInputException("User name or Password incorrect!", "Error 100");
 			}
 
+			wb.dbs.start();
+
 			// Check if Required fields are empty
 			Help_Func.ValidateNotEmpty("RequestID", RequestID);
 			Help_Func.ValidateNotEmpty("SystemID", SystemID);
@@ -99,8 +101,14 @@ public class WebSpectra// implements WebSpectraInterface
 			// No Hierarchy is given - returns root elements
 			if (Hierarchy == null || Hierarchy.equals("") || Hierarchy.equals("?"))
 			{
+				// ElementsList =
+				// wb.dbs.GetOneColumnUniqueResultSet("HierarchyTablePerTechnology2",
+				// "RootHierarchyNode",
+				// "1 = 1");
+
 				ElementsList = wb.dbs.GetOneColumnUniqueResultSet("HierarchyTablePerTechnology2", "RootHierarchyNode",
-						"1 = 1");
+						new String[] {}, new String[] {}, new String[] {});
+
 				String[] nodeNames = new String[] {};
 				String[] nodeValues = new String[] {};
 				Product pr = new Product(wb.dbs, new String[] {}, new String[] {}, new String[] {}, Hierarchy,
@@ -116,12 +124,14 @@ public class WebSpectra// implements WebSpectraInterface
 
 				// Get Hierarchy Table for that root hierarchy
 				String table = wb.dbs.GetOneValue("HierarchyTablePerTechnology2", "HierarchyTableName",
-						"RootHierarchyNode = '" + rootElementInHierarchy + "'");
+						new String[] { "RootHierarchyNode" }, new String[] { rootElementInHierarchy },
+						new String[] { "String" });
 
 				// Get Hierarchy data in style :
 				// OltElementName->OltSlot->OltPort->Onu->ElementName->Slot
 				String fullHierarchyFromDB = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-						"HierarchyTableNamePath", "RootHierarchyNode = '" + rootElementInHierarchy + "'");
+						"HierarchyTableNamePath", new String[] { "RootHierarchyNode" },
+						new String[] { rootElementInHierarchy }, new String[] { "String" });
 
 				// Check Columns of Hierarchy against fullHierarchy (avoid wrong key values in
 				// hierarchy e.g. SiteNa7me=AKADIMIAS)
@@ -133,7 +143,8 @@ public class WebSpectra// implements WebSpectraInterface
 				// Get Full Internet hierarchy in style :
 				// OltElementName->OltSlot->OltPort->Onu->ActiveElement->Slot
 				String fullDataSubsHierarchyFromDB = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-						"DataSubscribersTableNamePath", "RootHierarchyNode = '" + rootElementInHierarchy + "'");
+						"DataSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
+						new String[] { rootElementInHierarchy }, new String[] { "String" });
 
 				// Split the Internet hierarchy retrieved from DB into fields
 				String[] fullDataSubsHierarchyFromDBSplit = fullDataSubsHierarchyFromDB.split("->");
@@ -141,7 +152,8 @@ public class WebSpectra// implements WebSpectraInterface
 				// Get Full Voice hierarchy in style :
 				// OltElementName->OltSlot->OltPort->Onu->ActiveElement->Slot
 				String fullVoiceSubsHierarchyFromDB = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-						"VoiceSubscribersTableNamePath", "RootHierarchyNode = '" + rootElementInHierarchy + "'");
+						"VoiceSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
+						new String[] { rootElementInHierarchy }, new String[] { "String" });
 
 				// Split the Internet hierarchy retrieved from DB into fields
 				String[] fullVoiceSubsHierarchyFromDBSplit = fullVoiceSubsHierarchyFromDB.split("->");
@@ -160,7 +172,12 @@ public class WebSpectra// implements WebSpectraInterface
 				// If only root Hierarchy is given
 				if (hierItemsGiven.length == 1)
 				{
-					ElementsList = wb.dbs.GetOneColumnUniqueResultSet(table, fullHierarchyFromDBSplit[0], " 1 = 1 ");
+					// ElementsList = wb.dbs.GetOneColumnUniqueResultSet(table,
+					// fullHierarchyFromDBSplit[0], " 1 = 1 ");
+
+					ElementsList = wb.dbs.GetOneColumnUniqueResultSet(table, fullHierarchyFromDBSplit[0],
+							new String[] {}, new String[] {}, new String[] {});
+
 					String[] nodeNames = new String[] { rootElementInHierarchy };
 					String[] nodeValues = new String[] { "1" };
 					Product pr = new Product(wb.dbs, fullHierarchyFromDBSplit, fullDataSubsHierarchyFromDBSplit,
@@ -189,9 +206,16 @@ public class WebSpectra// implements WebSpectraInterface
 							nodeValuesArrayList.add(keyValue[1]);
 						}
 
+						// ElementsList = wb.dbs.GetOneColumnUniqueResultSet(table,
+						// fullHierarchyFromDBSplit[hierItemsGiven.length - 1],
+						// Help_Func.HierarchyToPredicate(Hierarchy));
+
 						ElementsList = wb.dbs.GetOneColumnUniqueResultSet(table,
 								fullHierarchyFromDBSplit[hierItemsGiven.length - 1],
-								Help_Func.HierarchyToPredicate(Hierarchy));
+								Help_Func.HierarchyKeys(fullHierarchyFromDBSplit[hierItemsGiven.length - 1]),
+								Help_Func.HierarchyValues(fullHierarchyFromDBSplit[hierItemsGiven.length - 1]),
+								Help_Func.HierarchyStringTypes(fullHierarchyFromDBSplit[hierItemsGiven.length - 1]));
+
 						String[] nodeNames = nodeNamesArrayList.toArray(new String[nodeNamesArrayList.size()]);
 						String[] nodeValues = nodeValuesArrayList.toArray(new String[nodeValuesArrayList.size()]);
 						Product pr = new Product(wb.dbs, fullHierarchyFromDBSplit, fullDataSubsHierarchyFromDBSplit,
@@ -343,7 +367,8 @@ public class WebSpectra// implements WebSpectraInterface
 					// Get Hierarchy data in style :
 					// OltElementName->OltSlot->OltPort->Onu->ElementName->Slot
 					String fullHierarchyFromDB = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-							"HierarchyTableNamePath", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+							"HierarchyTableNamePath", new String[] { "RootHierarchyNode" },
+							new String[] { rootHierarchySelected }, new String[] { "String" });
 
 					// Check Columns of Hierarchy against fullHierarchy (avoid wrong key values in
 					// hierarchy e.g. SiteNa7me=AKADIMIAS)
@@ -351,23 +376,35 @@ public class WebSpectra// implements WebSpectraInterface
 
 					// Determine Tables for Data/Voice subscribers
 					String dataSubsTable = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-							"DataSubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+							"DataSubscribersTableName", new String[] { "RootHierarchyNode" },
+							new String[] { rootHierarchySelected }, new String[] { "String" });
+
 					String voiceSubsTable = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-							"VoiceSubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+							"VoiceSubscribersTableName", new String[] { "RootHierarchyNode" },
+							new String[] { rootHierarchySelected }, new String[] { "String" });
 
 					// Get Hierarchies for Data/Voice Tables
 					String fullDataHierarchyPath = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-							"DataSubscribersTableNamePath", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+							"DataSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
+							new String[] { rootHierarchySelected }, new String[] { "String" });
+
 					String[] fullDataHierarchyPathSplit = fullDataHierarchyPath.split("->");
 
 					String fullVoiceHierarchyPath = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-							"VoiceSubscribersTableNamePath", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+							"VoiceSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
+							new String[] { rootHierarchySelected }, new String[] { "String" });
+
 					String[] fullVoiceHierarchyPathSplit = fullVoiceHierarchyPath.split("->");
 
 					// Count distinct values of Usernames or CliVlaues in the respective columns
 					String dataCustomersAffected = wb.dbs.CountDistinctRowsForSpecificColumn(dataSubsTable, "Username",
-							Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(
+							Help_Func.HierarchyKeys(Help_Func.ReplaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullDataHierarchyPathSplit)),
+							Help_Func.HierarchyValues(Help_Func.ReplaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullDataHierarchyPathSplit)),
+							Help_Func.HierarchyStringTypes(Help_Func.ReplaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullDataHierarchyPathSplit)));
+
 					String voiceCustomersAffected = wb.dbs.CountDistinctRowsForSpecificColumns(voiceSubsTable,
 							new String[] { "ActiveElement", "Subrack", "Slot", "Port", "PON" },
 							Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(
@@ -398,8 +435,9 @@ public class WebSpectra// implements WebSpectraInterface
 				{
 					boolean incidentAlreadyExists = wb.dbs.CheckIfCriteriaExists("SubmittedIncidents",
 							new String[] { "IncidentStatus", "IncidentID", "AffectedServices", "HierarchySelected" },
-							"IncidentStatus='OPEN' AND IncidentID = '" + IncidentID + "' AND AffectedServices = '"
-									+ service + "' AND HierarchySelected = '" + myHier.get(i).toString() + "'");
+							new String[] { "OPEN", IncidentID, service, myHier.get(i).toString() },
+							new String[] { "String", "String", "String", "String" });
+
 					if (incidentAlreadyExists)
 					{
 						throw new InvalidInputException("There is already an openned incident (" + IncidentID
@@ -409,13 +447,14 @@ public class WebSpectra// implements WebSpectraInterface
 				}
 			}
 
-			// Calculate Sum of Voice/Data Customers affected for potentially already opened
+			// Calculate Sum of Voice/Data Customers affected for potentially already
+			// openned
 			// same incident
 			String numberOfVoiceCustAffectedFromPreviousIncidents = "0";
 			String numberOfDataCustAffectedFromPreviousIncidents = "0";
 
 			if (wb.dbs.CheckIfCriteriaExists("SubmittedIncidents", new String[] { "IncidentID" },
-					"`IncidentID` = '" + IncidentID + "'"))
+					new String[] { IncidentID }, new String[] { "String" }))
 			{
 				numberOfVoiceCustAffectedFromPreviousIncidents = wb.dbs.MaxNumberOfCustomersAffected(
 						"SubmittedIncidents", "IncidentAffectedVoiceCustomers", new String[] { "IncidentID" },
@@ -446,28 +485,45 @@ public class WebSpectra// implements WebSpectraInterface
 
 					// Determine Tables for Data/Voice subscribers
 					String dataSubsTable = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-							"DataSubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+							"DataSubscribersTableName", new String[] { "RootHierarchyNode" },
+							new String[] { rootHierarchySelected }, new String[] { "String" });
+
 					String voiceSubsTable = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-							"VoiceSubscribersTableName", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+							"VoiceSubscribersTableName", new String[] { "RootHierarchyNode" },
+							new String[] { rootHierarchySelected }, new String[] { "String" });
 
 					// Get Hierarchies for Data/Voice Tables
 					String fullDataHierarchyPath = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-							"DataSubscribersTableNamePath", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+							"DataSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
+							new String[] { rootHierarchySelected }, new String[] { "String" });
+
 					String[] fullDataHierarchyPathSplit = fullDataHierarchyPath.split("->");
 					String fullVoiceHierarchyPath = wb.dbs.GetOneValue("HierarchyTablePerTechnology2",
-							"VoiceSubscribersTableNamePath", "RootHierarchyNode = '" + rootHierarchySelected + "'");
+							"VoiceSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
+							new String[] { rootHierarchySelected }, new String[] { "String" });
+
 					String[] fullVoiceHierarchyPathSplit = fullVoiceHierarchyPath.split("->");
 
 					// Count distinct values of Usernames or CliVlaues the respective columns
 					String dataCustomersAffected = wb.dbs.CountDistinctRowsForSpecificColumn(dataSubsTable, "Username",
-							Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(
+							Help_Func.HierarchyKeys(Help_Func.ReplaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullDataHierarchyPathSplit)),
+							Help_Func.HierarchyValues(Help_Func.ReplaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullDataHierarchyPathSplit)),
+							Help_Func.HierarchyStringTypes(Help_Func.ReplaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullDataHierarchyPathSplit)));
+
 					String voiceCustomersAffected = wb.dbs.CountDistinctRowsForSpecificColumns(voiceSubsTable,
 							new String[] { "ActiveElement", "Subrack", "Slot", "Port", "PON" },
 							Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
+
 					String CLIsAffected = wb.dbs.CountDistinctRowsForSpecificColumn(voiceSubsTable, "CliValue",
-							Help_Func.HierarchyToPredicate(Help_Func.ReplaceHierarchyForSubscribersAffected(
+							Help_Func.HierarchyKeys(Help_Func.ReplaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
+							Help_Func.HierarchyValues(Help_Func.ReplaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
+							Help_Func.HierarchyStringTypes(Help_Func.ReplaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
 
 					// For Voice no data customers are affected and vice versa
@@ -526,7 +582,7 @@ public class WebSpectra// implements WebSpectraInterface
 
 		} finally
 		{
-			wb.conObj.closeDBConnection();
+			// wb.conObj.closeDBConnection();
 		}
 	}
 
@@ -562,7 +618,11 @@ public class WebSpectra// implements WebSpectraInterface
 			if (IncidentID.equals("*"))
 			{
 				// Number of rows that will be returned
-				numOfRows = wb.dbs.NumberOfRowsFound("SubmittedIncidents", "IncidentStatus = '" + IncidentStatus + "'");
+				// numOfRows = wb.dbs.NumberOfRowsFound("SubmittedIncidents", "IncidentStatus =
+				// '" + IncidentStatus + "'");
+
+				numOfRows = wb.dbs.NumberOfRowsFound("SubmittedIncidents", new String[] { "IncidentStatus" },
+						new String[] { IncidentStatus }, new String[] { "String" });
 
 				rs = wb.dbs.GetRows("SubmittedIncidents",
 						new String[] { "OutageID", "IncidentStatus", "RequestTimestamp", "SystemID", "UserID",
@@ -571,11 +631,12 @@ public class WebSpectra// implements WebSpectraInterface
 								"AffectedDataCustomers", "AffectedCLICustomers", "ActiveDataCustomersAffected",
 								"TVCustomersAffected", "IncidentAffectedVoiceCustomers",
 								"IncidentAffectedDataCustomers" },
-						"IncidentStatus = '" + IncidentStatus + "';");
+						new String[] { "IncidentStatus" }, new String[] { IncidentStatus }, new String[] { "String" });
 			} else
 			{
 				numOfRows = wb.dbs.NumberOfRowsFound("SubmittedIncidents",
-						"IncidentID = '" + IncidentID + "' AND IncidentStatus = '" + IncidentStatus + "'");
+						new String[] { "IncidentID", "IncidentStatus" }, new String[] { IncidentID, IncidentStatus },
+						new String[] { "String", "String" });
 
 				rs = wb.dbs.GetRows("SubmittedIncidents",
 						new String[] { "OutageID", "IncidentStatus", "RequestTimestamp", "SystemID", "UserID",
@@ -584,7 +645,8 @@ public class WebSpectra// implements WebSpectraInterface
 								"AffectedDataCustomers", "AffectedCLICustomers", "ActiveDataCustomersAffected",
 								"TVCustomersAffected", "IncidentAffectedVoiceCustomers",
 								"IncidentAffectedDataCustomers" },
-						"IncidentID = '" + IncidentID + "' AND " + "IncidentStatus = '" + IncidentStatus + "';");
+						new String[] { "IncidentID", "IncidentStatus" }, new String[] { IncidentID, IncidentStatus },
+						new String[] { "String", "String" });
 			}
 			if (Integer.parseInt(numOfRows) == 0)
 			{
@@ -680,17 +742,16 @@ public class WebSpectra// implements WebSpectraInterface
 
 			// Check if the combination of IncidentID & OutageID exists
 			boolean incidentPlusOutageExists = wb.dbs.CheckIfCriteriaExists("SubmittedIncidents",
-					new String[] { "IncidentID", "OutageID" },
-					"`IncidentID` = '" + IncidentID + "' AND  `OutageID` = '" + OutageID + "'");
+					new String[] { "IncidentID", "OutageID" }, new String[] { IncidentID, OutageID },
+					new String[] { "String", "String" });
 
 			if (incidentPlusOutageExists)
 			{
 				// Check if the combination of IncidentID & OutageID refers to a scheduled
 				// Incident (Scheduled = "Yes")
 				boolean incidentIsScheduled = wb.dbs.CheckIfCriteriaExists("SubmittedIncidents",
-						new String[] { "IncidentID", "OutageID" }, "`IncidentID` = '" + IncidentID
-								+ "' AND  `OutageID` = '" + OutageID + "' AND `Scheduled` = 'Yes'");
-
+						new String[] { "IncidentID", "OutageID", "Scheduled" },
+						new String[] { IncidentID, OutageID, "Yes" }, new String[] { "String", "String", "String" });
 				// Create a new list with the updated columns - based on what is empty or not
 				List<String> listOfColumnsForUpdate = new ArrayList<>();
 				List<String> listOfValuesForUpdate = new ArrayList<>();
