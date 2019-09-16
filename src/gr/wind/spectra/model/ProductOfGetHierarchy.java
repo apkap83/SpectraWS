@@ -15,7 +15,7 @@ import gr.wind.spectra.web.InvalidInputException;
 @XmlType(name = "basicStruct", propOrder = { "requestID", "type", "item", "hierarchySelected",
 		"internetCustomersAffected", "voiceCustomersAffected", "clisAffected", "activeDataCustomersAffected",
 		"tvCustomersAffected" })
-public class Product
+public class ProductOfGetHierarchy
 {
 
 	private String type;
@@ -35,14 +35,14 @@ public class Product
 	private String[] hierElements;
 
 	// Empty constructor requirement of JAXB (Java Architecture for XML Binding)
-	public Product()
+	public ProductOfGetHierarchy()
 	{
 	}
 	// Product(wb.dbs, fullHierarchyFromDBSplit, fullDataSubsHierarchyFromDBSplit,
 	// fullVoiceSubsHierarchyFromDBSplit, Hierarchy, fullHierarchyFromDBSplit[0] ,
 	// ElementsList, nodeNames, nodeValues, RequestID);
 
-	public Product(DB_Operations dbs, String[] hierarchyFullPathList, String[] fullDataHierarchyPath,
+	public ProductOfGetHierarchy(DB_Operations dbs, String[] hierarchyFullPathList, String[] fullDataHierarchyPath,
 			String[] fullVoiceHierarchyPath, String hierarchyProvided, String type, List<String> items,
 			String[] nodeNames, String[] nodeValues, String requestID) throws SQLException, InvalidInputException
 	{

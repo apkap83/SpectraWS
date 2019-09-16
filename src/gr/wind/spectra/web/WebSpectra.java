@@ -15,7 +15,8 @@ import javax.xml.bind.annotation.XmlElement;
 import gr.wind.spectra.business.DB_Connection;
 import gr.wind.spectra.business.DB_Operations;
 import gr.wind.spectra.business.Help_Func;
-import gr.wind.spectra.model.Product;
+import gr.wind.spectra.model.ProductOfCloseOutage;
+import gr.wind.spectra.model.ProductOfGetHierarchy;
 import gr.wind.spectra.model.ProductOfGetOutage;
 import gr.wind.spectra.model.ProductOfModify;
 import gr.wind.spectra.model.ProductOfSubmission;
@@ -49,7 +50,7 @@ public class WebSpectra// implements WebSpectraInterface
 
 	@WebMethod()
 	@WebResult(name = "Result")
-	public List<Product> getHierarchy(
+	public List<ProductOfGetHierarchy> getHierarchy(
 			// @WebParam(targetNamespace="http://spectra.wind.gr/handler/", name="UserName",
 			// header = true, mode = Mode.IN) @XmlElement( required = true ) String
 			// UserName,
@@ -77,7 +78,7 @@ public class WebSpectra// implements WebSpectraInterface
 		{
 			wb.establishDBConnection();
 			List<String> ElementsList = new ArrayList<String>();
-			List<Product> prodElementsList = new ArrayList<>();
+			List<ProductOfGetHierarchy> prodElementsList = new ArrayList<>();
 
 			// Check if Authentication credentials are correct.
 			if (!wb.dbs.AuthenticateRequest(UserName, Password))
@@ -111,8 +112,8 @@ public class WebSpectra// implements WebSpectraInterface
 
 				String[] nodeNames = new String[] {};
 				String[] nodeValues = new String[] {};
-				Product pr = new Product(wb.dbs, new String[] {}, new String[] {}, new String[] {}, Hierarchy,
-						"rootElements", ElementsList, nodeNames, nodeValues, RequestID);
+				ProductOfGetHierarchy pr = new ProductOfGetHierarchy(wb.dbs, new String[] {}, new String[] {},
+						new String[] {}, Hierarchy, "rootElements", ElementsList, nodeNames, nodeValues, RequestID);
 				prodElementsList.add(pr);
 			} else
 			{
@@ -180,9 +181,9 @@ public class WebSpectra// implements WebSpectraInterface
 
 					String[] nodeNames = new String[] { rootElementInHierarchy };
 					String[] nodeValues = new String[] { "1" };
-					Product pr = new Product(wb.dbs, fullHierarchyFromDBSplit, fullDataSubsHierarchyFromDBSplit,
-							fullVoiceSubsHierarchyFromDBSplit, Hierarchy, fullHierarchyFromDBSplit[0], ElementsList,
-							nodeNames, nodeValues, RequestID);
+					ProductOfGetHierarchy pr = new ProductOfGetHierarchy(wb.dbs, fullHierarchyFromDBSplit,
+							fullDataSubsHierarchyFromDBSplit, fullVoiceSubsHierarchyFromDBSplit, Hierarchy,
+							fullHierarchyFromDBSplit[0], ElementsList, nodeNames, nodeValues, RequestID);
 					prodElementsList.add(pr);
 				} else
 				{
@@ -218,8 +219,8 @@ public class WebSpectra// implements WebSpectraInterface
 
 						String[] nodeNames = nodeNamesArrayList.toArray(new String[nodeNamesArrayList.size()]);
 						String[] nodeValues = nodeValuesArrayList.toArray(new String[nodeValuesArrayList.size()]);
-						Product pr = new Product(wb.dbs, fullHierarchyFromDBSplit, fullDataSubsHierarchyFromDBSplit,
-								fullVoiceSubsHierarchyFromDBSplit, Hierarchy,
+						ProductOfGetHierarchy pr = new ProductOfGetHierarchy(wb.dbs, fullHierarchyFromDBSplit,
+								fullDataSubsHierarchyFromDBSplit, fullVoiceSubsHierarchyFromDBSplit, Hierarchy,
 								fullHierarchyFromDBSplit[hierItemsGiven.length - 1], ElementsList, nodeNames,
 								nodeValues, RequestID);
 						prodElementsList.add(pr);
@@ -243,9 +244,9 @@ public class WebSpectra// implements WebSpectraInterface
 						ElementsList = new ArrayList<String>();
 						String[] nodeNames = nodeNamesArrayList.toArray(new String[nodeNamesArrayList.size()]);
 						String[] nodeValues = nodeValuesArrayList.toArray(new String[nodeValuesArrayList.size()]);
-						Product pr = new Product(wb.dbs, fullHierarchyFromDBSplit, fullDataSubsHierarchyFromDBSplit,
-								fullVoiceSubsHierarchyFromDBSplit, Hierarchy, "MaxLevel", ElementsList, nodeNames,
-								nodeValues, RequestID);
+						ProductOfGetHierarchy pr = new ProductOfGetHierarchy(wb.dbs, fullHierarchyFromDBSplit,
+								fullDataSubsHierarchyFromDBSplit, fullVoiceSubsHierarchyFromDBSplit, Hierarchy,
+								"MaxLevel", ElementsList, nodeNames, nodeValues, RequestID);
 						prodElementsList.add(pr);
 					}
 				}
@@ -820,11 +821,10 @@ public class WebSpectra// implements WebSpectraInterface
 
 				if (numOfRowsUpdated == 1)
 				{
-					pom = new ProductOfModify(
-							"Successfully Modified Incident: " + IncidentID + " - Outage ID: " + OutageID);
+					pom = new ProductOfModify(IncidentID, OutageID, "930", "Successfully Modified Incident");
 				} else
 				{
-					pom = new ProductOfModify("Error modifying incident!");
+					pom = new ProductOfModify(IncidentID, OutageID, "980", "Error modifying incident!");
 				}
 			} else
 			{
@@ -843,37 +843,85 @@ public class WebSpectra// implements WebSpectraInterface
 
 	@WebMethod
 	@WebResult(name = "Result")
-	public List<ProductOfSubmission> closeOutage(
-			@WebParam(name = "UserName", header = true, mode = Mode.IN) String UserName,
+	public ProductOfCloseOutage closeOutage(@WebParam(name = "UserName", header = true, mode = Mode.IN) String UserName,
 			@WebParam(name = "Password", header = true, mode = Mode.IN) String Password,
-			@WebParam(name = "RequestID") @XmlElement(required = true) String RequestID,
 			@WebParam(name = "RequestTimestamp") @XmlElement(required = true) String RequestTimestamp,
 			@WebParam(name = "SystemID") @XmlElement(required = true) String SystemID,
 			@WebParam(name = "UserID") @XmlElement(required = true) String UserID,
-
-			// Defines Uniquely The Incident
 			@WebParam(name = "IncidentID") @XmlElement(required = true) String IncidentID,
-			@WebParam(name = "EndTime") @XmlElement(required = false) String EndTime
-
-	) throws InstantiationException, IllegalAccessException, ClassNotFoundException, Exception, InvalidInputException
+			@WebParam(name = "OutageID") @XmlElement(required = true) String OutageID) throws InstantiationException,
+			IllegalAccessException, ClassNotFoundException, Exception, InvalidInputException
 	{
-		// try {
-		// boolean result = wb.dbs.InsertValuesInTable("SubmittedIncidents", new
-		// String[] {"RequestID", "UserID"}, new String[] {RequestID, UserID});
-		// } catch (Exception e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
 		WebSpectra wb = new WebSpectra();
-		wb.conObj.closeDBConnection();
 
-		// Check if Authentication credentials are correct.
-		if (!wb.dbs.AuthenticateRequest(UserName, Password))
+		try
 		{
-			throw new InvalidInputException("User name or Password incorrect!", "Error 100");
-		}
+			wb.establishDBConnection();
+			// Check if Authentication credentials are correct.
+			if (!wb.dbs.AuthenticateRequest(UserName, Password))
+			{
+				throw new InvalidInputException("User name or Password incorrect!", "Error 100");
+			}
 
-		return null;
+			ProductOfCloseOutage poca = null;
+
+			// Check if Required fields are empty
+			Help_Func.ValidateNotEmpty("RequestTimestamp", RequestTimestamp);
+			Help_Func.ValidateDateTimeFormat("RequestTimestamp", RequestTimestamp);
+			Help_Func.ValidateNotEmpty("SystemID", SystemID);
+			Help_Func.ValidateNotEmpty("UserID", UserID);
+			Help_Func.ValidateNotEmpty("IncidentID", IncidentID);
+			Help_Func.ValidateNotEmpty("OutageID", OutageID);
+
+			// Check if the combination of IncidentID & OutageID exists
+			boolean incidentPlusOutageExists = wb.dbs.CheckIfCriteriaExists("SubmittedIncidents",
+					new String[] { "IncidentID", "OutageID" }, new String[] { IncidentID, OutageID },
+					new String[] { "String", "String" });
+
+			if (incidentPlusOutageExists)
+			{
+
+				// Check if the combination of IncidentID & OutageID is still OPEN
+				boolean incidentPlusOutageIsOpen = wb.dbs.CheckIfCriteriaExists("SubmittedIncidents",
+						new String[] { "IncidentID", "OutageID", "IncidentStatus" },
+						new String[] { IncidentID, OutageID, "OPEN" }, new String[] { "String", "String", "String" });
+
+				// If incident is still in status OPEN
+				if (incidentPlusOutageIsOpen)
+				{
+					// Update Operation
+					int numOfRowsUpdated = wb.dbs.UpdateColumnOnSpecificCriteria("SubmittedIncidents",
+							new String[] { "IncidentStatus", "EndTime" }, new String[] { "CLOSED", Help_Func.now() },
+							new String[] { "String", "Date" }, new String[] { "IncidentID", "OutageID" },
+							new String[] { IncidentID, OutageID }, new String[] { "String", "Integer" });
+
+					if (numOfRowsUpdated == 1)
+					{
+						poca = new ProductOfCloseOutage(IncidentID, OutageID, "990", "Successfully Closed Incident");
+					} else
+					{
+						poca = new ProductOfCloseOutage(IncidentID, OutageID, "423", "Error Closing Incident");
+					}
+				} else // If incident is not in status OPEN
+				{
+					String closedTime = wb.dbs.GetOneValue("SubmittedIncidents", "EndTime",
+							new String[] { "IncidentID", "OutageID" }, new String[] { IncidentID, OutageID },
+							new String[] { "String", "String" });
+
+					throw new InvalidInputException("The combination of IncidentID: " + IncidentID + " and OutageID: "
+							+ OutageID + " has already been closed since: " + closedTime, "Error 820");
+				}
+			} else
+			{
+				throw new InvalidInputException("The combination of IncidentID: " + IncidentID + " and OutageID: "
+						+ OutageID + " does not exist!", "Error 950");
+			}
+
+			return poca;
+		} finally
+		{
+			wb.conObj.closeDBConnection();
+		}
 	}
 
 	/*

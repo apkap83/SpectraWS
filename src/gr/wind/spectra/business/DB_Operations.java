@@ -244,21 +244,7 @@ public class DB_Operations extends Thread
 		return myList;
 	}
 
-	public int UpdateValuesForOneColumn(String table, String setColumnName, String newValue, String predicate)
-			throws SQLException
-	{
-		// Example: update TestTable set `Name` = 100 where Surname = "Kapetanios";
-
-		String sqlString = "update `" + table + "` set `" + setColumnName + "` = '" + newValue + "' WHERE " + predicate;
-		System.out.println(sqlString);
-		PreparedStatement pst = conn.prepareStatement(sqlString);
-		int rowsAffected = pst.executeUpdate();
-
-		return rowsAffected;
-
-	}
-
-	public int UpdateValuesForOneColumn2(String table, String setColumnName, String newValue, String[] predicateKeys,
+	public int UpdateValuesForOneColumn(String table, String setColumnName, String newValue, String[] predicateKeys,
 			String[] predicateValues, String[] predicateTypes) throws SQLException
 	{
 		// Example: update TestTable set `Name` = 100 where Surname = "Kapetanios";

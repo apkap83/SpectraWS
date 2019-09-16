@@ -5,30 +5,69 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name = "Element")
-@XmlType(name = "basicStruct5", propOrder = { "status" })
+@XmlType(name = "basicStruct5", propOrder = { "incidentID", "outageID", "statusCode", "description" })
 public class ProductOfModify
 {
-	private String status;
+	private String incidentID;
+	private String outageID;
+	private String statusCode;
+	private String description;
 
 	public ProductOfModify()
 	{
 
 	}
 
-	public ProductOfModify(String status)
+	public ProductOfModify(String incidentID, String outageID, String statusCode, String description)
 	{
-		this.status = status;
+		this.incidentID = incidentID;
+		this.outageID = outageID;
+		this.statusCode = statusCode;
+		this.description = description;
 	}
 
-	@XmlElement(name = "status")
-	public String getstatus()
+	@XmlElement(name = "incidentID")
+	public String getincidentID()
 	{
-		return status;
+		return incidentID;
 	}
 
-	public void setstatus(String status)
+	public void setincidentID(String incidentID)
 	{
-		this.status = status;
+		this.incidentID = incidentID;
+	}
+
+	@XmlElement(name = "outageID")
+	public String getoutageID()
+	{
+		return outageID;
+	}
+
+	public void setoutageID(String outageID)
+	{
+		this.outageID = outageID;
+	}
+
+	@XmlElement(name = "statusCode")
+	public String getstatusCode()
+	{
+		return statusCode;
+	}
+
+	public void setstatusCode(String statusCode)
+	{
+		this.statusCode = statusCode;
+	}
+
+	@XmlElement(name = "description")
+	public String getdescription()
+	{
+		return description;
+	}
+
+	public void setdescription(String description)
+	{
+		this.description = description;
 	}
 
 }
