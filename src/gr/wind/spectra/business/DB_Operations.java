@@ -205,6 +205,12 @@ public class DB_Operations extends Thread
 		String sqlString = "SELECT DISTINCT `" + columnName + "` FROM `" + table + "` WHERE "
 				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
 		System.out.println(sqlString);
+//		System.out.println("We are HERE");
+//		System.out.println("columnName " + columnName);
+//		System.out.println("predicateKeys " + Arrays.toString(predicateKeys));
+//		System.out.println("predicateValues " + Arrays.toString(predicateValues));
+//		System.out.println("predicateTypes " + Arrays.toString(predicateTypes));
+
 		PreparedStatement pst = conn.prepareStatement(sqlString);
 
 		for (int i = 0; i < predicateKeys.length; i++)

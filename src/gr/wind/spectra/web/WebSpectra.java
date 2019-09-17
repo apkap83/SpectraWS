@@ -209,10 +209,8 @@ public class WebSpectra implements InterfaceWebSpectra
 						// Help_Func.HierarchyToPredicate(Hierarchy));
 
 						ElementsList = wb.dbs.getOneColumnUniqueResultSet(table,
-								fullHierarchyFromDBSplit[hierItemsGiven.length - 1],
-								Help_Func.hierarchyKeys(fullHierarchyFromDBSplit[hierItemsGiven.length - 1]),
-								Help_Func.hierarchyValues(fullHierarchyFromDBSplit[hierItemsGiven.length - 1]),
-								Help_Func.hierarchyStringTypes(fullHierarchyFromDBSplit[hierItemsGiven.length - 1]));
+								fullHierarchyFromDBSplit[hierItemsGiven.length - 1], Help_Func.hierarchyKeys(Hierarchy),
+								Help_Func.hierarchyValues(Hierarchy), Help_Func.hierarchyStringTypes(Hierarchy));
 
 						String[] nodeNames = nodeNamesArrayList.toArray(new String[nodeNamesArrayList.size()]);
 						String[] nodeValues = nodeValuesArrayList.toArray(new String[nodeValuesArrayList.size()]);
