@@ -12,6 +12,7 @@ import javax.jws.WebResult;
 import javax.jws.WebService;
 import javax.xml.bind.annotation.XmlElement;
 
+import gr.wind.spectra.business.CLIOutage;
 import gr.wind.spectra.business.DB_Connection;
 import gr.wind.spectra.business.DB_Operations;
 import gr.wind.spectra.business.Help_Func;
@@ -19,6 +20,7 @@ import gr.wind.spectra.model.ProductOfCloseOutage;
 import gr.wind.spectra.model.ProductOfGetHierarchy;
 import gr.wind.spectra.model.ProductOfGetOutage;
 import gr.wind.spectra.model.ProductOfModify;
+import gr.wind.spectra.model.ProductOfNLUActive;
 import gr.wind.spectra.model.ProductOfSubmission;
 
 @WebService(endpointInterface = "gr.wind.spectra.web.InterfaceWebSpectra")
@@ -935,7 +937,8 @@ public class WebSpectra implements InterfaceWebSpectra
 	@Override
 	@WebMethod
 	@WebResult(name = "Result")
-	public void NLU_Active(@WebParam(name = "UserName", header = true, mode = Mode.IN) String UserName,
+	public ArrayList<ProductOfNLUActive> NLU_Active(
+			@WebParam(name = "UserName", header = true, mode = Mode.IN) String UserName,
 			@WebParam(name = "Password", header = true, mode = Mode.IN) String Password,
 			@WebParam(name = "RequestID") @XmlElement(required = true) String RequestID,
 			@WebParam(name = "SystemID") @XmlElement(required = true) String SystemID,
@@ -947,7 +950,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			throws Exception, InvalidInputException
 	{
 		WebSpectra wb = new WebSpectra();
-
+		ArrayList<ProductOfNLUActive> mylist = null;
 		try
 		{
 			wb.establishDBConnection();
@@ -966,11 +969,14 @@ public class WebSpectra implements InterfaceWebSpectra
 			Help_Func.validateNotEmpty("CLI", CLI);
 			Help_Func.validateNotEmpty("Service", Service);
 
+			CLIOutage co = new CLIOutage(wb.dbs, RequestID);
+			mylist = co.checkCLIOutage(CLI, Service);
+
 		} finally
 		{
 			wb.conObj.closeDBConnection();
 		}
-
+		return mylist;
 	}
 
 }

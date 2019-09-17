@@ -23,6 +23,11 @@ public class ProductOfNLUActive
 	private String flag2 = "NULL";
 	private String flag3 = "NULL";
 
+	public ProductOfNLUActive()
+	{
+		// TODO Auto-generated constructor stub
+	}
+
 	public ProductOfNLUActive(String requestID, String CLI, String incidentID, String problem_severity,
 			String affected_services, String scheduled, String duration, String end_time, String impact, String flag1,
 			String flag2, String flag3)

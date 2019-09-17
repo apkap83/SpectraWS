@@ -1,5 +1,6 @@
 package gr.wind.spectra.web;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.jws.WebMethod;
@@ -13,6 +14,7 @@ import gr.wind.spectra.model.ProductOfCloseOutage;
 import gr.wind.spectra.model.ProductOfGetHierarchy;
 import gr.wind.spectra.model.ProductOfGetOutage;
 import gr.wind.spectra.model.ProductOfModify;
+import gr.wind.spectra.model.ProductOfNLUActive;
 import gr.wind.spectra.model.ProductOfSubmission;
 
 @WebService
@@ -95,7 +97,8 @@ public interface InterfaceWebSpectra
 
 	@WebMethod
 	@WebResult(name = "Result")
-	void NLU_Active(@WebParam(name = "UserName", header = true, mode = Mode.IN) String UserName,
+	ArrayList<ProductOfNLUActive> NLU_Active(
+			@WebParam(name = "UserName", header = true, mode = Mode.IN) String UserName,
 			@WebParam(name = "Password", header = true, mode = Mode.IN) String Password,
 			@WebParam(name = "RequestID") @XmlElement(required = true) String RequestID,
 			@WebParam(name = "SystemID") @XmlElement(required = true) String SystemID,
