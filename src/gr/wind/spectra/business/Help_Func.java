@@ -151,7 +151,7 @@ public class Help_Func
 			if (!foundInArray)
 			{
 				throw new InvalidInputException("The accepted values of field '" + fieldName
-						+ "' are not validated against any combination of Voice, Internet, IP TV alone or with pipe delimiter",
+						+ "' are not validated against any combination of Voice, Data, IP TV alone or with pipe delimiter",
 						"Error 181");
 			}
 

@@ -36,7 +36,7 @@ public class CLIOutage
 					"VoiceSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
 					new String[] { rootElementInHierarchy }, new String[] { "String" });
 
-			// Split the Internet hierarchy retrieved from DB into fields
+			// Split the Data hierarchy retrieved from DB into fields
 			fullVoiceSubsHierarchyFromDBSplit = fullVoiceSubsHierarchyFromDB.split("->");
 
 			// Replace Hierarchy Columns from the relevant subscribers table
@@ -55,7 +55,7 @@ public class CLIOutage
 					"DataSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
 					new String[] { rootElementInHierarchy }, new String[] { "String" });
 
-			// Split the Internet hierarchy retrieved from DB into fields
+			// Split the Data hierarchy retrieved from DB into fields
 			fullVoiceSubsHierarchyFromDBSplit = fullVoiceSubsHierarchyFromDB.split("->");
 
 			// Replace Hierarchy Columns from the relevant subscribers table
@@ -168,7 +168,7 @@ public class CLIOutage
 
 					// If matched Hierarchy + CLI matches lines (then those CLIs have actually
 					// Outage)
-					if (Integer.parseInt(numOfRowsFound) > 0 && AffectedServices.equals("Internet"))
+					if (Integer.parseInt(numOfRowsFound) > 0 && AffectedServices.equals("Data"))
 					{
 						foundAtLeastOneCLIAffected = true;
 						mylist.add(new ProductOfNLUActive(this.requestID, CLIProvided, IncidentID, Priority,

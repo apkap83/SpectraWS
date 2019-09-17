@@ -65,8 +65,8 @@ public class WebSpectra implements InterfaceWebSpectra
 	{
 
 		/*
-		 * <internetCustomersAffected>34</potentialCustomersAffected>// unique user
-		 * names from Internet Resource path
+		 * <DataCustomersAffected>34</potentialCustomersAffected>// unique user names
+		 * from Data Resource path
 		 * <voiceCustomersAffected>34</potentialCustomersAffected> // unique user names
 		 * from Voice Resource path <cLIsAffected>34</potentialCustomersAffected> //
 		 * unique CLIs from Voice Resource path
@@ -146,7 +146,7 @@ public class WebSpectra implements InterfaceWebSpectra
 						"DataSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
 						new String[] { rootElementInHierarchy }, new String[] { "String" });
 
-				// Split the Internet hierarchy retrieved from DB into fields
+				// Split the Data hierarchy retrieved from DB into fields
 				String[] fullDataSubsHierarchyFromDBSplit = fullDataSubsHierarchyFromDB.split("->");
 
 				// Get Full Voice hierarchy in style :
@@ -155,7 +155,7 @@ public class WebSpectra implements InterfaceWebSpectra
 						"VoiceSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
 						new String[] { rootElementInHierarchy }, new String[] { "String" });
 
-				// Split the Internet hierarchy retrieved from DB into fields
+				// Split the Data hierarchy retrieved from DB into fields
 				String[] fullVoiceSubsHierarchyFromDBSplit = fullVoiceSubsHierarchyFromDB.split("->");
 
 				// Split given hierarchy
@@ -323,7 +323,7 @@ public class WebSpectra implements InterfaceWebSpectra
 
 			Help_Func.validateNotEmpty("AffectedServices", AffectedServices);
 			Help_Func.validateDelimitedValues("AffectedServices", AffectedServices, "\\|",
-					new String[] { "Voice", "Internet", "IPTV" });
+					new String[] { "Voice", "Data", "IPTV" });
 
 			Help_Func.validateNotEmpty("Impact", Impact);
 			Help_Func.validateAgainstPredefinedValues("Impact", Impact, new String[] { "QoS", "LoS" });
@@ -418,7 +418,7 @@ public class WebSpectra implements InterfaceWebSpectra
 					if (service.equals("Voice"))
 					{
 						dataCustomersAffected = "0";
-					} else if (service.equals("Internet"))
+					} else if (service.equals("Data"))
 					{
 						voiceCustomersAffected = "0";
 					}
@@ -538,7 +538,7 @@ public class WebSpectra implements InterfaceWebSpectra
 					if (service.equals("Voice"))
 					{
 						dataCustomersAffected = "0";
-					} else if (service.equals("Internet"))
+					} else if (service.equals("Data"))
 					{
 						voiceCustomersAffected = "0";
 						CLIsAffected = "0";
