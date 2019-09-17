@@ -969,6 +969,13 @@ public class WebSpectra implements InterfaceWebSpectra
 			Help_Func.validateNotEmpty("CLI", CLI);
 			Help_Func.validateNotEmpty("Service", Service);
 
+			// if Impact Value Exists
+			if (!Help_Func.checkIfEmpty("Service", Service))
+			{
+				// Check if it has the appropriate format
+				Help_Func.validateAgainstPredefinedValues("Service", Service, new String[] { "Voice", "Data", "IPTV" });
+			}
+
 			CLIOutage co = new CLIOutage(wb.dbs, RequestID);
 			mylist = co.checkCLIOutage(CLI, Service);
 
