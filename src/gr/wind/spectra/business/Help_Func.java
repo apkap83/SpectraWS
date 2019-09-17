@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -125,6 +126,48 @@ public class Help_Func
 		{
 			throw new InvalidInputException(
 					"The accepted values of field '" + fieldName + "' are: " + String.join(", ", values), "Error 180");
+		}
+
+	}
+
+	public static void validateAgainstPredefinedValuesOrCombinations(String fieldName, String fieldValue,
+			String[] values) throws InvalidInputException
+	{
+		boolean found = false;
+		String delimeterChar = "\\|";
+		String[] fieldValueSplitted = fieldValue.split(delimeterChar);
+
+		// If there is no pipe delimiter
+		if (fieldValueSplitted.length == 1)
+		{
+			for (String preValue : values)
+			{
+				if (preValue.equals(fieldValue))
+				{
+					found = true;
+				}
+			}
+		} else // If there is pipe delimiter (Voice|Data)
+		{
+			System.out.println("If you want me, I'm here!");
+			for (String value : fieldValueSplitted)
+			{
+				found = true; // assumption
+				boolean contains = Arrays.stream(values).anyMatch(value::equals);
+
+				if (!contains)
+				{
+
+					throw new InvalidInputException("The accepted values of field '" + fieldName + "' are: "
+							+ String.join(", ", values) + " or any combination of them with \"|\" delimeter",
+							"Error 180");
+				}
+			}
+		}
+		if (!found)
+		{
+			throw new InvalidInputException("The accepted values of field '" + fieldName + "' are: "
+					+ String.join(", ", values) + " or any combination of them with \"|\" delimeter", "Error 180");
 		}
 
 	}

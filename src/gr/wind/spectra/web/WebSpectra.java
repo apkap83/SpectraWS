@@ -973,7 +973,8 @@ public class WebSpectra implements InterfaceWebSpectra
 			if (!Help_Func.checkIfEmpty("Service", Service))
 			{
 				// Check if it has the appropriate format
-				Help_Func.validateAgainstPredefinedValues("Service", Service, new String[] { "Voice", "Data", "IPTV" });
+				Help_Func.validateAgainstPredefinedValuesOrCombinations("Service", Service,
+						new String[] { "Voice", "Data", "IPTV" });
 			}
 
 			CLIOutage co = new CLIOutage(wb.dbs, RequestID);
