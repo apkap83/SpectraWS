@@ -25,9 +25,9 @@ import gr.wind.spectra.model.ProductOfSubmission;
 public class WebSpectra implements InterfaceWebSpectra
 {
 	private static final String hierSep = "->";
-	DB_Connection conObj;
-	Connection conn;
-	DB_Operations dbs;
+	private DB_Connection conObj;
+	private Connection conn;
+	private DB_Operations dbs;
 
 	public WebSpectra()
 	{
@@ -934,16 +934,44 @@ public class WebSpectra implements InterfaceWebSpectra
 		}
 	}
 
-	public void NLU_Request(@WebParam(name = "UserName", header = true, mode = Mode.IN) String UserName,
+	@Override
+	@WebMethod
+	@WebResult(name = "Result")
+	public void NLU_Active(@WebParam(name = "UserName", header = true, mode = Mode.IN) String UserName,
 			@WebParam(name = "Password", header = true, mode = Mode.IN) String Password,
-			@WebParam(name = "SystemID") @XmlElement(required = true) String SystemID,
 			@WebParam(name = "RequestID") @XmlElement(required = true) String RequestID,
+			@WebParam(name = "SystemID") @XmlElement(required = true) String SystemID,
 			@WebParam(name = "RequestTimestamp") @XmlElement(required = true) String RequestTimestamp,
 			@WebParam(name = "CLI") @XmlElement(required = true) String CLI,
 			@WebParam(name = "Service") @XmlElement(required = true) String Service,
-			@WebParam(name = "ServiceL2") @XmlElement(required = true) String ServiceL2,
-			@WebParam(name = "ServiceL3") @XmlElement(required = true) String ServiceL3)
+			@WebParam(name = "ServiceL2") @XmlElement(required = false) String ServiceL2,
+			@WebParam(name = "ServiceL3") @XmlElement(required = false) String ServiceL3)
+			throws Exception, InvalidInputException
 	{
+		WebSpectra wb = new WebSpectra();
+
+		try
+		{
+			wb.establishDBConnection();
+			// Check if Authentication credentials are correct.
+			if (!wb.dbs.authenticateRequest(UserName, Password))
+			{
+				throw new InvalidInputException("User name or Password incorrect!", "Error 100");
+			}
+
+			// Check if Required fields are empty
+			Help_Func.validateNotEmpty("RequestID", RequestID);
+			Help_Func.validateNotEmpty("SystemID", SystemID);
+			Help_Func.validateNotEmpty("RequestTimestamp", RequestTimestamp);
+			Help_Func.validateDateTimeFormat("RequestTimestamp", RequestTimestamp);
+
+			Help_Func.validateNotEmpty("CLI", CLI);
+			Help_Func.validateNotEmpty("Service", Service);
+
+		} finally
+		{
+			wb.conObj.closeDBConnection();
+		}
 
 	}
 

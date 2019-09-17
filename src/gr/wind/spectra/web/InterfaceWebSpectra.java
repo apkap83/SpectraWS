@@ -93,4 +93,16 @@ public interface InterfaceWebSpectra
 			@WebParam(name = "OutageID") @XmlElement(required = true) String OutageID)
 			throws Exception, InvalidInputException;
 
+	@WebMethod
+	@WebResult(name = "Result")
+	void NLU_Active(@WebParam(name = "UserName", header = true, mode = Mode.IN) String UserName,
+			@WebParam(name = "Password", header = true, mode = Mode.IN) String Password,
+			@WebParam(name = "RequestID") @XmlElement(required = true) String RequestID,
+			@WebParam(name = "SystemID") @XmlElement(required = true) String SystemID,
+			@WebParam(name = "RequestTimestamp") @XmlElement(required = true) String RequestTimestamp,
+			@WebParam(name = "CLI") @XmlElement(required = true) String CLI,
+			@WebParam(name = "Service") @XmlElement(required = true) String Service,
+			@WebParam(name = "ServiceL2") @XmlElement(required = true) String ServiceL2,
+			@WebParam(name = "ServiceL3") @XmlElement(required = true) String ServiceL3)
+			throws Exception, InvalidInputException;
 }
