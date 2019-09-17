@@ -140,7 +140,7 @@ public class WebSpectra implements InterfaceWebSpectra
 				// Split the hierarchy retrieved from DB into fields
 				String[] fullHierarchyFromDBSplit = fullHierarchyFromDB.split("->");
 
-				// Get Full Internet hierarchy in style :
+				// Get Full Data hierarchy in style :
 				// OltElementName->OltSlot->OltPort->Onu->ActiveElement->Slot
 				String fullDataSubsHierarchyFromDB = wb.dbs.getOneValue("HierarchyTablePerTechnology2",
 						"DataSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
