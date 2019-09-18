@@ -319,6 +319,13 @@ public class WebSpectra implements InterfaceWebSpectra
 			Help_Func.validateNotEmpty("Scheduled", Scheduled);
 			Help_Func.validateAgainstPredefinedValues("Scheduled", Scheduled, new String[] { "Yes", "No" });
 
+			// If the submitted incident is scheduled then it should always has "EndTime"
+			/*
+			 * if (Scheduled.equals("Yes")) { if (Help_Func.checkIfEmpty("EndTime",
+			 * EndTime)) { throw new
+			 * InvalidInputException("Scheduled incidents should always contain Start Time and End Time"
+			 * , "Error 172"); } }
+			 */
 			Help_Func.validateIntegerOrEmptyValue("Duration", Duration);
 
 			Help_Func.validateNotEmpty("AffectedServices", AffectedServices);
@@ -937,8 +944,7 @@ public class WebSpectra implements InterfaceWebSpectra
 	@Override
 	@WebMethod
 	@WebResult(name = "Result")
-	public ArrayList<ProductOfNLUActive> NLU_Active(
-			@WebParam(name = "UserName", header = true, mode = Mode.IN) String UserName,
+	public ProductOfNLUActive NLU_Active(@WebParam(name = "UserName", header = true, mode = Mode.IN) String UserName,
 			@WebParam(name = "Password", header = true, mode = Mode.IN) String Password,
 			@WebParam(name = "RequestID") @XmlElement(required = true) String RequestID,
 			@WebParam(name = "SystemID") @XmlElement(required = true) String SystemID,
@@ -950,7 +956,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			throws Exception, InvalidInputException
 	{
 		WebSpectra wb = new WebSpectra();
-		ArrayList<ProductOfNLUActive> mylist = null;
+		ProductOfNLUActive ponla = null;
 		try
 		{
 			wb.establishDBConnection();
@@ -973,18 +979,17 @@ public class WebSpectra implements InterfaceWebSpectra
 			if (!Help_Func.checkIfEmpty("Service", Service))
 			{
 				// Check if it has the appropriate format
-				Help_Func.validateAgainstPredefinedValuesOrCombinations("Service", Service,
-						new String[] { "Voice", "Data", "IPTV" });
+				Help_Func.validateDelimitedValues("Service", Service, "\\|", new String[] { "Voice", "Data", "IPTV" });
 			}
 
 			CLIOutage co = new CLIOutage(wb.dbs, RequestID);
-			mylist = co.checkCLIOutage(CLI, Service);
+			ponla = co.checkCLIOutage(CLI, Service);
 
 		} finally
 		{
 			wb.conObj.closeDBConnection();
 		}
-		return mylist;
+		return ponla;
 	}
 
 }

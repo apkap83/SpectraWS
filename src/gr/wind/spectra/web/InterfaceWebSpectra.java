@@ -1,6 +1,5 @@
 package gr.wind.spectra.web;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.jws.WebMethod;
@@ -97,8 +96,7 @@ public interface InterfaceWebSpectra
 
 	@WebMethod
 	@WebResult(name = "Result")
-	ArrayList<ProductOfNLUActive> NLU_Active(
-			@WebParam(name = "UserName", header = true, mode = Mode.IN) String UserName,
+	ProductOfNLUActive NLU_Active(@WebParam(name = "UserName", header = true, mode = Mode.IN) String UserName,
 			@WebParam(name = "Password", header = true, mode = Mode.IN) String Password,
 			@WebParam(name = "RequestID") @XmlElement(required = true) String RequestID,
 			@WebParam(name = "SystemID") @XmlElement(required = true) String SystemID,

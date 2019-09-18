@@ -4,7 +4,6 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -12,12 +11,12 @@ import gr.wind.spectra.web.InvalidInputException;
 
 public class Help_Func
 {
-	public static final String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
+	public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
 	public static String now()
 	{
 		Calendar cal = Calendar.getInstance();
-		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
+		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
 		return sdf.format(cal.getTime());
 	}
 
@@ -130,48 +129,6 @@ public class Help_Func
 
 	}
 
-	public static void validateAgainstPredefinedValuesOrCombinations(String fieldName, String fieldValue,
-			String[] values) throws InvalidInputException
-	{
-		boolean found = false;
-		String delimeterChar = "\\|";
-		String[] fieldValueSplitted = fieldValue.split(delimeterChar);
-
-		// If there is no pipe delimiter
-		if (fieldValueSplitted.length == 1)
-		{
-			for (String preValue : values)
-			{
-				if (preValue.equals(fieldValue))
-				{
-					found = true;
-				}
-			}
-		} else // If there is pipe delimiter (Voice|Data)
-		{
-			System.out.println("If you want me, I'm here!");
-			for (String value : fieldValueSplitted)
-			{
-				found = true; // assumption
-				boolean contains = Arrays.stream(values).anyMatch(value::equals);
-
-				if (!contains)
-				{
-
-					throw new InvalidInputException("The accepted values of field '" + fieldName + "' are: "
-							+ String.join(", ", values) + " or any combination of them with \"|\" delimeter",
-							"Error 180");
-				}
-			}
-		}
-		if (!found)
-		{
-			throw new InvalidInputException("The accepted values of field '" + fieldName + "' are: "
-					+ String.join(", ", values) + " or any combination of them with \"|\" delimeter", "Error 180");
-		}
-
-	}
-
 	public static void validateDelimitedValues(String fieldName, String fieldValue, String delimiter,
 			String[] acceptedValues) throws InvalidInputException
 	{
@@ -194,7 +151,7 @@ public class Help_Func
 			if (!foundInArray)
 			{
 				throw new InvalidInputException("The accepted values of field '" + fieldName
-						+ "' are not validated against any combination of Voice, Data, IP TV alone or with pipe delimiter",
+						+ "' are not validated against any combination of Voice, Data, IPTV alone or with pipe (|) delimiter",
 						"Error 181");
 			}
 

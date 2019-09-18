@@ -2,7 +2,13 @@ package gr.wind.spectra.business;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 import gr.wind.spectra.model.ProductOfNLUActive;
 import gr.wind.spectra.web.InvalidInputException;
@@ -11,6 +17,7 @@ public class CLIOutage
 {
 	private DB_Operations dbs;
 	private String requestID;
+	DateFormat dateFormat = new SimpleDateFormat(Help_Func.DATE_FORMAT);
 
 	public CLIOutage(DB_Operations dbs, String requestID) throws Exception
 	{
@@ -65,11 +72,15 @@ public class CLIOutage
 		return newHierarchyValue;
 	}
 
-	public ArrayList<ProductOfNLUActive> checkCLIOutage(String CLIProvided, String ServiceType)
-			throws SQLException, InvalidInputException
+	public ProductOfNLUActive checkCLIOutage(String CLIProvided, String ServiceType)
+			throws SQLException, InvalidInputException, ParseException
 	{
+		ProductOfNLUActive ponla = new ProductOfNLUActive();
 		boolean foundAtLeastOneCLIAffected = false;
-		ArrayList<ProductOfNLUActive> mylist = new ArrayList<ProductOfNLUActive>();
+		boolean voiceAffected = false;
+		boolean dataAffected = false;
+
+		String allAffectedServices = "";
 
 		// Check if we have at least one OPEN incident
 		boolean weHaveOpenIncident = dbs.checkIfStringExistsInSpecificColumn("SubmittedIncidents", "IncidentStatus",
@@ -79,36 +90,75 @@ public class CLIOutage
 		String delimiterCharacter = "\\|";
 		String[] ServiceTypeSplitted = ServiceType.split(delimiterCharacter);
 
-		// If We have at least one openned incident...
+		// If We have at least one opened incident...
 		if (weHaveOpenIncident)
 		{
-//			System.out.println("We currently have open incidents");
+
+			String IncidentID = "";
+			int OutageID = 0;
+			String HierarchySelected = "";
+			String Priority = "";
+			String AffectedServices = "";
+			String Scheduled = "";
+			String Duration = "";
+			Date StartTime = null;
+			Date EndTime = null;
+			String Impact = "";
+			String EndTimeString = null;
 
 			for (String service : ServiceTypeSplitted)
 			{
 				ResultSet rs = null;
+				// Get Lines with IncidentStatus = "OPEN"
 				rs = dbs.getRows("SubmittedIncidents",
 						new String[] { "IncidentID", "OutageID", "HierarchySelected", "Priority", "AffectedServices",
-								"Scheduled", "Duration", "EndTime", "Impact" },
+								"Scheduled", "Duration", "StartTime", "EndTime", "Impact" },
 						new String[] { "IncidentStatus" }, new String[] { "OPEN" }, new String[] { "String" });
 
 				while (rs.next())
 				{
-					if (service.equals("Voice"))
+					boolean isOutageWithinScheduledRange = false;
+
+					IncidentID = rs.getString("IncidentID");
+					OutageID = rs.getInt("OutageID");
+					HierarchySelected = rs.getString("HierarchySelected");
+					Priority = rs.getString("Priority");
+					AffectedServices = rs.getString("AffectedServices");
+					Scheduled = rs.getString("Scheduled");
+					Duration = rs.getString("Duration");
+					StartTime = rs.getDate("StartTime");
+					EndTime = rs.getDate("EndTime");
+					Impact = rs.getString("Impact");
+
+					System.out.println("SCHEDULED = " + Scheduled);
+
+					// If it is OPEN & Scheduled & Date(Now) > StartTime then set
+					// isOutageWithinScheduledRange to TRUE
+					if (Scheduled.equals("Yes"))
 					{
-						String IncidentID = rs.getString("IncidentID");
-						int OutageID = rs.getInt("OutageID");
-						String HierarchySelected = rs.getString("HierarchySelected");
-						String Priority = rs.getString("Priority");
-						String AffectedServices = rs.getString("AffectedServices");
-						String Scheduled = rs.getString("Scheduled");
-						String Duration = rs.getString("Duration");
-						String EndTime = rs.getString("EndTime");
-						String Impact = rs.getString("Impact");
+						// Get current date
+						LocalDateTime now = LocalDateTime.now();
 
-						System.out.println(IncidentID + " " + OutageID + " " + HierarchySelected + " " + Priority + " "
-								+ AffectedServices + " " + Scheduled + " " + Duration + " " + EndTime + " " + Impact);
+						// Convert StartTime date to LocalDateTime object
+						LocalDateTime StartTimeInLocalDateTime = Instant.ofEpochMilli(StartTime.getTime())
+								.atZone(ZoneId.systemDefault()).toLocalDateTime();
 
+						// if Start time is after NOW and it is still OPEN
+						if (now.isAfter(StartTimeInLocalDateTime))
+						{
+							isOutageWithinScheduledRange = true;
+						} else
+						{
+							isOutageWithinScheduledRange = false;
+						}
+
+						System.out.println("isOutageWithinScheduledRange = " + isOutageWithinScheduledRange);
+					}
+
+					// if service given in web request is Voice
+					if (AffectedServices.equals("Voice") && service.equals("Voice"))
+					{
+						System.out.println("Inside VOICE");
 						// Replace Hierarchy keys from the correct column names of Hierarchy Subscribers
 						// table
 						HierarchySelected = this.replaceHierarchyColumns(HierarchySelected, "Voice");
@@ -130,27 +180,21 @@ public class CLIOutage
 
 						// If matched Hierarchy + CLI matches lines (then those CLIs have actually
 						// Outage)
-						if (Integer.parseInt(numOfRowsFound) > 0 && AffectedServices.equals("Voice"))
+						if (Integer.parseInt(numOfRowsFound) > 0 && Scheduled.equals("No"))
 						{
-
 							foundAtLeastOneCLIAffected = true;
-							mylist.add(new ProductOfNLUActive(this.requestID, CLIProvided, IncidentID, Priority,
-									AffectedServices, Scheduled, Duration, EndTime, Impact, "NULL", "NULL", "NULL"));
+							voiceAffected = true;
+						} else if (Integer.parseInt(numOfRowsFound) > 0 && Scheduled.equals("Yes")
+								&& isOutageWithinScheduledRange)
+						{
+							foundAtLeastOneCLIAffected = true;
+							voiceAffected = true;
 						}
 
 						System.out.println("Number of rows found ARE: " + numOfRowsFound);
-					} else if (service.equals("Data"))
+					} else if (AffectedServices.equals("Data") && service.equals("Data"))
 					{
-						String IncidentID = rs.getString("IncidentID");
-						int OutageID = rs.getInt("OutageID");
-						String HierarchySelected = rs.getString("HierarchySelected");
-						String Priority = rs.getString("Priority");
-						String AffectedServices = rs.getString("AffectedServices");
-						String Scheduled = rs.getString("Scheduled");
-						String Duration = rs.getString("Duration");
-						String EndTime = rs.getString("EndTime");
-						String Impact = rs.getString("Impact");
-
+						System.out.println("Inside DATA");
 						System.out.println(IncidentID + " " + OutageID + " " + HierarchySelected + " " + Priority + " "
 								+ AffectedServices + " " + Scheduled + " " + Duration + " " + EndTime + " " + Impact);
 
@@ -173,34 +217,52 @@ public class CLIOutage
 								Help_Func.hierarchyValues(HierarchySelected),
 								Help_Func.hierarchyStringTypes(HierarchySelected));
 
-						// If matched Hierarchy + CLI matches lines (then those CLIs have actually
-						// Outage)
-						if (Integer.parseInt(numOfRowsFound) > 0 && AffectedServices.equals("Data"))
+						System.out.println("numOfRowsFound = " + numOfRowsFound);
+
+						// Scheduled No & Rows Found
+						if (Integer.parseInt(numOfRowsFound) > 0 && Scheduled.equals("No"))
 						{
 							foundAtLeastOneCLIAffected = true;
-							mylist.add(new ProductOfNLUActive(this.requestID, CLIProvided, IncidentID, Priority,
-									AffectedServices, Scheduled, Duration, EndTime, Impact, "NULL", "NULL", "NULL"));
-						}
+							dataAffected = true;
 
-//						System.out.println("Number of rows found ARE: " + numOfRowsFound);
+							// Scheduled Yes & Rows Found & Outage Within Scheduled Range
+						} else if (Integer.parseInt(numOfRowsFound) > 0 && Scheduled.equals("Yes")
+								&& isOutageWithinScheduledRange)
+						{
+							foundAtLeastOneCLIAffected = true;
+							dataAffected = true;
+						}
 					}
 				}
 
-				//
+				// CLI is not affected from outage
 				if (!foundAtLeastOneCLIAffected)
 				{
-					throw new InvalidInputException("No service affection", "Error 425");
-					// mylist.add(new ProductOfNLUActive("MyRequestID", CLIProvided, "NULL", "NULL",
-					// "NULL", "NULL", "NULL",
-					// "NULL", "NULL", "NULL", "NULL", "NULL"));
+					throw new InvalidInputException("No service affection", "Info 425");
+				} else
+				{
+					// Indicate Voice, Data or Voice|Data service affection
+					if (voiceAffected && dataAffected)
+					{
+						allAffectedServices = "Voice|Data";
+					} else if (voiceAffected)
+					{
+						allAffectedServices = "Voice";
+					} else if (dataAffected)
+					{
+						allAffectedServices = "Data";
+					}
+
+					ponla = new ProductOfNLUActive(this.requestID, CLIProvided, Priority, allAffectedServices,
+							Scheduled, Duration, EndTimeString, Impact, "NULL", "NULL", "NULL");
 				}
 			}
 		} else
 		{
-			System.out.println("No openned Incidents currently");
+			throw new InvalidInputException("No service affection", "Info 425");
 		}
 
-		return mylist;
+		return ponla;
 	}
 
 }

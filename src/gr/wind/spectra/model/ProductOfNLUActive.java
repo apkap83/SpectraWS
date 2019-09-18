@@ -5,14 +5,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name = "Element")
-@XmlType(name = "basicStruct8", propOrder = { "requestID", "CLI", "incidentID", "problem_severity", "affected_services",
-		"scheduled", "duration", "end_time", "impact", "flag1", "flag2", "flag3" })
+@XmlType(name = "basicStruct8", propOrder = { "requestID", "CLI", "problem_severity", "affected_services", "scheduled",
+		"duration", "end_time", "impact", "flag1", "flag2", "flag3" })
 public class ProductOfNLUActive
 {
 
 	private String requestID;
 	private String CLI;
-	private String incidentID = "NULL";
 	private String problem_severity = "NULL";
 	private String affected_services = "NULL";
 	private String scheduled = "NULL";
@@ -28,22 +27,53 @@ public class ProductOfNLUActive
 		// TODO Auto-generated constructor stub
 	}
 
-	public ProductOfNLUActive(String requestID, String CLI, String incidentID, String problem_severity,
-			String affected_services, String scheduled, String duration, String end_time, String impact, String flag1,
-			String flag2, String flag3)
+	public ProductOfNLUActive(String requestID, String CLI, String problem_severity, String affected_services,
+			String scheduled, String duration, String end_time, String impact, String flag1, String flag2, String flag3)
 	{
-		this.requestID = requestID;
-		this.CLI = CLI;
-		this.incidentID = incidentID;
-		this.problem_severity = problem_severity;
-		this.affected_services = affected_services;
-		this.scheduled = scheduled;
-		this.duration = duration;
-		this.end_time = end_time;
-		this.impact = impact;
-		this.flag1 = flag1;
-		this.flag2 = flag2;
-		this.flag3 = flag3;
+		if (requestID != null)
+		{
+			this.requestID = requestID;
+		}
+		if (CLI != null)
+		{
+			this.CLI = CLI;
+		}
+		if (problem_severity != null)
+		{
+			this.problem_severity = problem_severity;
+		}
+		if (affected_services != null)
+		{
+			this.affected_services = affected_services;
+		}
+		if (scheduled != null)
+		{
+			this.scheduled = scheduled;
+		}
+		if (duration != null)
+		{
+			this.duration = duration;
+		}
+		if (end_time != null)
+		{
+			this.end_time = end_time;
+		}
+		if (impact != null)
+		{
+			this.impact = impact;
+		}
+		if (flag1 != null)
+		{
+			this.flag1 = flag1;
+		}
+		if (flag2 != null)
+		{
+			this.flag2 = flag2;
+		}
+		if (flag3 != null)
+		{
+			this.flag3 = flag3;
+		}
 	}
 
 	@XmlElement(name = "requestID")
@@ -66,17 +96,6 @@ public class ProductOfNLUActive
 	public void setCLI(String cLI)
 	{
 		CLI = cLI;
-	}
-
-	@XmlElement(name = "incidentID")
-	public String getIncidentID()
-	{
-		return incidentID;
-	}
-
-	public void setIncidentID(String incidentID)
-	{
-		this.incidentID = incidentID;
 	}
 
 	@XmlElement(name = "problem_severity")
