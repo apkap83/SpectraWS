@@ -971,9 +971,8 @@ public class WebSpectra implements InterfaceWebSpectra
 			Help_Func.validateNotEmpty("SystemID", SystemID);
 			Help_Func.validateNotEmpty("RequestTimestamp", RequestTimestamp);
 			Help_Func.validateDateTimeFormat("RequestTimestamp", RequestTimestamp);
-
 			Help_Func.validateNotEmpty("CLI", CLI);
-			Help_Func.validateNotEmpty("Service", Service);
+			// Help_Func.validateNotEmpty("Service", Service);
 
 			// if Impact Value Exists
 			if (!Help_Func.checkIfEmpty("Service", Service))

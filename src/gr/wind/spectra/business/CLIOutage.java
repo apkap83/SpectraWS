@@ -86,10 +86,16 @@ public class CLIOutage
 		boolean weHaveOpenIncident = dbs.checkIfStringExistsInSpecificColumn("SubmittedIncidents", "IncidentStatus",
 				"OPEN");
 
+		// If the submitted service type is empty then fill it with "Voice|Data"
+		if (Help_Func.checkIfEmpty("ServiceType", ServiceType))
+		{
+			ServiceType = "Voice|Data";
+		}
+
 		// Split ServiceType
 		String delimiterCharacter = "\\|";
 		String[] ServiceTypeSplitted = ServiceType.split(delimiterCharacter);
-
+		
 		// If We have at least one opened incident...
 		if (weHaveOpenIncident)
 		{
@@ -108,6 +114,7 @@ public class CLIOutage
 
 			for (String service : ServiceTypeSplitted)
 			{
+				System.out.println("HERE service = " + service);
 				ResultSet rs = null;
 				// Get Lines with IncidentStatus = "OPEN"
 				rs = dbs.getRows("SubmittedIncidents",
@@ -154,6 +161,9 @@ public class CLIOutage
 
 						System.out.println("isOutageWithinScheduledRange = " + isOutageWithinScheduledRange);
 					}
+
+					System.out.println("AffectedServices = " + AffectedServices);
+					System.out.println("service = " + service);
 
 					// if service given in web request is Voice
 					if (AffectedServices.equals("Voice") && service.equals("Voice"))
@@ -234,29 +244,29 @@ public class CLIOutage
 						}
 					}
 				}
-
-				// CLI is not affected from outage
-				if (!foundAtLeastOneCLIAffected)
-				{
-					throw new InvalidInputException("No service affection", "Info 425");
-				} else
-				{
-					// Indicate Voice, Data or Voice|Data service affection
-					if (voiceAffected && dataAffected)
-					{
-						allAffectedServices = "Voice|Data";
-					} else if (voiceAffected)
-					{
-						allAffectedServices = "Voice";
-					} else if (dataAffected)
-					{
-						allAffectedServices = "Data";
-					}
-
-					ponla = new ProductOfNLUActive(this.requestID, CLIProvided, Priority, allAffectedServices,
-							Scheduled, Duration, EndTimeString, Impact, "NULL", "NULL", "NULL");
-				}
 			}
+			// CLI is not affected from outage
+			if (!foundAtLeastOneCLIAffected)
+			{
+				throw new InvalidInputException("No service affection", "Info 425");
+			} else
+			{
+				// Indicate Voice, Data or Voice|Data service affection
+				if (voiceAffected && dataAffected)
+				{
+					allAffectedServices = "Voice|Data";
+				} else if (voiceAffected)
+				{
+					allAffectedServices = "Voice";
+				} else if (dataAffected)
+				{
+					allAffectedServices = "Data";
+				}
+
+				ponla = new ProductOfNLUActive(this.requestID, CLIProvided, Priority, allAffectedServices, Scheduled,
+						Duration, EndTimeString, Impact, "NULL", "NULL", "NULL");
+			}
+
 		} else
 		{
 			throw new InvalidInputException("No service affection", "Info 425");
