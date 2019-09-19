@@ -11,7 +11,6 @@ import gr.wind.spectra.web.InvalidInputException;
 
 // Notice, do not import com.mysql.cj.jdbc.*
 // or you will have problems!
-
 public class DB_Connection
 {
 	java.sql.Connection conn = null;
