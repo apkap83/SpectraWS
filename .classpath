@@ -13,29 +13,27 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/log4j2">
+	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/commons-codec-1.13.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/apache-log4j-2.12.1-bin/log4j-api-2.12.1.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/apache-log4j-2.12.1-bin/log4j-core-2.12.1.jar">
+	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/HikariCP-3.3.1.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/commons-codec-1.13/commons-codec-1.13.jar">
+	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/mysql-connector-java-8.0.16.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/commons-codec-1.13/commons-codec-1.13-javadoc.jar!/"/>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/HikariCP-3.3.1.jar" sourcepath="WebContent/WEB-INF/lib/HikariCP-dev/src"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/slf4j-api-2.0.0-alpha0.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/mysql-connector-java-5.1.48.jar"/>
+	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/slf4j-api-2.0.0-alpha0.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/log4j-api-2.12.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/log4j-core-2.12.1.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
