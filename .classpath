@@ -33,7 +33,16 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/log4j-api-2.12.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/log4j-core-2.12.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/log4j-api-2.12.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/log4j-core-2.12.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-dbcp2-2.7.0.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

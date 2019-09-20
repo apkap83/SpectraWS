@@ -18,11 +18,17 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import gr.wind.spectra.web.InvalidInputException;
+
+//Import log4j classes.
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class DB_Operations extends Thread
 {
+	// Logger instance
+	private static final Logger logger = LogManager.getLogger(gr.wind.spectra.business.DB_Operations.class.getName());
+	
 	Connection conn;
 	Statement stmt = null;
 	ResultSet rs = null;

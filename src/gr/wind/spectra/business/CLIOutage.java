@@ -10,6 +10,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
+//Import log4j classes.
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import gr.wind.spectra.model.ProductOfNLUActive;
 import gr.wind.spectra.web.InvalidInputException;
 
@@ -19,10 +23,15 @@ public class CLIOutage
 	private String requestID;
 	DateFormat dateFormat = new SimpleDateFormat(Help_Func.DATE_FORMAT);
 
+	// Logger instance named "DB_Connection".
+	private static final Logger logger = LogManager.getLogger(gr.wind.spectra.business.CLIOutage.class.getName());
+
 	public CLIOutage(DB_Operations dbs, String requestID) throws Exception
 	{
 		this.dbs = dbs;
 		this.requestID = requestID;
+
+		logger.info("This is a log from CLIOutage class");
 	}
 
 	public String replaceHierarchyColumns(String hierarchyProvided, String technology)
@@ -95,11 +104,10 @@ public class CLIOutage
 		// Split ServiceType
 		String delimiterCharacter = "\\|";
 		String[] ServiceTypeSplitted = ServiceType.split(delimiterCharacter);
-		
+
 		// If We have at least one opened incident...
 		if (weHaveOpenIncident)
 		{
-
 			String IncidentID = "";
 			int OutageID = 0;
 			String HierarchySelected = "";

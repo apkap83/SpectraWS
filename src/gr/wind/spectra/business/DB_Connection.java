@@ -3,8 +3,8 @@ package gr.wind.spectra.business;
 import java.sql.Connection;
 import java.util.ArrayList;
 
+// Import log4j classes.
 import org.apache.logging.log4j.LogManager;
-//Import log4j classes.
 import org.apache.logging.log4j.Logger;
 
 import gr.wind.spectra.web.InvalidInputException;
@@ -17,7 +17,7 @@ public class DB_Connection
 
 	// Define a static logger variable so that it references the
 	// Logger instance named "DB_Connection".
-	private static final Logger logger = LogManager.getLogger(DB_Connection.class);
+	private static final Logger logger = LogManager.getLogger(gr.wind.spectra.business.DB_Connection.class);
 
 	public Connection connect()
 			throws InvalidInputException, InstantiationException, IllegalAccessException, ClassNotFoundException
@@ -45,7 +45,7 @@ public class DB_Connection
 			 * );
 			 */
 
-			// Using HikariCP Datasource (fastest Java JDBC datasource!)
+			// Using HikariCP - MyDataSource Class (fastest Java JDBC datasource!)
 			conn = MyDataSource.getConnection();
 			/**
 			 * Implemented Connection Pooling! Requires Glassfish configuration (JDBC
