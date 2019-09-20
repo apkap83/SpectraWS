@@ -12,10 +12,6 @@ import javax.jws.WebResult;
 import javax.jws.WebService;
 import javax.xml.bind.annotation.XmlElement;
 
-//Import log4j classes.
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import gr.wind.spectra.business.CLIOutage;
 import gr.wind.spectra.business.DB_Connection;
 import gr.wind.spectra.business.DB_Operations;
@@ -36,7 +32,8 @@ public class WebSpectra implements InterfaceWebSpectra
 	private DB_Operations dbs;
 
 	// Logger instance
-	private static final Logger logger = LogManager.getLogger(gr.wind.spectra.web.WebSpectra.class.getName());
+	// private static final Logger logger =
+	// LogManager.getLogger(gr.wind.spectra.web.WebSpectra.class.getName());
 
 	public WebSpectra()
 	{

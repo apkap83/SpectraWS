@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import gr.wind.spectra.business.DB_Operations;
 import gr.wind.spectra.business.Help_Func;
+import gr.wind.spectra.business.SQLStatementToCSV;
 import gr.wind.spectra.web.InvalidInputException;
 
 @XmlRootElement(name = "Element")
@@ -118,6 +119,12 @@ public class ProductOfGetHierarchy
 				this.tvCustomersAffected = "0";
 			}
 		}
+		// Ability To Export SQL Resultset to exported File
+		SQLStatementToCSV s = new SQLStatementToCSV("MyUniqueFileExport2.txt", "Internet_Resource_Path",
+				new String[] { "BRASNAME", "TECHNOLOGY" }, new String[] { "BRASNAME" }, new String[] { "AthMet1BR03" },
+				new String[] { "String" });
+		s.start();
+
 	}
 
 	@XmlElement(name = "activeDataCustomersAffected")
