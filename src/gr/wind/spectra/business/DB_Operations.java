@@ -18,17 +18,18 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import gr.wind.spectra.web.InvalidInputException;
 
 //Import log4j classes.
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import gr.wind.spectra.web.InvalidInputException;
+
 public class DB_Operations extends Thread
 {
 	// Logger instance
 	private static final Logger logger = LogManager.getLogger(gr.wind.spectra.business.DB_Operations.class.getName());
-	
+
 	Connection conn;
 	Statement stmt = null;
 	ResultSet rs = null;
@@ -60,6 +61,7 @@ public class DB_Operations extends Thread
 		boolean found = false;
 
 		String sqlString = "SELECT `" + columnName + "` FROM `" + table + "` WHERE `" + columnName + "` = ?";
+		logger.debug(sqlString);
 		PreparedStatement pst = conn.prepareStatement(sqlString);
 		pst.setString(1, searchValue);
 		pst.execute();
@@ -84,7 +86,7 @@ public class DB_Operations extends Thread
 		boolean statusOfOperation = false;
 		String sqlString = "INSERT INTO " + table + Help_Func.columnsToInsertStatement(columnNames)
 				+ Help_Func.valuesToInsertStatement(columnValues);
-		System.out.println(sqlString);
+		logger.debug(sqlString);
 		PreparedStatement pst = conn.prepareStatement(sqlString, Statement.RETURN_GENERATED_KEYS);
 
 		for (int i = 0; i < columnNames.length; i++)
@@ -132,6 +134,7 @@ public class DB_Operations extends Thread
 	{
 		int returnValue = 0;
 		String sqlString = "SELECT MAX(" + columnName + ") FROM " + table;
+		logger.debug(sqlString);
 		PreparedStatement pst = conn.prepareStatement(sqlString);
 		pst.execute();
 		ResultSet rs = pst.executeQuery();
@@ -151,7 +154,7 @@ public class DB_Operations extends Thread
 
 		String sqlQuery = "SELECT COUNT(*) as Result FROM " + table + " WHERE "
 				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
-		System.out.println(sqlQuery);
+		logger.debug(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 		ResultSet rs = null;
 		for (int i = 0; i < predicateKeys.length; i++)
@@ -182,7 +185,7 @@ public class DB_Operations extends Thread
 	{
 		String sqlQuery = "SELECT " + columnName + " FROM " + table + " WHERE "
 				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
-		System.out.println(sqlQuery);
+		logger.debug(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 
 		for (int i = 0; i < predicateKeys.length; i++)
@@ -210,7 +213,7 @@ public class DB_Operations extends Thread
 
 		String sqlString = "SELECT DISTINCT `" + columnName + "` FROM `" + table + "` WHERE "
 				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
-		System.out.println(sqlString);
+		logger.debug(sqlString);
 //		System.out.println("We are HERE");
 //		System.out.println("columnName " + columnName);
 //		System.out.println("predicateKeys " + Arrays.toString(predicateKeys));
@@ -263,7 +266,7 @@ public class DB_Operations extends Thread
 
 		String sqlString = "update `" + table + "` set `" + setColumnName + "` = '" + newValue + "' WHERE "
 				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
-		System.out.println(sqlString);
+		logger.debug(sqlString);
 		PreparedStatement pst = conn.prepareStatement(sqlString);
 
 		for (int i = 0; i < predicateKeys.length; i++)
@@ -289,7 +292,7 @@ public class DB_Operations extends Thread
 		int numOfRows = 0;
 		String sqlQuery = "SELECT *" + " FROM " + table + " WHERE "
 				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
-		System.out.println(sqlQuery);
+		logger.debug(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 
 		for (int i = 0; i < predicateKeys.length; i++)
@@ -320,7 +323,7 @@ public class DB_Operations extends Thread
 		String numOfRows = "";
 		String sqlQuery = "SELECT COUNT(DISTINCT(" + column + ")) as " + column + " FROM " + table + " WHERE "
 				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
-		System.out.println(sqlQuery);
+		logger.debug(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 
 		for (int i = 0; i < predicateKeys.length; i++)
@@ -373,7 +376,7 @@ public class DB_Operations extends Thread
 		sqlQuery += " FROM " + table + " WHERE " + Help_Func.generateANDPredicateQuestionMarks(predicateKeys)
 				+ ") as AK ";
 
-		System.out.println(sqlQuery);
+		logger.debug(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 
 		for (int i = 0; i < predicateKeys.length; i++)
@@ -415,7 +418,7 @@ public class DB_Operations extends Thread
 			}
 		}
 
-		System.out.println(sqlQuery);
+		logger.debug(sqlQuery);
 
 		pst.execute();
 		ResultSet rs = pst.executeQuery();
@@ -427,6 +430,7 @@ public class DB_Operations extends Thread
 		boolean found = false;
 		String table = "WSAccounts";
 		String sqlString = "SELECT * FROM `" + table + "` WHERE `UserName` = ?";
+		logger.debug(sqlString);
 		PreparedStatement pst = conn.prepareStatement(sqlString);
 		pst.setString(1, userName);
 		// pst.setString(2, password);
@@ -477,7 +481,7 @@ public class DB_Operations extends Thread
 		String numOfRows = "";
 		String sqlQuery = "SELECT MAX(" + SumOfColumn + ") as Result FROM " + table + " WHERE "
 				+ Help_Func.generateANDPredicateQuestionMarks(predicateColumns);
-		System.out.println(sqlQuery);
+		logger.debug(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 
 		if (predicateColumns.length == predicateValues.length)
@@ -505,7 +509,7 @@ public class DB_Operations extends Thread
 		String sqlQuery = "UPDATE " + tableName + " SET "
 				+ Help_Func.generateCommaPredicateQuestionMarks(columnNamesForUpdate) + " WHERE "
 				+ Help_Func.generateANDPredicateQuestionMarks(predicateColumns);
-		System.out.println(sqlQuery);
+		logger.debug(sqlQuery);
 
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 

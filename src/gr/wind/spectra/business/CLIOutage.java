@@ -23,7 +23,7 @@ public class CLIOutage
 	private String requestID;
 	DateFormat dateFormat = new SimpleDateFormat(Help_Func.DATE_FORMAT);
 
-	// Logger instance named "DB_Connection".
+	// Logger instance
 	private static final Logger logger = LogManager.getLogger(gr.wind.spectra.business.CLIOutage.class.getName());
 
 	public CLIOutage(DB_Operations dbs, String requestID) throws Exception
@@ -108,21 +108,17 @@ public class CLIOutage
 		// If We have at least one opened incident...
 		if (weHaveOpenIncident)
 		{
-			String IncidentID = "";
-			int OutageID = 0;
 			String HierarchySelected = "";
 			String Priority = "";
 			String AffectedServices = "";
 			String Scheduled = "";
 			String Duration = "";
 			Date StartTime = null;
-			Date EndTime = null;
 			String Impact = "";
 			String EndTimeString = null;
 
 			for (String service : ServiceTypeSplitted)
 			{
-				System.out.println("HERE service = " + service);
 				ResultSet rs = null;
 				// Get Lines with IncidentStatus = "OPEN"
 				rs = dbs.getRows("SubmittedIncidents",
@@ -134,18 +130,16 @@ public class CLIOutage
 				{
 					boolean isOutageWithinScheduledRange = false;
 
-					IncidentID = rs.getString("IncidentID");
-					OutageID = rs.getInt("OutageID");
+					rs.getString("IncidentID");
+					rs.getInt("OutageID");
 					HierarchySelected = rs.getString("HierarchySelected");
 					Priority = rs.getString("Priority");
 					AffectedServices = rs.getString("AffectedServices");
 					Scheduled = rs.getString("Scheduled");
 					Duration = rs.getString("Duration");
 					StartTime = rs.getDate("StartTime");
-					EndTime = rs.getDate("EndTime");
+					rs.getDate("EndTime");
 					Impact = rs.getString("Impact");
-
-					System.out.println("SCHEDULED = " + Scheduled);
 
 					// If it is OPEN & Scheduled & Date(Now) > StartTime then set
 					// isOutageWithinScheduledRange to TRUE
@@ -166,17 +160,11 @@ public class CLIOutage
 						{
 							isOutageWithinScheduledRange = false;
 						}
-
-						System.out.println("isOutageWithinScheduledRange = " + isOutageWithinScheduledRange);
 					}
-
-					System.out.println("AffectedServices = " + AffectedServices);
-					System.out.println("service = " + service);
 
 					// if service given in web request is Voice
 					if (AffectedServices.equals("Voice") && service.equals("Voice"))
 					{
-						System.out.println("Inside VOICE");
 						// Replace Hierarchy keys from the correct column names of Hierarchy Subscribers
 						// table
 						HierarchySelected = this.replaceHierarchyColumns(HierarchySelected, "Voice");
@@ -209,13 +197,8 @@ public class CLIOutage
 							voiceAffected = true;
 						}
 
-						System.out.println("Number of rows found ARE: " + numOfRowsFound);
 					} else if (AffectedServices.equals("Data") && service.equals("Data"))
 					{
-						System.out.println("Inside DATA");
-						System.out.println(IncidentID + " " + OutageID + " " + HierarchySelected + " " + Priority + " "
-								+ AffectedServices + " " + Scheduled + " " + Duration + " " + EndTime + " " + Impact);
-
 						// Replace Hierarchy keys from the correct column names of Hierarchy Subscribers
 						// table
 						HierarchySelected = this.replaceHierarchyColumns(HierarchySelected, "Data");
@@ -234,8 +217,6 @@ public class CLIOutage
 						String numOfRowsFound = dbs.numberOfRowsFound(table, Help_Func.hierarchyKeys(HierarchySelected),
 								Help_Func.hierarchyValues(HierarchySelected),
 								Help_Func.hierarchyStringTypes(HierarchySelected));
-
-						System.out.println("numOfRowsFound = " + numOfRowsFound);
 
 						// Scheduled No & Rows Found
 						if (Integer.parseInt(numOfRowsFound) > 0 && Scheduled.equals("No"))
