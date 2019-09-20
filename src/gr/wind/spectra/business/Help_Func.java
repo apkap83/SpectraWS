@@ -192,7 +192,6 @@ public class Help_Func
 		elementHierarchy.add(technology);
 		int numOfParts = parts.length;
 
-		System.out.println("Number of Parts: " + numOfParts);
 		for (int i = 0; i < numOfParts; i++)
 		{
 			if (i == 0)
@@ -214,10 +213,6 @@ public class Help_Func
 		}
 
 		elementHierarchy.add(SQLExpression);
-
-		System.out.println("Part I: " + elementHierarchy.get(0));
-		System.out.println("Part II: " + elementHierarchy.get(1));
-
 		return elementHierarchy;
 	}
 
@@ -320,11 +315,6 @@ public class Help_Func
 				// System.out.println("Part 7 " + UniqueHierarchy + multipleItems[k]);
 				myList.add(UniqueHierarchy + multipleItems[k]);
 			}
-		}
-
-		for (String item : myList)
-		{
-			System.out.println(item);
 		}
 
 		return myList;
@@ -683,7 +673,6 @@ public class Help_Func
 		// System.out.println(Help_Func.ConCatHierarchy(nodeNamesArrayList,
 		// nodeValuesArrayList, hierarchyFullPathList));
 
-		System.out.println(generateANDPredicateQuestionMarks(new String[] { "a", "b", "c", "d" }));
 	}
 
 }

@@ -56,7 +56,7 @@ public class DB_Connection
 			// DataSource ds = (DataSource) ctx.lookup("mySQLJDBCResource");
 			// conn = ds.getConnection();
 
-			logger.info("DB Connection established!");
+			logger.debug("DB Connection established!");
 			// Do something with the Connection
 
 		} catch (Exception ex)
@@ -83,7 +83,7 @@ public class DB_Connection
 
 	public void closeDBConnection() throws Exception
 	{
-		logger.info("Closing DB Connection");
+		logger.debug("Closing DB Connection");
 		conn.close();
 	}
 

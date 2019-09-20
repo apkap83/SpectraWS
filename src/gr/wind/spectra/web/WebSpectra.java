@@ -12,6 +12,10 @@ import javax.jws.WebResult;
 import javax.jws.WebService;
 import javax.xml.bind.annotation.XmlElement;
 
+//Import log4j classes.
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import gr.wind.spectra.business.CLIOutage;
 import gr.wind.spectra.business.DB_Connection;
 import gr.wind.spectra.business.DB_Operations;
@@ -30,6 +34,9 @@ public class WebSpectra implements InterfaceWebSpectra
 	private DB_Connection conObj;
 	private Connection conn;
 	private DB_Operations dbs;
+
+	// Logger instance
+	private static final Logger logger = LogManager.getLogger(gr.wind.spectra.web.WebSpectra.class.getName());
 
 	public WebSpectra()
 	{
@@ -432,9 +439,6 @@ public class WebSpectra implements InterfaceWebSpectra
 
 					incidentDataCustomersAffected += Integer.parseInt(dataCustomersAffected);
 					incidentVoiceCustomersAffected += Integer.parseInt(voiceCustomersAffected);
-
-					System.out.println("incidentDataCustomersAffected = " + incidentDataCustomersAffected);
-					System.out.println("incidentVoiceCustomersAffected = " + incidentVoiceCustomersAffected);
 				}
 			}
 
@@ -474,10 +478,6 @@ public class WebSpectra implements InterfaceWebSpectra
 						"SubmittedIncidents", "IncidentAffectedDataCustomers", new String[] { "IncidentID" },
 						new String[] { IncidentID });
 
-				System.out.println("numberOfVoiceCustAffectedFromPreviousIncidents = "
-						+ numberOfVoiceCustAffectedFromPreviousIncidents);
-				System.out.println("numberOfDataCustAffectedFromPreviousIncidents = "
-						+ numberOfDataCustAffectedFromPreviousIncidents);
 			}
 
 			for (String service : servicesAffected)
@@ -812,8 +812,6 @@ public class WebSpectra implements InterfaceWebSpectra
 						.toArray(new String[listOfValuesForUpdate.size()]);
 				String[] arrayOfDataTypesForUpdate = listOfDataTypesForUpdate
 						.toArray(new String[listOfDataTypesForUpdate.size()]);
-
-				System.out.println("incidentIsScheduled = " + incidentIsScheduled);
 
 				// Update Start/End Times ONLY for Scheduled Incidents
 				if (!incidentIsScheduled && (!Help_Func.checkIfEmpty("StartTime", StartTime)
