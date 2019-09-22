@@ -56,6 +56,10 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/opencsv-3.3-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/opencsv-3.3-sources.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

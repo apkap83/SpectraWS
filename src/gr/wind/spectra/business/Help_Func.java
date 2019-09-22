@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 import gr.wind.spectra.web.InvalidInputException;
 
@@ -636,43 +637,90 @@ public class Help_Func
 		return output;
 	}
 
+	/**
+	 * Checks if hierarchyGiven start with: Cabinet_Code or Wind_FTTX or
+	 * FTTC_Location_Element
+	 *
+	 * @param hierarchyGiven
+	 * @return
+	 */
+	public static String determineWSAffected(String hierarchyGiven)
+	{
+		String output = "";
+		Pattern.compile("^Cabinet_Code");
+		Pattern.compile("Wind_FTTX");
+		Pattern.compile("^FTTC_Location_Element");
+
+		boolean b1, b2, b3;
+		b1 = b2 = b3 = false;
+
+		if (hierarchyGiven.startsWith("Cabinet_Code"))
+		{
+			b1 = true;
+		}
+		if (hierarchyGiven.startsWith("Wind_FTTX"))
+		{
+			b2 = true;
+		}
+		if (hierarchyGiven.startsWith("FTTC_Location_Element"))
+		{
+			b3 = true;
+		}
+
+		if (b1 || b2 || b3)
+		{
+			output = "Yes";
+		} else
+		{
+			output = "No";
+		}
+
+		return output;
+	}
+
 	public static void main(String[] args)
 	{
-
-		// System.out.println(Help_Func.ReplaceHierarchyForSubscribersAffected("FTTX->OltElementName=LAROAKDMOLT01->OltSlot=1->OltPort=0->Onu=0->ElementName=LAROAKDMOFLND010H11",
-		// new String[]
-		// {"OltElementName","OltSlot","OltPort","Onu","ActiveElement","Slot"}));
-
-		// HierarchyStringToANDPredicates("FTTX=1->OLTElementName=ATHOKRDLOLT01->OltSlot=4");
-		// System.out.println("Starting...");
-		// GetHierarchySelections("FTTX=1->OLTElementName=ATHOKRDLOLT01->OltSlot=1|OltSlot=2%OLT=1->OLTElementName=ATHOKRDLOLT01->OltSlot=3|OltSlot=4");
-		// FTTX=1->OLTElementName=ATHOKRDLOLT01->OltSlot=1
-		// String out =
-		// HierarchyToPredicate("FTTX=1->OLTElementName=ATHOKRDLOLT01->OltSlot=1");
-		// System.out.println(out);
-		// System.out.println(Help_Func.HierarchyToPredicate("FTTX->OltElementName=ak->something=3"));
-
-		/*
-		 * ArrayList<String> nodeNamesArrayList = new ArrayList<String>();
-		 * ArrayList<String> nodeValuesArrayList = new ArrayList<String>();
-		 *
-		 * nodeNamesArrayList.add("FTTX"); nodeValuesArrayList.add("1");
-		 *
-		 * nodeNamesArrayList.add("OltElementName");
-		 * nodeValuesArrayList.add("Somethin1");
-		 *
-		 * nodeNamesArrayList.add("OltSlot"); nodeValuesArrayList.add("Something2");
-		 */
-		// FTTX->OltElementName=LAROAKDMOLT01->OltSlot=1->OltPort=0->Onu=0->ElementName=LAROAKDMOFLND010H11->Slot=4
-		// String[] hierarchyFullPathList = {"OltElementName", "OltSlot", "OltPort",
-		// "Onu", "ElementName", "Slot"};
-		// String[] nodeNamesArrayList =
-		// {"FTTX","OltElementName","OltSlot","OltPort","Onu","ElementName", "Slot"};
-		// String[] nodeValuesArrayList =
-		// {"1","LAROAKDMOLT01","1","0","0","LAROAKDMOFLND010H11", "5"};
-		// System.out.println(Help_Func.ConCatHierarchy(nodeNamesArrayList,
-		// nodeValuesArrayList, hierarchyFullPathList));
-
+		String givenHierarchy = "Wind_FTTX->OltElementName=LAROAKDMOLT01";
+		System.out.println(Help_Func.determineWSAffected(givenHierarchy));
 	}
+
+	// public static void main(String[] args)
+	// {
+
+	// System.out.println(Help_Func.ReplaceHierarchyForSubscribersAffected("FTTX->OltElementName=LAROAKDMOLT01->OltSlot=1->OltPort=0->Onu=0->ElementName=LAROAKDMOFLND010H11",
+	// new String[]
+	// {"OltElementName","OltSlot","OltPort","Onu","ActiveElement","Slot"}));
+
+	// HierarchyStringToANDPredicates("FTTX=1->OLTElementName=ATHOKRDLOLT01->OltSlot=4");
+	// System.out.println("Starting...");
+	// GetHierarchySelections("FTTX=1->OLTElementName=ATHOKRDLOLT01->OltSlot=1|OltSlot=2%OLT=1->OLTElementName=ATHOKRDLOLT01->OltSlot=3|OltSlot=4");
+	// FTTX=1->OLTElementName=ATHOKRDLOLT01->OltSlot=1
+	// String out =
+	// HierarchyToPredicate("FTTX=1->OLTElementName=ATHOKRDLOLT01->OltSlot=1");
+	// System.out.println(out);
+	// System.out.println(Help_Func.HierarchyToPredicate("FTTX->OltElementName=ak->something=3"));
+
+	/*
+	 * ArrayList<String> nodeNamesArrayList = new ArrayList<String>();
+	 * ArrayList<String> nodeValuesArrayList = new ArrayList<String>();
+	 *
+	 * nodeNamesArrayList.add("FTTX"); nodeValuesArrayList.add("1");
+	 *
+	 * nodeNamesArrayList.add("OltElementName");
+	 * nodeValuesArrayList.add("Somethin1");
+	 *
+	 * nodeNamesArrayList.add("OltSlot"); nodeValuesArrayList.add("Something2");
+	 */
+	// FTTX->OltElementName=LAROAKDMOLT01->OltSlot=1->OltPort=0->Onu=0->ElementName=LAROAKDMOFLND010H11->Slot=4
+	// String[] hierarchyFullPathList = {"OltElementName", "OltSlot", "OltPort",
+	// "Onu", "ElementName", "Slot"};
+	// String[] nodeNamesArrayList =
+	// {"FTTX","OltElementName","OltSlot","OltPort","Onu","ElementName", "Slot"};
+	// String[] nodeValuesArrayList =
+	// {"1","LAROAKDMOLT01","1","0","0","LAROAKDMOFLND010H11", "5"};
+	// System.out.println(Help_Func.ConCatHierarchy(nodeNamesArrayList,
+	// nodeValuesArrayList, hierarchyFullPathList));
+
+	// }
 
 }

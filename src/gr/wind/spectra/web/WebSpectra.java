@@ -89,8 +89,6 @@ public class WebSpectra implements InterfaceWebSpectra
 				throw new InvalidInputException("User name or Password incorrect!", "Error 100");
 			}
 
-			wb.dbs.start();
-
 			// Check if Required fields are empty
 			Help_Func.validateNotEmpty("RequestID", RequestID);
 			Help_Func.validateNotEmpty("SystemID", SystemID);
@@ -116,7 +114,8 @@ public class WebSpectra implements InterfaceWebSpectra
 				String[] nodeNames = new String[] {};
 				String[] nodeValues = new String[] {};
 				ProductOfGetHierarchy pr = new ProductOfGetHierarchy(wb.dbs, new String[] {}, new String[] {},
-						new String[] {}, Hierarchy, "rootElements", ElementsList, nodeNames, nodeValues, RequestID);
+						new String[] {}, Hierarchy, "rootElements", ElementsList, nodeNames, nodeValues, RequestID,
+						"No");
 				prodElementsList.add(pr);
 			} else
 			{
@@ -184,9 +183,11 @@ public class WebSpectra implements InterfaceWebSpectra
 
 					String[] nodeNames = new String[] { rootElementInHierarchy };
 					String[] nodeValues = new String[] { "1" };
+
 					ProductOfGetHierarchy pr = new ProductOfGetHierarchy(wb.dbs, fullHierarchyFromDBSplit,
 							fullDataSubsHierarchyFromDBSplit, fullVoiceSubsHierarchyFromDBSplit, Hierarchy,
-							fullHierarchyFromDBSplit[0], ElementsList, nodeNames, nodeValues, RequestID);
+							fullHierarchyFromDBSplit[0], ElementsList, nodeNames, nodeValues, RequestID,
+							Help_Func.determineWSAffected(Hierarchy));
 					prodElementsList.add(pr);
 				} else
 				{
@@ -223,7 +224,7 @@ public class WebSpectra implements InterfaceWebSpectra
 						ProductOfGetHierarchy pr = new ProductOfGetHierarchy(wb.dbs, fullHierarchyFromDBSplit,
 								fullDataSubsHierarchyFromDBSplit, fullVoiceSubsHierarchyFromDBSplit, Hierarchy,
 								fullHierarchyFromDBSplit[hierItemsGiven.length - 1], ElementsList, nodeNames,
-								nodeValues, RequestID);
+								nodeValues, RequestID, Help_Func.determineWSAffected(Hierarchy));
 						prodElementsList.add(pr);
 					} else
 					{ // Max Hierarchy Level
@@ -247,7 +248,8 @@ public class WebSpectra implements InterfaceWebSpectra
 						String[] nodeValues = nodeValuesArrayList.toArray(new String[nodeValuesArrayList.size()]);
 						ProductOfGetHierarchy pr = new ProductOfGetHierarchy(wb.dbs, fullHierarchyFromDBSplit,
 								fullDataSubsHierarchyFromDBSplit, fullVoiceSubsHierarchyFromDBSplit, Hierarchy,
-								"MaxLevel", ElementsList, nodeNames, nodeValues, RequestID);
+								"MaxLevel", ElementsList, nodeNames, nodeValues, RequestID,
+								Help_Func.determineWSAffected(Hierarchy));
 						prodElementsList.add(pr);
 					}
 				}

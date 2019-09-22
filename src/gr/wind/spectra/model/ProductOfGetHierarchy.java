@@ -1,6 +1,7 @@
 package gr.wind.spectra.model;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -14,7 +15,7 @@ import gr.wind.spectra.web.InvalidInputException;
 
 @XmlRootElement(name = "Element")
 @XmlType(name = "basicStruct", propOrder = { "requestID", "type", "item", "hierarchySelected", "dataCustomersAffected",
-		"voiceCustomersAffected", "clisAffected", "activeDataCustomersAffected", "tvCustomersAffected" })
+		"voiceCustomersAffected", "clisAffected", "activeDataCustomersAffected", "tvCustomersAffected", "wsAffected" })
 public class ProductOfGetHierarchy
 {
 
@@ -26,7 +27,7 @@ public class ProductOfGetHierarchy
 
 	private String activeDataCustomersAffected = "none";
 	private String tvCustomersAffected = "none";
-
+	private String wsAffected = "none";
 	private String requestID;
 	private String hierarchyProvided;
 	private String[] nodeNames;
@@ -44,7 +45,8 @@ public class ProductOfGetHierarchy
 
 	public ProductOfGetHierarchy(DB_Operations dbs, String[] hierarchyFullPathList, String[] fullDataHierarchyPath,
 			String[] fullVoiceHierarchyPath, String hierarchyProvided, String type, List<String> items,
-			String[] nodeNames, String[] nodeValues, String requestID) throws SQLException, InvalidInputException
+			String[] nodeNames, String[] nodeValues, String requestID, String WSAffected)
+			throws SQLException, InvalidInputException
 	{
 
 		this.hierarchyProvided = hierarchyProvided;
@@ -53,8 +55,11 @@ public class ProductOfGetHierarchy
 		this.nodeNames = nodeNames;
 		this.nodeValues = nodeValues;
 		this.requestID = requestID;
+		this.wsAffected = WSAffected;
 		this.hierarchyFullPathList = hierarchyFullPathList;
 		this.hierElements = hierarchyProvided.split("->");
+
+		System.out.println("hierarchyFullPathList = " + Arrays.toString(hierarchyFullPathList));
 
 		// If hierarchyProvided is null then return only values provided
 		if (this.hierarchyProvided == null || this.hierarchyProvided.equals("") || this.hierarchyProvided.equals("?"))
@@ -125,6 +130,17 @@ public class ProductOfGetHierarchy
 				new String[] { "String" });
 		s.start();
 
+	}
+
+	@XmlElement(name = "wsAffected")
+	public String getwsAffected()
+	{
+		return this.wsAffected;
+	}
+
+	public void setWSAffected(String wSAffected)
+	{
+		this.wsAffected = wSAffected;
 	}
 
 	@XmlElement(name = "activeDataCustomersAffected")

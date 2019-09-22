@@ -1,11 +1,5 @@
 package gr.wind.spectra.business;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,7 +10,6 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 //Import log4j classes.
@@ -25,7 +18,7 @@ import org.apache.logging.log4j.Logger;
 
 import gr.wind.spectra.web.InvalidInputException;
 
-public class DB_Operations extends Thread
+public class DB_Operations
 {
 	// Logger instance
 	private static final Logger logger = LogManager.getLogger(gr.wind.spectra.business.DB_Operations.class.getName());
@@ -37,22 +30,6 @@ public class DB_Operations extends Thread
 	public DB_Operations(Connection conn)
 	{
 		this.conn = conn;
-	}
-
-	@Override
-	public void run()
-	{
-		System.out.println("New Thread is created here!");
-		Charset utf8 = StandardCharsets.UTF_8;
-		List<String> lines = Arrays.asList("1st line", "2nd line");
-		try
-		{
-			Files.write(Paths.get("MyExportFile.txt"), lines, utf8, StandardOpenOption.CREATE,
-					StandardOpenOption.APPEND);
-		} catch (IOException e)
-		{
-			e.printStackTrace();
-		}
 	}
 
 	public boolean checkIfStringExistsInSpecificColumn(String table, String columnName, String searchValue)
