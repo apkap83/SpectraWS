@@ -289,7 +289,6 @@ public class WebSpectra implements InterfaceWebSpectra
 			throws Exception, InvalidInputException
 	{
 		WebSpectra wb = new WebSpectra();
-		logger.error("Just entered SubmitOutage from LIVE Project");
 		try
 		{
 			wb.establishDBConnection();
