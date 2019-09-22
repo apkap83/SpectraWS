@@ -4,8 +4,10 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import gr.wind.spectra.web.InvalidInputException;
@@ -678,10 +680,66 @@ public class Help_Func
 		return output;
 	}
 
-	public static void main(String[] args)
+	public static String declineSubmissionOnCertainHierarchyLevels(List<String> hierarchiesSubmitted)
+			throws InvalidInputException
 	{
-		String givenHierarchy = "Wind_FTTX->OltElementName=LAROAKDMOLT01";
-		System.out.println(Help_Func.determineWSAffected(givenHierarchy));
+		/**
+		 * Blacklisted for Submission Hierarchies 1.
+		 * Wind_FTTX->OltElementName=ATHOKRDLOLT01->OltSlot=11->OltPort=10->Onu=1 2.
+		 * FTTC_Location_Element->SiteName=AKADIMIAS
+		 */
+		ArrayList<String> hierarchyBlackList1 = new ArrayList<String>();
+		hierarchyBlackList1.add("Wind_FTTX");
+		hierarchyBlackList1.add("OltElementName");
+		hierarchyBlackList1.add("OltSlot");
+		hierarchyBlackList1.add("OltPort");
+		hierarchyBlackList1.add("Onu");
+
+		ArrayList<String> hierarchyBlackList2 = new ArrayList<String>();
+		hierarchyBlackList2.add("FTTC_Location_Element");
+		hierarchyBlackList2.add("SiteName");
+
+		System.out.println("hierarchiesSubmitted = " + Arrays.toString(hierarchiesSubmitted.toArray()));
+		for (int i = 0; i < hierarchiesSubmitted.size(); i++)
+		{
+			ArrayList<String> hierarchyLevelSubmitted = new ArrayList<String>();
+
+			// Check Hierarchy Format Key_Value Pairs
+			Help_Func.checkHierarchyFormatKeyValuePairs(hierarchiesSubmitted.get(i).toString());
+
+			// FTTX=1->OLTElementName=ATHOKRDLOLT01->OltSlot=1
+			// Split it on '->'
+			String[] hierarchiesSubmittedSplitted = hierarchiesSubmitted.get(i).split("->");
+
+			// foreach element delimited by '->'
+			for (int j = 0; j < hierarchiesSubmittedSplitted.length; j++)
+			{
+				// FTTX=1->OLTElementName=ATHOKRDLOLT01->OltSlot=1
+				// Split it on '='
+				String[] keyValuePairs = hierarchiesSubmittedSplitted[j].split("=");
+				hierarchyLevelSubmitted.add(keyValuePairs[0]);
+			}
+
+			System.out.println("hierarchyLevelSubmitted = " + Arrays.toString(hierarchyLevelSubmitted.toArray()));
+
+			if (hierarchyBlackList1.equals(hierarchyLevelSubmitted)
+					|| hierarchyBlackList2.equals(hierarchyLevelSubmitted))
+			{
+				throw new InvalidInputException(
+						"You cannot submit incident at this specific hierarchy level - Please choose one level Up or Down from this level",
+						"Error 447");
+			}
+
+		}
+
+		return null;
+	}
+
+	public static void main(String[] args) throws InvalidInputException
+	{
+		ArrayList<String> myList = new ArrayList<String>();
+		myList.add("FTTC_Location_Element->SiteName=AKADIMIAS");
+		Help_Func.declineSubmissionOnCertainHierarchyLevels(myList);
 	}
 
 	// public static void main(String[] args)

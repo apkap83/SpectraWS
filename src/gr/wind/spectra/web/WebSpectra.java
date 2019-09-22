@@ -356,6 +356,12 @@ public class WebSpectra implements InterfaceWebSpectra
 			// Services affected
 			String[] servicesAffected = AffectedServices.split("\\|");
 
+			/**
+			 * 	•	Exception 1 : RootHierarchyNode = Wind_FTTX , HierarchyTableNamePath : 'OltElementName->OltSlot->OltPort->Onu
+			 *	•	Exception 2 : RootHierarchyNode = FTTC_Location_Element , HierarchyTableNamePath : Site Name
+			 */
+			Help_Func.declineSubmissionOnCertainHierarchyLevels(myHier);
+
 			// Calculate Total number per Indicent, of customers affected per incident
 			int incidentDataCustomersAffected = 0;
 			int incidentVoiceCustomersAffected = 0;
@@ -462,8 +468,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			}
 
 			// Calculate Sum of Voice/Data Customers affected for potentially already
-			// openned
-			// same incident
+			// opened same incident
 			String numberOfVoiceCustAffectedFromPreviousIncidents = "0";
 			String numberOfDataCustAffectedFromPreviousIncidents = "0";
 

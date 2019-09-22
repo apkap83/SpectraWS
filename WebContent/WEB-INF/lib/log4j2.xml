@@ -70,7 +70,7 @@
             <!-- <AppenderRef ref="Console" /> -->
         </Logger>
 				 
-        <Root level="info">
+        <Root level="debug">
             <AppenderRef ref="Console"/>
 			<!-- <AppenderRef ref="WebSpectraLog"/> -->
 			<!-- <AppenderRef ref="ModelLog"/> -->
