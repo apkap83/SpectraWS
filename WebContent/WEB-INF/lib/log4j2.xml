@@ -1,81 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN" monitorInterval="30">
  
-    <!-- Logging Properties -->
     <Properties>
         <Property name="LOG_PATTERN">%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} %p %m%n</Property>
-        <Property name="APP_LOG_ROOT">/opt/glassfish5/glassfish/domains/domain1/logs</Property>
+		<Property name="APP_LOG_ROOT">/opt/glassfish5/glassfish/domains/domain1/logs</Property>
     </Properties>
-     
+ 
     <Appenders>
-        <!-- Console Appender -->
+ 
         <Console name="Console" target="SYSTEM_OUT" follow="true">
             <PatternLayout pattern="${LOG_PATTERN}"/>
         </Console>
          
-        <!-- File Appenders on need basis -->
-        <RollingFile name="WebSpectraLog" fileName="${APP_LOG_ROOT}/WebSpectra.log"
-            filePattern="${APP_LOG_ROOT}/WebSpectra-%d{yyyy-MM-dd}-%i.log">
-            <!-- <LevelRangeFilter minLevel="TRACE" maxLevel="FATAL" onMatch="ACCEPT" onMismatch="DENY"/> -->
+        <RollingFile name="spectraLog" fileName="${sys:APP_LOG_ROOT}/spectra.log"
+            filePattern="${sys:APP_LOG_ROOT}/spectra-%d{yyyy-MM-dd}-%i.log">
             <PatternLayout pattern="${LOG_PATTERN}"/>
             <Policies>
                 <SizeBasedTriggeringPolicy size="19500KB" />
             </Policies>
-            <DefaultRolloverStrategy max="40"/>
+            <DefaultRolloverStrategy max="10"/>
         </RollingFile>
-
-        <RollingFile name="ModelLog" fileName="${APP_LOG_ROOT}/Model.log"
-            filePattern="${APP_LOG_ROOT}/Model-%d{yyyy-MM-dd}-%i.log">
-            <!-- <LevelRangeFilter minLevel="TRACE" maxLevel="FATAL" onMatch="ACCEPT" onMismatch="DENY"/> -->
-            <PatternLayout pattern="${LOG_PATTERN}"/>
-            <Policies>
-                <SizeBasedTriggeringPolicy size="19500KB" />
-            </Policies>
-            <DefaultRolloverStrategy max="40"/>
-        </RollingFile>
-
-        <RollingFile name="BusinessLog" fileName="${APP_LOG_ROOT}/Business.log"
-            filePattern="${APP_LOG_ROOT}/Model-%d{yyyy-MM-dd}-%i.log">
-            <!-- <LevelRangeFilter minLevel="TRACE" maxLevel="FATAL" onMatch="ACCEPT" onMismatch="DENY"/> -->
-            <PatternLayout pattern="${LOG_PATTERN}"/>
-            <Policies>
-                <SizeBasedTriggeringPolicy size="19500KB" />
-            </Policies>
-            <DefaultRolloverStrategy max="40"/>
-        </RollingFile>
-
-        <RollingFile name="NLURequestsLog" fileName="${APP_LOG_ROOT}/NLURequests.log"
-            filePattern="${APP_LOG_ROOT}/Model-%d{yyyy-MM-dd}-%i.log">
-            <!-- <LevelRangeFilter minLevel="TRACE" maxLevel="FATAL" onMatch="ACCEPT" onMismatch="DENY"/> -->
-            <PatternLayout pattern="${LOG_PATTERN}"/>
-            <Policies>
-                <SizeBasedTriggeringPolicy size="19500KB" />
-            </Policies>
-            <DefaultRolloverStrategy max="40"/>
-        </RollingFile>
+     
+         
     </Appenders>
+ 
     <Loggers>
-        <Logger name="gr.wind.spectra.web.WebSpectra" level="trace">
-            <AppenderRef ref="WebSpectraLog" />
-            <!-- <AppenderRef ref="Console" /> -->
+     
+        <Logger name="gr" additivity="false" level="all">
+            <AppenderRef ref="spectraLog" />
         </Logger>
-
-        <Logger name="gr.wind.spectra.model" level="trace">
-            <AppenderRef ref="ModelLog" />
-            <!-- <AppenderRef ref="Console" /> -->
-        </Logger>
-
-        <Logger name="gr.wind.spectra.business.CLIOutage" level="trace">
-            <AppenderRef ref="NLURequestsLog" />
-            <!-- <AppenderRef ref="Console" /> -->
-        </Logger>
-				 
-        <Root level="debug">
+                 
+        <Root level="all">
             <AppenderRef ref="Console"/>
-			<!-- <AppenderRef ref="WebSpectraLog"/> -->
-			<!-- <AppenderRef ref="ModelLog"/> -->
-			<!-- <AppenderRef ref="BusinessLog"/> -->
         </Root>
+ 
     </Loggers>
  
 </Configuration>

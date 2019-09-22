@@ -12,6 +12,9 @@ import javax.jws.WebResult;
 import javax.jws.WebService;
 import javax.xml.bind.annotation.XmlElement;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import gr.wind.spectra.business.CLIOutage;
 import gr.wind.spectra.business.DB_Connection;
 import gr.wind.spectra.business.DB_Operations;
@@ -26,14 +29,13 @@ import gr.wind.spectra.model.ProductOfSubmission;
 @WebService(endpointInterface = "gr.wind.spectra.web.InterfaceWebSpectra")
 public class WebSpectra implements InterfaceWebSpectra
 {
+	// Logger instance
+	private static final Logger logger = LogManager.getLogger(gr.wind.spectra.web.WebSpectra.class.getName());
+
 	private static final String hierSep = "->";
 	private DB_Connection conObj;
 	private Connection conn;
 	private DB_Operations dbs;
-
-	// Logger instance
-	// private static final Logger logger =
-	// LogManager.getLogger(gr.wind.spectra.web.WebSpectra.class.getName());
 
 	public WebSpectra()
 	{
@@ -287,7 +289,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			throws Exception, InvalidInputException
 	{
 		WebSpectra wb = new WebSpectra();
-
+		logger.error("Just entered SubmitOutage from LIVE Project");
 		try
 		{
 			wb.establishDBConnection();
