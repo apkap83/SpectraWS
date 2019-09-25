@@ -327,12 +327,15 @@ public class WebSpectra implements InterfaceWebSpectra
 			Help_Func.validateAgainstPredefinedValues("Scheduled", Scheduled, new String[] { "Yes", "No" });
 
 			// If the submitted incident is scheduled then it should always has "EndTime"
-			/*
-			 * if (Scheduled.equals("Yes")) { if (Help_Func.checkIfEmpty("EndTime",
-			 * EndTime)) { throw new
-			 * InvalidInputException("Scheduled incidents should always contain Start Time and End Time"
-			 * , "Error 172"); } }
-			 */
+			if (Scheduled.equals("Yes"))
+			{
+				if (Help_Func.checkIfEmpty("EndTime", EndTime))
+				{
+					throw new InvalidInputException("Scheduled incidents should always contain Start Time and End Time",
+							"Error 172");
+				}
+			}
+
 			Help_Func.validateIntegerOrEmptyValue("Duration", Duration);
 
 			Help_Func.validateNotEmpty("AffectedServices", AffectedServices);
@@ -569,6 +572,8 @@ public class WebSpectra implements InterfaceWebSpectra
 							+ Integer.parseInt(numberOfDataCustAffectedFromPreviousIncidents);
 
 					// Insert Values in Database
+					//System.out.println("25 SEP 2019 Start Time = " + StartTime);
+					//System.out.println("25 SEP 2019 Start Time = " + EndTime);
 					wb.dbs.insertValuesInTable("SubmittedIncidents",
 							new String[] { "DateTime", "OutageID", "IncidentStatus", "RequestTimestamp", "SystemID",
 									"UserID", "IncidentID", "Scheduled", "StartTime", "EndTime", "Duration",
@@ -985,7 +990,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			}
 
 			CLIOutage co = new CLIOutage(wb.dbs, RequestID);
-			ponla = co.checkCLIOutage(CLI, Service);
+			ponla = co.checkCLIOutage(RequestID, CLI, Service);
 
 		} finally
 		{
