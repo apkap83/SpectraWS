@@ -13,7 +13,7 @@
         </Console>
          
         <RollingFile name="remedyRequestsLog" fileName="${sys:APP_LOG_ROOT}/remedy_requests.log"
-            filePattern="${sys:APP_LOG_ROOT}/spectra-%d{yyyy-MM-dd}-%i.log">
+            filePattern="${sys:APP_LOG_ROOT}/remedy_requests-%d{yyyy-MM-dd}-%i.log">
             <PatternLayout pattern="${LOG_PATTERN}"/>
             <Policies>
                 <SizeBasedTriggeringPolicy size="19500KB" />
@@ -22,7 +22,7 @@
         </RollingFile>
 
         <RollingFile name="nluRequestsLog" fileName="${sys:APP_LOG_ROOT}/nlu_requests.log"
-            filePattern="${sys:APP_LOG_ROOT}/spectra-%d{yyyy-MM-dd}-%i.log">
+            filePattern="${sys:APP_LOG_ROOT}/nlu_requests-%d{yyyy-MM-dd}-%i.log">
             <PatternLayout pattern="${LOG_PATTERN}"/>
             <Policies>
                 <SizeBasedTriggeringPolicy size="19500KB" />
@@ -34,13 +34,26 @@
  
     <Loggers>
      
-        <Logger name="gr" additivity="false" level="all">
+        <Logger name="gr.wind.spectra.business.CLIOutage" additivity="false" level="info">
+            <AppenderRef ref="nluRequestsLog" />
+        </Logger>
+
+        <Logger name="gr.wind.spectra.web.WebSpectra" additivity="false" level="info">
             <AppenderRef ref="remedyRequestsLog" />
         </Logger>
 
-        <Logger name="gr.wind.spectra.business.CLIOutage" additivity="false" level="all">
-            <AppenderRef ref="nluRequestsLog" />
+        <Logger name="gr.wind.spectra.business.DB_Operations" additivity="false" level="info">
+            <AppenderRef ref="remedyRequestsLog" />
         </Logger>
+
+        <Logger name="gr.wind.spectra.business.DB_Connection" additivity="false" level="info">
+            <AppenderRef ref="remedyRequestsLog" />
+        </Logger>
+
+        <Logger name="gr.wind.spectra.business.MyDataSource" additivity="false" level="info">
+            <AppenderRef ref="remedyRequestsLog" />
+        </Logger>
+
                  
         <Root level="all">
             <AppenderRef ref="Console"/>

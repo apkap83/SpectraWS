@@ -53,6 +53,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			this.dbs = new DB_Operations(conn);
 		} catch (Exception ex)
 		{
+			logger.fatal("Could not open connection with database!");
 			throw new Exception(ex.getMessage());
 		}
 	}
@@ -82,12 +83,15 @@ public class WebSpectra implements InterfaceWebSpectra
 		try
 		{
 			wb.establishDBConnection();
+			logger.trace("ReqID: " + RequestID + " - Get Hierarchy: Establishing DB Connection");
 			List<String> ElementsList = new ArrayList<String>();
 			List<ProductOfGetHierarchy> prodElementsList = new ArrayList<>();
 
 			// Check if Authentication credentials are correct.
 			if (!wb.dbs.authenticateRequest(UserName, Password))
 			{
+				logger.error("ReqID: " + RequestID + "Get Hierarchy: - Wrong credentials provided - UserName: "
+						+ UserName + " Password: " + Password);
 				throw new InvalidInputException("User name or Password incorrect!", "Error 100");
 			}
 
@@ -260,6 +264,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			return prodElementsList;
 		} finally
 		{
+			logger.trace("ReqID: " + RequestID + " - Get Hierarchy: Closing DB Connection");
 			wb.conObj.closeDBConnection();
 		}
 
@@ -292,12 +297,15 @@ public class WebSpectra implements InterfaceWebSpectra
 		try
 		{
 			wb.establishDBConnection();
+			logger.trace("ReqID: " + RequestID + " - Submit Outage: Establishing DB Connection");
 			List<ProductOfSubmission> prodElementsList;
 			prodElementsList = new ArrayList<>();
 			int OutageID_Integer = 0;
 			// Check if Authentication credentials are correct.
 			if (!wb.dbs.authenticateRequest(UserName, Password))
 			{
+				logger.error("ReqID: " + RequestID + "Submit Outage: - Wrong credentials provided - UserName: "
+						+ UserName + " Password: " + Password);
 				throw new InvalidInputException("User name or Password incorrect!", "Error 100");
 			}
 
@@ -607,7 +615,8 @@ public class WebSpectra implements InterfaceWebSpectra
 
 		} finally
 		{
-			// wb.conObj.closeDBConnection();
+			logger.trace("ReqID: " + RequestID + " - Submit Outage: Closing DB Connection");
+			wb.conObj.closeDBConnection();
 		}
 	}
 
@@ -627,6 +636,7 @@ public class WebSpectra implements InterfaceWebSpectra
 		try
 		{
 			wb.establishDBConnection();
+			logger.trace("ReqID: " + RequestID + " - Get Outage Status: Establishing DB Connection");
 			List<ProductOfGetOutage> prodElementsList;
 			prodElementsList = new ArrayList<>();
 
@@ -637,6 +647,8 @@ public class WebSpectra implements InterfaceWebSpectra
 			// Check if Authentication credentials are correct.
 			if (!wb.dbs.authenticateRequest(UserName, Password))
 			{
+				logger.error("ReqID: " + RequestID + "Get Outage Status: - Wrong credentials provided - UserName: "
+						+ UserName + " Password: " + Password);
 				throw new InvalidInputException("User name or Password incorrect!", "Error 100");
 			}
 
@@ -700,6 +712,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			return prodElementsList;
 		} finally
 		{
+			logger.trace("ReqID: " + RequestID + " - Get Outage Status: Closing DB Connection");
 			wb.conObj.closeDBConnection();
 		}
 	}
@@ -727,9 +740,12 @@ public class WebSpectra implements InterfaceWebSpectra
 		try
 		{
 			wb.establishDBConnection();
+			logger.trace("ReqID: " + RequestID + " - Modify Outage: Establishing DB Connection");
 			// Check if Authentication credentials are correct.
 			if (!wb.dbs.authenticateRequest(UserName, Password))
 			{
+				logger.error("ReqID: " + RequestID + "Modify Outage: - Wrong credentials provided - UserName: "
+						+ UserName + " Password: " + Password);
 				throw new InvalidInputException("User name or Password incorrect!", "Error 100");
 			}
 
@@ -857,6 +873,7 @@ public class WebSpectra implements InterfaceWebSpectra
 		} finally
 		{
 			// Close DB Connection
+			logger.trace("ReqID: " + RequestID + " - Modify Outage: Closing DB Connection");
 			wb.conObj.closeDBConnection();
 		}
 	}
@@ -875,13 +892,17 @@ public class WebSpectra implements InterfaceWebSpectra
 			throws Exception, InvalidInputException
 	{
 		WebSpectra wb = new WebSpectra();
-
+		int numOfRowsUpdated = 0;
+		logger.info("ReqID: " + RequestID + " - Close Outage: INCID: " + IncidentID + " OutageID: " + OutageID);
 		try
 		{
 			wb.establishDBConnection();
+			logger.trace("ReqID: " + RequestID + " - Close Outage: Establishing DB Connection");
 			// Check if Authentication credentials are correct.
 			if (!wb.dbs.authenticateRequest(UserName, Password))
 			{
+				logger.error("ReqID: " + RequestID + " - Close Outage: - Wrong credentials provided - UserName: "
+						+ UserName + " Password: " + Password);
 				throw new InvalidInputException("User name or Password incorrect!", "Error 100");
 			}
 
@@ -903,6 +924,8 @@ public class WebSpectra implements InterfaceWebSpectra
 
 			if (incidentPlusOutageExists)
 			{
+				logger.info(
+						"ReqID: " + RequestID + " - Close Outage: for INCID: " + IncidentID + " OutageID: " + OutageID);
 
 				// Check if the combination of IncidentID & OutageID is still OPEN
 				boolean incidentPlusOutageIsOpen = wb.dbs.checkIfCriteriaExists("SubmittedIncidents",
@@ -912,32 +935,64 @@ public class WebSpectra implements InterfaceWebSpectra
 				// If incident is still in status OPEN
 				if (incidentPlusOutageIsOpen)
 				{
-					// Update Operation
-					int numOfRowsUpdated = wb.dbs.updateColumnOnSpecificCriteria("SubmittedIncidents",
-							new String[] { "IncidentStatus", "EndTime" }, new String[] { "CLOSED", Help_Func.now() },
-							new String[] { "String", "Date" }, new String[] { "IncidentID", "OutageID" },
-							new String[] { IncidentID, OutageID }, new String[] { "String", "Integer" });
+					// Check if the Incidents is Scheduled
+					boolean incidentIsScheduled = wb.dbs.checkIfCriteriaExists("SubmittedIncidents",
+							new String[] { "IncidentID", "OutageID", "IncidentStatus", "Scheduled" },
+							new String[] { IncidentID, OutageID, "OPEN", "Yes" },
+							new String[] { "String", "String", "String", "String" });
 
+					// If it is scheduled then the End Time should NOT be updated
+					if (incidentIsScheduled)
+					{
+						logger.info("ReqID: " + RequestID + " - Close Outage: INCID: " + IncidentID + " | OutageID: "
+								+ OutageID + " is OPEN & Scheduled");
+						// Update Operation
+						numOfRowsUpdated = wb.dbs.updateColumnOnSpecificCriteria("SubmittedIncidents",
+								new String[] { "IncidentStatus" }, new String[] { "CLOSED" }, new String[] { "String" },
+								new String[] { "IncidentID", "OutageID" }, new String[] { IncidentID, OutageID },
+								new String[] { "String", "Integer" });
+
+					} else
+					{
+						logger.info("ReqID: " + RequestID + " - Close Outage: INCID: " + IncidentID + " | OutageID: "
+								+ OutageID + " is OPEN & NOT Scheduled");
+						// If it is NOT scheduled then the End Time should be updated
+						numOfRowsUpdated = wb.dbs.updateColumnOnSpecificCriteria("SubmittedIncidents",
+								new String[] { "IncidentStatus", "EndTime" },
+								new String[] { "CLOSED", Help_Func.now() }, new String[] { "String", "Date" },
+								new String[] { "IncidentID", "OutageID" }, new String[] { IncidentID, OutageID },
+								new String[] { "String", "Integer" });
+					}
+
+					// Only one line should always be updated in this operation
 					if (numOfRowsUpdated == 1)
 					{
+						logger.info("ReqID: " + RequestID + " - Close Outage: INCID: " + IncidentID + "| OutageID: "
+								+ OutageID + " successfully CLOSED");
 						poca = new ProductOfCloseOutage(RequestID, IncidentID, OutageID, "990",
 								"Successfully Closed Incident");
 					} else
 					{
+						logger.error("ReqID: " + RequestID + " - Close Outage: INCID: " + IncidentID + "| OutageID: "
+								+ OutageID + " FAILED (more than 1 lines updated)");
 						poca = new ProductOfCloseOutage(RequestID, IncidentID, OutageID, "423",
 								"Error Closing Incident");
 					}
 				} else // If incident is not in status OPEN
 				{
+
 					String closedTime = wb.dbs.getOneValue("SubmittedIncidents", "EndTime",
 							new String[] { "IncidentID", "OutageID" }, new String[] { IncidentID, OutageID },
 							new String[] { "String", "String" });
-
+					logger.error("ReqID: " + RequestID + " - Close Outage: INCID: " + IncidentID + " | OutageID: "
+							+ OutageID + " is already closed since: " + closedTime);
 					throw new InvalidInputException("The combination of IncidentID: " + IncidentID + " and OutageID: "
 							+ OutageID + " has already been closed since: " + closedTime, "Error 820");
 				}
 			} else
 			{
+				logger.error("ReqID: " + RequestID + " - Close Outage: The combination of IncidentID: " + IncidentID
+						+ " | OutageID: " + OutageID + " does not exist");
 				throw new InvalidInputException("The combination of IncidentID: " + IncidentID + " and OutageID: "
 						+ OutageID + " does not exist!", "Error 950");
 			}
@@ -945,6 +1000,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			return poca;
 		} finally
 		{
+			logger.trace("ReqID: " + RequestID + " - Close Outage: Closing DB Connection");
 			wb.conObj.closeDBConnection();
 		}
 	}
@@ -968,9 +1024,12 @@ public class WebSpectra implements InterfaceWebSpectra
 		try
 		{
 			wb.establishDBConnection();
+			logger.trace("ReqID: " + RequestID + " - NLU Active: Establishing DB Connection");
 			// Check if Authentication credentials are correct.
 			if (!wb.dbs.authenticateRequest(UserName, Password))
 			{
+				logger.error("ReqID: " + RequestID + "NLU Active: - Wrong credentials provided - UserName: " + UserName
+						+ " Password: " + Password);
 				throw new InvalidInputException("User name or Password incorrect!", "Error 100");
 			}
 
@@ -994,6 +1053,7 @@ public class WebSpectra implements InterfaceWebSpectra
 
 		} finally
 		{
+			logger.trace("ReqID: " + RequestID + " - NLU Active: Closing DB Connection");
 			wb.conObj.closeDBConnection();
 		}
 		return ponla;

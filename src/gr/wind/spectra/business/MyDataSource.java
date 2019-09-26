@@ -3,6 +3,9 @@ package gr.wind.spectra.business;
 import java.sql.Connection;
 import java.util.ResourceBundle;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -14,6 +17,10 @@ public class MyDataSource
 
 	private static HikariConfig config = new HikariConfig();
 	private static HikariDataSource ds;
+
+	// Define a static logger variable so that it references the
+	// Logger instance named "MyDataSource".
+	private static final Logger logger = LogManager.getLogger(gr.wind.spectra.business.MyDataSource.class);
 
 	static
 	{
@@ -41,6 +48,14 @@ public class MyDataSource
 
 	public static Connection getConnection() throws Exception
 	{
-		return ds.getConnection();
+		Connection con = null;
+		try
+		{
+			con = ds.getConnection();
+		} catch (Exception ex)
+		{
+			logger.fatal("Could not open connection with database!");
+		}
+		return con;
 	}
 }

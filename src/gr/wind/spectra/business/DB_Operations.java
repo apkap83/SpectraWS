@@ -38,7 +38,7 @@ public class DB_Operations
 		boolean found = false;
 
 		String sqlString = "SELECT `" + columnName + "` FROM `" + table + "` WHERE `" + columnName + "` = ?";
-		logger.debug(sqlString);
+		logger.trace(sqlString);
 		PreparedStatement pst = conn.prepareStatement(sqlString);
 		pst.setString(1, searchValue);
 		pst.execute();
@@ -63,7 +63,7 @@ public class DB_Operations
 		boolean statusOfOperation = false;
 		String sqlString = "INSERT INTO " + table + Help_Func.columnsToInsertStatement(columnNames)
 				+ Help_Func.valuesToInsertStatement(columnValues);
-		logger.debug(sqlString);
+		logger.trace(sqlString);
 		PreparedStatement pst = conn.prepareStatement(sqlString, Statement.RETURN_GENERATED_KEYS);
 
 		for (int i = 0; i < columnNames.length; i++)
@@ -111,7 +111,7 @@ public class DB_Operations
 	{
 		int returnValue = 0;
 		String sqlString = "SELECT MAX(" + columnName + ") FROM " + table;
-		logger.debug(sqlString);
+		logger.trace(sqlString);
 		PreparedStatement pst = conn.prepareStatement(sqlString);
 		pst.execute();
 		ResultSet rs = pst.executeQuery();
@@ -131,7 +131,7 @@ public class DB_Operations
 
 		String sqlQuery = "SELECT COUNT(*) as Result FROM " + table + " WHERE "
 				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
-		logger.debug(sqlQuery);
+		logger.trace(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 		ResultSet rs = null;
 		for (int i = 0; i < predicateKeys.length; i++)
@@ -163,7 +163,7 @@ public class DB_Operations
 		String output;
 		String sqlQuery = "SELECT " + columnName + " FROM " + table + " WHERE "
 				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
-		logger.debug(sqlQuery);
+		logger.trace(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 
 		for (int i = 0; i < predicateKeys.length; i++)
@@ -194,12 +194,12 @@ public class DB_Operations
 
 		String sqlString = "SELECT DISTINCT `" + columnName + "` FROM `" + table + "` WHERE "
 				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
-		logger.debug(sqlString);
-//		System.out.println("We are HERE");
-//		System.out.println("columnName " + columnName);
-//		System.out.println("predicateKeys " + Arrays.toString(predicateKeys));
-//		System.out.println("predicateValues " + Arrays.toString(predicateValues));
-//		System.out.println("predicateTypes " + Arrays.toString(predicateTypes));
+		logger.trace(sqlString);
+		//		System.out.println("We are HERE");
+		//		System.out.println("columnName " + columnName);
+		//		System.out.println("predicateKeys " + Arrays.toString(predicateKeys));
+		//		System.out.println("predicateValues " + Arrays.toString(predicateValues));
+		//		System.out.println("predicateTypes " + Arrays.toString(predicateTypes));
 
 		PreparedStatement pst = conn.prepareStatement(sqlString);
 
@@ -247,7 +247,7 @@ public class DB_Operations
 
 		String sqlString = "update `" + table + "` set `" + setColumnName + "` = '" + newValue + "' WHERE "
 				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
-		logger.debug(sqlString);
+		logger.trace(sqlString);
 		PreparedStatement pst = conn.prepareStatement(sqlString);
 
 		for (int i = 0; i < predicateKeys.length; i++)
@@ -273,7 +273,7 @@ public class DB_Operations
 		int numOfRows = 0;
 		String sqlQuery = "SELECT *" + " FROM " + table + " WHERE "
 				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
-		logger.debug(sqlQuery);
+		logger.trace(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 
 		for (int i = 0; i < predicateKeys.length; i++)
@@ -304,7 +304,7 @@ public class DB_Operations
 		String numOfRows = "";
 		String sqlQuery = "SELECT COUNT(DISTINCT(" + column + ")) as " + column + " FROM " + table + " WHERE "
 				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
-		logger.debug(sqlQuery);
+		logger.trace(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 
 		for (int i = 0; i < predicateKeys.length; i++)
@@ -357,7 +357,7 @@ public class DB_Operations
 		sqlQuery += " FROM " + table + " WHERE " + Help_Func.generateANDPredicateQuestionMarks(predicateKeys)
 				+ ") as AK ";
 
-		logger.debug(sqlQuery);
+		logger.trace(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 
 		for (int i = 0; i < predicateKeys.length; i++)
@@ -399,7 +399,7 @@ public class DB_Operations
 			}
 		}
 
-		logger.debug(sqlQuery);
+		logger.trace(sqlQuery);
 
 		pst.execute();
 		ResultSet rs = pst.executeQuery();
@@ -411,7 +411,7 @@ public class DB_Operations
 		boolean found = false;
 		String table = "WSAccounts";
 		String sqlString = "SELECT * FROM `" + table + "` WHERE `UserName` = ?";
-		logger.debug(sqlString);
+		logger.trace(sqlString);
 		PreparedStatement pst = conn.prepareStatement(sqlString);
 		pst.setString(1, userName);
 		// pst.setString(2, password);
@@ -436,9 +436,9 @@ public class DB_Operations
 				 */
 				passwordIsCorrect = Password.check(password, r_password);
 
-//					System.out.println("password " + password);
-//					System.out.println("r_password " + r_password);
-//					System.out.println("passwordIsCorrect " + passwordIsCorrect);
+				//					System.out.println("password " + password);
+				//					System.out.println("r_password " + r_password);
+				//					System.out.println("passwordIsCorrect " + passwordIsCorrect);
 			} catch (Exception e)
 			{
 				// TODO Auto-generated catch block
@@ -462,7 +462,7 @@ public class DB_Operations
 		String numOfRows = "";
 		String sqlQuery = "SELECT MAX(" + SumOfColumn + ") as Result FROM " + table + " WHERE "
 				+ Help_Func.generateANDPredicateQuestionMarks(predicateColumns);
-		logger.debug(sqlQuery);
+		logger.trace(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 
 		if (predicateColumns.length == predicateValues.length)
@@ -490,7 +490,7 @@ public class DB_Operations
 		String sqlQuery = "UPDATE " + tableName + " SET "
 				+ Help_Func.generateCommaPredicateQuestionMarks(columnNamesForUpdate) + " WHERE "
 				+ Help_Func.generateANDPredicateQuestionMarks(predicateColumns);
-		logger.debug(sqlQuery);
+		logger.trace(sqlQuery);
 
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 

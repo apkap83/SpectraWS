@@ -56,13 +56,19 @@ public class DB_Connection
 			// DataSource ds = (DataSource) ctx.lookup("mySQLJDBCResource");
 			// conn = ds.getConnection();
 
-			logger.debug("DB Connection established!");
+			if (conn != null)
+			{
+				logger.debug("DB Connection established!");
+			} else
+			{
+				logger.fatal("Could not open connection with database!");
+			}
+
 			// Do something with the Connection
 
 		} catch (Exception ex)
 		{
 			conn = null;
-			logger.error("Could not open connection with database!");
 			throw new InvalidInputException("DB Connection Error", "Could not connect to database!");
 
 		}
@@ -84,7 +90,13 @@ public class DB_Connection
 	public void closeDBConnection() throws Exception
 	{
 		logger.debug("Closing DB Connection");
-		conn.close();
+		try
+		{
+			conn.close();
+		} catch (Exception ex)
+		{
+			logger.fatal("Could not open connection with database!");
+		}
 	}
 
 	public static void main(String[] args) throws Exception, InvalidInputException, InstantiationException,
@@ -118,14 +130,14 @@ public class DB_Connection
 		 * System.out.println("Result ID: " + result);
 		 */
 		// ------------------------------------------------------
-//    	List<String> myList = new ArrayList<String>();
-//    	myList = new ArrayList<String>();
-//    	myList = dbs.GetOneColumnResultSet("TestTable", "ID", "Name = 'Nikos Zorzos'");
-//    	for (String item : myList)
-//    	{
-//    		System.out.println(item);
-//    	}
-//    	conObj.closeDBConnection();
+		//    	List<String> myList = new ArrayList<String>();
+		//    	myList = new ArrayList<String>();
+		//    	myList = dbs.GetOneColumnResultSet("TestTable", "ID", "Name = 'Nikos Zorzos'");
+		//    	for (String item : myList)
+		//    	{
+		//    		System.out.println(item);
+		//    	}
+		//    	conObj.closeDBConnection();
 
 		// ------------------------------------------------------
 		// int rowsAffected = dbs.UpdateValuesForOneColumn("TestTable", "Surname",
