@@ -583,20 +583,21 @@ public class WebSpectra implements InterfaceWebSpectra
 					//System.out.println("25 SEP 2019 Start Time = " + StartTime);
 					//System.out.println("25 SEP 2019 Start Time = " + EndTime);
 					wb.dbs.insertValuesInTable("SubmittedIncidents",
-							new String[] { "DateTime", "OutageID", "IncidentStatus", "RequestTimestamp", "SystemID",
-									"UserID", "IncidentID", "Scheduled", "StartTime", "EndTime", "Duration",
-									"AffectedServices", "Impact", "Priority", "HierarchySelected",
-									"AffectedVoiceCustomers", "AffectedDataCustomers", "AffectedCLICustomers",
-									"ActiveDataCustomersAffected", "TVCustomersAffected",
+							new String[] { "DateTime", "WillBePublished", "OutageID", "IncidentStatus",
+									"RequestTimestamp", "SystemID", "UserID", "IncidentID", "Scheduled", "StartTime",
+									"EndTime", "Duration", "AffectedServices", "Impact", "Priority",
+									"HierarchySelected", "AffectedVoiceCustomers", "AffectedDataCustomers",
+									"AffectedCLICustomers", "ActiveDataCustomersAffected", "TVCustomersAffected",
 									"IncidentAffectedVoiceCustomers", "IncidentAffectedDataCustomers" },
-							new String[] { Help_Func.now(), OutageID_String, "OPEN", RequestTimestamp, SystemID, UserID,
-									IncidentID, Scheduled, StartTime, EndTime, Duration, service, Impact, Priority,
-									myHier.get(i).toString(), voiceCustomersAffected, dataCustomersAffected,
+							new String[] { Help_Func.now(), "Yes", OutageID_String, "OPEN", RequestTimestamp, SystemID,
+									UserID, IncidentID, Scheduled, StartTime, EndTime, Duration, service, Impact,
+									Priority, myHier.get(i).toString(), voiceCustomersAffected, dataCustomersAffected,
 									CLIsAffected, "0", "0", Integer.toString(totalVoiceIncidentAffected),
 									Integer.toString(totalDataIncidentAffected) },
-							new String[] { "DateTime", "Integer", "String", "DateTime", "String", "String", "String",
-									"String", "DateTime", "DateTime", "String", "String", "String", "String", "String",
-									"Integer", "Integer", "Integer", "Integer", "Integer", "Integer", "Integer" });
+							new String[] { "DateTime", "String", "Integer", "String", "DateTime", "String", "String",
+									"String", "String", "DateTime", "DateTime", "String", "String", "String", "String",
+									"String", "Integer", "Integer", "Integer", "Integer", "Integer", "Integer",
+									"Integer" });
 
 					if (Integer.parseInt(OutageID_String) > 0)
 					{
