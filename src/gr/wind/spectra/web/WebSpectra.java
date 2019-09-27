@@ -342,6 +342,13 @@ public class WebSpectra implements InterfaceWebSpectra
 					throw new InvalidInputException("Scheduled incidents should always contain Start Time and End Time",
 							"Error 172");
 				}
+			} else if (Scheduled.equals("No")) // If the submitted incident is NON scheduled then it should NOT contain "EndTime"
+			{
+				if (!Help_Func.checkIfEmpty("EndTime", EndTime))
+				{
+					throw new InvalidInputException(
+							"Non scheduled incidents should not contain End Time during submission", "Error 173");
+				}
 			}
 
 			Help_Func.validateIntegerOrEmptyValue("Duration", Duration);
@@ -355,7 +362,7 @@ public class WebSpectra implements InterfaceWebSpectra
 
 			Help_Func.validateNotEmpty("Priority", Priority);
 			Help_Func.validateAgainstPredefinedValues("Priority", Priority,
-					new String[] { "Critical", "Medium", "Low" });
+					new String[] { "Critical", "Medium", "Low", "High" });
 
 			Help_Func.validateNotEmpty("HierarchySelected", HierarchySelected);
 
