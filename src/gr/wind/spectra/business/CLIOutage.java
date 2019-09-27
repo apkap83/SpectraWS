@@ -109,11 +109,11 @@ public class CLIOutage
 		String delimiterCharacter = "\\|";
 		String[] ServiceTypeSplitted = ServiceType.split(delimiterCharacter);
 
-		logger.info("ReqID: " + RequestID + " - We have open incidents: " + weHaveOpenIncident);
+		logger.debug("ReqID: " + RequestID + " - We have open incidents: " + weHaveOpenIncident);
 		// If We have at least one opened incident...
 		if (weHaveOpenIncident)
 		{
-			logger.info(
+			logger.debug(
 					"ReqID: " + RequestID + " - Number of incidents currently OPEN: " + numOfOpenIncidentsCurrently);
 
 			String HierarchySelected = "";
@@ -131,14 +131,15 @@ public class CLIOutage
 				ResultSet rs = null;
 				// Get Lines with IncidentStatus = "OPEN"
 				rs = dbs.getRows("SubmittedIncidents",
-						new String[] { "IncidentID", "OutageID", "HierarchySelected", "Priority", "AffectedServices",
-								"Scheduled", "Duration", "StartTime", "EndTime", "Impact" },
+						new String[] { "WillBePublished", "IncidentID", "OutageID", "HierarchySelected", "Priority",
+								"AffectedServices", "Scheduled", "Duration", "StartTime", "EndTime", "Impact" },
 						new String[] { "IncidentStatus" }, new String[] { "OPEN" }, new String[] { "String" });
 
 				while (rs.next())
 				{
 					boolean isOutageWithinScheduledRange = false;
 
+					String WillBePublished = rs.getString("WillBePublished");
 					String IncidentID = rs.getString("IncidentID");
 					int OutageID = rs.getInt("OutageID");
 					HierarchySelected = rs.getString("HierarchySelected");
@@ -154,7 +155,7 @@ public class CLIOutage
 					// isOutageWithinScheduledRange to TRUE
 					if (Scheduled.equals("Yes"))
 					{
-						logger.info("ReqID: " + RequestID + " - Checking Scheduled Incident: " + IncidentID);
+						logger.debug("ReqID: " + RequestID + " - Checking Scheduled Incident: " + IncidentID);
 						// Get current date
 						LocalDateTime now = LocalDateTime.now();
 
@@ -170,11 +171,12 @@ public class CLIOutage
 						if (now.isAfter(StartTimeInLocalDateTime) && now.isBefore(EndTimeInLocalDateTime))
 						{
 							isOutageWithinScheduledRange = true;
-							logger.info("ReqID: " + RequestID + " - Scheduled Incident: " + IncidentID + " is ongoing");
+							logger.debug(
+									"ReqID: " + RequestID + " - Scheduled Incident: " + IncidentID + " is ongoing");
 						} else
 						{
 							isOutageWithinScheduledRange = false;
-							logger.info(
+							logger.debug(
 									"ReqID: " + RequestID + " - Scheduled Incident: " + IncidentID + " is NOT ongoing");
 						}
 					}
@@ -203,22 +205,25 @@ public class CLIOutage
 
 						// If matched Hierarchy + CLI matches lines (then those CLIs have actually
 						// Outage)
-						if (Integer.parseInt(numOfRowsFound) > 0 && Scheduled.equals("No"))
+						if (WillBePublished.equals("Yes") && Integer.parseInt(numOfRowsFound) > 0
+								&& Scheduled.equals("No"))
 						{
 							foundAtLeastOneCLIAffected = true;
 							voiceAffected = true;
 							logger.info("ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided + " | "
 									+ ServiceType + " from Non-scheduled INC: " + IncidentID + " | OutageID: "
 									+ OutageID + " | " + outageAffectedService);
+							break;
 
-						} else if (Integer.parseInt(numOfRowsFound) > 0 && Scheduled.equals("Yes")
-								&& isOutageWithinScheduledRange)
+						} else if (WillBePublished.equals("Yes") && Integer.parseInt(numOfRowsFound) > 0
+								&& Scheduled.equals("Yes") && isOutageWithinScheduledRange)
 						{
 							foundAtLeastOneCLIAffected = true;
 							voiceAffected = true;
 							logger.info("ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided + " | "
 									+ ServiceType + " from Scheduled INC: " + IncidentID + " | OutageID: " + OutageID
 									+ " | " + outageAffectedService);
+							break;
 						}
 
 					} else if (outageAffectedService.equals("Data") && service.equals("Data"))
@@ -243,23 +248,25 @@ public class CLIOutage
 								Help_Func.hierarchyStringTypes(HierarchySelected));
 
 						// Scheduled No & Rows Found
-						if (Integer.parseInt(numOfRowsFound) > 0 && Scheduled.equals("No"))
+						if (WillBePublished.equals("Yes") && Integer.parseInt(numOfRowsFound) > 0
+								&& Scheduled.equals("No"))
 						{
 							foundAtLeastOneCLIAffected = true;
 							dataAffected = true;
 							logger.info("ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided + " | "
 									+ ServiceType + " from Non-scheduled INC: " + IncidentID + " | OutageID: "
 									+ OutageID + " | " + outageAffectedService);
-
+							break;
 							// Scheduled Yes & Rows Found & Outage Within Scheduled Range
-						} else if (Integer.parseInt(numOfRowsFound) > 0 && Scheduled.equals("Yes")
-								&& isOutageWithinScheduledRange)
+						} else if (WillBePublished.equals("Yes") && Integer.parseInt(numOfRowsFound) > 0
+								&& Scheduled.equals("Yes") && isOutageWithinScheduledRange)
 						{
 							foundAtLeastOneCLIAffected = true;
 							dataAffected = true;
 							logger.info("ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided + " | "
 									+ ServiceType + " from Scheduled INC: " + IncidentID + " | OutageID: " + OutageID
 									+ " | " + outageAffectedService);
+							break;
 						}
 					}
 				}
