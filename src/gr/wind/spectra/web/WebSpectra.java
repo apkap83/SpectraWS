@@ -597,7 +597,7 @@ public class WebSpectra implements InterfaceWebSpectra
 					//System.out.println("25 SEP 2019 Start Time = " + StartTime);
 					//System.out.println("25 SEP 2019 Start Time = " + EndTime);
 					wb.dbs.insertValuesInTable("SubmittedIncidents",
-							new String[] { "RequestID", "DateTime", "WillBePublished", "OutageID", "IncidentStatus",
+							new String[] { "OpenReqID", "DateTime", "WillBePublished", "OutageID", "IncidentStatus",
 									"RequestTimestamp", "SystemID", "UserID", "IncidentID", "Scheduled", "StartTime",
 									"EndTime", "Duration", "AffectedServices", "Impact", "Priority",
 									"HierarchySelected", "AffectedVoiceCustomers", "AffectedDataCustomers",
@@ -825,6 +825,10 @@ public class WebSpectra implements InterfaceWebSpectra
 					listOfColumnsForUpdate.add("StartTime");
 					listOfValuesForUpdate.add(StartTime);
 					listOfDataTypesForUpdate.add("Date");
+
+					listOfColumnsForUpdate.add("ModifyReqID");
+					listOfValuesForUpdate.add(RequestID);
+					listOfDataTypesForUpdate.add("String");
 				}
 
 				if (!Help_Func.checkIfEmpty("EndTime", EndTime))
@@ -832,12 +836,20 @@ public class WebSpectra implements InterfaceWebSpectra
 					listOfColumnsForUpdate.add("EndTime");
 					listOfValuesForUpdate.add(EndTime);
 					listOfDataTypesForUpdate.add("Date");
+
+					listOfColumnsForUpdate.add("ModifyReqID");
+					listOfValuesForUpdate.add(RequestID);
+					listOfDataTypesForUpdate.add("String");
 				}
 
 				if (!Help_Func.checkIfEmpty("Impact", Impact))
 				{
 					listOfColumnsForUpdate.add("Impact");
 					listOfValuesForUpdate.add(Impact);
+					listOfDataTypesForUpdate.add("String");
+
+					listOfColumnsForUpdate.add("ModifyReqID");
+					listOfValuesForUpdate.add(RequestID);
 					listOfDataTypesForUpdate.add("String");
 				}
 
@@ -846,6 +858,10 @@ public class WebSpectra implements InterfaceWebSpectra
 					listOfColumnsForUpdate.add("Duration");
 					listOfValuesForUpdate.add(Duration);
 					listOfDataTypesForUpdate.add("Integer");
+
+					listOfColumnsForUpdate.add("ModifyReqID");
+					listOfValuesForUpdate.add(RequestID);
+					listOfDataTypesForUpdate.add("String");
 				}
 
 				String[] arrayOfColumnsForUpdate = listOfColumnsForUpdate
@@ -865,6 +881,19 @@ public class WebSpectra implements InterfaceWebSpectra
 							"Error 385");
 				}
 
+				// Check if Incident is still open
+				boolean isIncidentClosed = wb.dbs.checkIfCriteriaExists("SubmittedIncidents",
+						new String[] { "IncidentStatus", "IncidentID", "OutageID" },
+						new String[] { "CLOSED", IncidentID, OutageID }, new String[] { "String", "String", "String" });
+
+				if (isIncidentClosed)
+				{
+					throw new InvalidInputException(
+							"The combination of IncidentID/OutageID is already closed and it cannot be modified - IncidentID: "
+									+ IncidentID + " / OutageID: " + OutageID,
+							"Error 715");
+				}
+
 				// Update Operation
 				int numOfRowsUpdated = wb.dbs.updateColumnOnSpecificCriteria("SubmittedIncidents",
 						arrayOfColumnsForUpdate, arrayOfValuesForUpdate, arrayOfDataTypesForUpdate,
@@ -876,6 +905,7 @@ public class WebSpectra implements InterfaceWebSpectra
 					pom = new ProductOfModify(RequestID, IncidentID, OutageID, "930", "Successfully Modified Incident");
 				} else
 				{
+					System.out.println("Modifying: numOfRowsUpdated = " + numOfRowsUpdated);
 					pom = new ProductOfModify(RequestID, IncidentID, OutageID, "980", "Error modifying incident!");
 				}
 			} else
@@ -974,10 +1004,10 @@ public class WebSpectra implements InterfaceWebSpectra
 								+ OutageID + " is OPEN & NOT Scheduled");
 						// If it is NOT scheduled then the End Time should be updated
 						numOfRowsUpdated = wb.dbs.updateColumnOnSpecificCriteria("SubmittedIncidents",
-								new String[] { "IncidentStatus", "EndTime" },
-								new String[] { "CLOSED", Help_Func.now() }, new String[] { "String", "Date" },
-								new String[] { "IncidentID", "OutageID" }, new String[] { IncidentID, OutageID },
-								new String[] { "String", "Integer" });
+								new String[] { "IncidentStatus", "EndTime", "CloseReqID" },
+								new String[] { "CLOSED", Help_Func.now(), RequestID },
+								new String[] { "String", "Date", "String" }, new String[] { "IncidentID", "OutageID" },
+								new String[] { IncidentID, OutageID }, new String[] { "String", "Integer" });
 					}
 
 					// Only one line should always be updated in this operation
