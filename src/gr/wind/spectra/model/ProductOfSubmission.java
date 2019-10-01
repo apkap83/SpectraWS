@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name = "Element")
 @XmlType(name = "basicStruct2", propOrder = { "requestID", "outageID", "incidentID", "serviceAffected",
-		"hierarchySelected", "voiceCustomersAffected", "dataCustomersAffected", "CLIsAffected",
+		"hierarchySelected", "location", "voiceCustomersAffected", "dataCustomersAffected", "CLIsAffected",
 		"incidentVoiceCustomersAffected", "incidentDataCustomersAffected", "activeDataCustomersAffected",
 		"tvCustomersAffected", "statusCode", "description" })
 
@@ -25,6 +25,7 @@ public class ProductOfSubmission
 	private String description;
 	private String serviceAffected;
 	private String hierarchySelected;
+	private String location;
 
 	private String activeDataCustomersAffected;
 	private String tvCustomersAffected;
@@ -52,6 +53,7 @@ public class ProductOfSubmission
 		this.description = description;
 		this.serviceAffected = serviceAffected;
 		this.hierarchySelected = hierarchySelected;
+		this.location = "none";
 
 		this.activeDataCustomersAffected = "0";
 		this.tvCustomersAffected = "0";
@@ -105,6 +107,17 @@ public class ProductOfSubmission
 	public String gethierarchySelected()
 	{
 		return this.hierarchySelected;
+	}
+
+	@XmlElement(name = "location")
+	public String getLocation()
+	{
+		return location;
+	}
+
+	public void setLocation(String location)
+	{
+		this.location = location;
 	}
 
 	public void sethierarchySelected(String hierarchySelected)
