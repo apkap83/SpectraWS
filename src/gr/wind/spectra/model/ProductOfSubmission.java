@@ -25,7 +25,7 @@ public class ProductOfSubmission
 	private String description;
 	private String serviceAffected;
 	private String hierarchySelected;
-	private String location;
+	private String location = "Unknown";
 
 	private String activeDataCustomersAffected;
 	private String tvCustomersAffected;
@@ -36,9 +36,9 @@ public class ProductOfSubmission
 	}
 
 	public ProductOfSubmission(String requestID, String outageID, String incidentID, String voiceCustomersAffected,
-			String dataCustomersAffected, String CLIsAffected, String incidentVoiceCustomersAffected,
-			String incidentDataCustomersAffected, String statusCode, String serviceAffected, String hierarchySelected,
-			String description)
+			String dataCustomersAffected, String CLIsAffected, String locationsAffected,
+			String incidentVoiceCustomersAffected, String incidentDataCustomersAffected, String statusCode,
+			String serviceAffected, String hierarchySelected, String description)
 	{
 		this.requestID = requestID;
 		this.incidentID = incidentID;
@@ -46,6 +46,10 @@ public class ProductOfSubmission
 		this.voiceCustomersAffected = voiceCustomersAffected;
 		this.dataCustomersAffected = dataCustomersAffected;
 		this.CLIsAffected = CLIsAffected;
+		if (locationsAffected != null)
+		{
+			this.location = locationsAffected;
+		}
 		this.incidentVoiceCustomersAffected = incidentVoiceCustomersAffected;
 		this.incidentDataCustomersAffected = incidentDataCustomersAffected;
 
@@ -53,7 +57,6 @@ public class ProductOfSubmission
 		this.description = description;
 		this.serviceAffected = serviceAffected;
 		this.hierarchySelected = hierarchySelected;
-		this.location = "none";
 
 		this.activeDataCustomersAffected = "0";
 		this.tvCustomersAffected = "0";

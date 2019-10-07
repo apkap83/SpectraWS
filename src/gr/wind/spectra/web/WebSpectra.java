@@ -3,7 +3,9 @@ package gr.wind.spectra.web;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -299,6 +301,9 @@ public class WebSpectra implements InterfaceWebSpectra
 			wb.establishDBConnection();
 			logger.trace("ReqID: " + RequestID + " - Submit Outage: Establishing DB Connection");
 			List<ProductOfSubmission> prodElementsList;
+			String locationsAffected = null;
+			ArrayList<String> locationsAffectedList = new ArrayList<>();
+
 			prodElementsList = new ArrayList<>();
 			int OutageID_Integer = 0;
 			// Check if Authentication credentials are correct.
@@ -571,16 +576,46 @@ public class WebSpectra implements InterfaceWebSpectra
 					if (service.equals("Voice"))
 					{
 						dataCustomersAffected = "0";
+
+						// Get Unique Locations affected from Voice_Resource_Path
+						List<String> myList = wb.dbs.getOneColumnUniqueResultSet("Voice_Resource_Path", "SiteName",
+								Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
+										myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
+								Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
+										myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
+								Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
+										myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
+						locationsAffectedList.addAll(myList);
 					} else if (service.equals("Data"))
 					{
 						voiceCustomersAffected = "0";
 						CLIsAffected = "0";
+
+						// Get Unique Locations affected from Internet_Resource_Path
+						List<String> myList = wb.dbs.getOneColumnUniqueResultSet("Internet_Resource_Path", "SiteName",
+								Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
+										myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
+								Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
+										myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
+								Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
+										myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
+						locationsAffectedList.addAll(myList);
+
 					} else if (service.equals("IPTV"))
 					{
 						dataCustomersAffected = "0";
 						voiceCustomersAffected = "0";
 					}
 
+					// Pick Unique values from locationsAffectedList
+					Set<String> uniqueLocationsSet = new HashSet<String>(locationsAffectedList);
+
+					// Concatenating uniqueLocationsSet with pipe delimeter
+					if (uniqueLocationsSet.size() > 0)
+					{
+						locationsAffected = String.join("|", uniqueLocationsSet);
+						System.out.println("locationsAffected = " + locationsAffected);
+					}
 					// Convert it to String (only for the sake of the below method
 					// (InsertValuesInTableGetSequence) - In the database it is still an integer
 					String OutageID_String = Integer.toString(OutageID_Integer);
@@ -600,24 +635,24 @@ public class WebSpectra implements InterfaceWebSpectra
 							new String[] { "OpenReqID", "DateTime", "WillBePublished", "OutageID", "IncidentStatus",
 									"RequestTimestamp", "SystemID", "UserID", "IncidentID", "Scheduled", "StartTime",
 									"EndTime", "Duration", "AffectedServices", "Impact", "Priority",
-									"HierarchySelected", "AffectedVoiceCustomers", "AffectedDataCustomers",
+									"HierarchySelected", "Locations", "AffectedVoiceCustomers", "AffectedDataCustomers",
 									"AffectedCLICustomers", "ActiveDataCustomersAffected", "TVCustomersAffected",
 									"IncidentAffectedVoiceCustomers", "IncidentAffectedDataCustomers" },
 							new String[] { RequestID, Help_Func.now(), "Yes", OutageID_String, "OPEN", RequestTimestamp,
 									SystemID, UserID, IncidentID, Scheduled, StartTime, EndTime, Duration, service,
-									Impact, Priority, myHier.get(i).toString(), voiceCustomersAffected,
-									dataCustomersAffected, CLIsAffected, "0", "0",
+									Impact, Priority, myHier.get(i).toString(), locationsAffected,
+									voiceCustomersAffected, dataCustomersAffected, CLIsAffected, "0", "0",
 									Integer.toString(totalVoiceIncidentAffected),
 									Integer.toString(totalDataIncidentAffected) },
 							new String[] { "String", "DateTime", "String", "Integer", "String", "DateTime", "String",
 									"String", "String", "String", "DateTime", "DateTime", "String", "String", "String",
-									"String", "String", "Integer", "Integer", "Integer", "Integer", "Integer",
+									"String", "String", "String", "Integer", "Integer", "Integer", "Integer", "Integer",
 									"Integer", "Integer" });
 
 					if (Integer.parseInt(OutageID_String) > 0)
 					{
 						ProductOfSubmission ps = new ProductOfSubmission(RequestID, OutageID_String, IncidentID,
-								voiceCustomersAffected, dataCustomersAffected, CLIsAffected,
+								voiceCustomersAffected, dataCustomersAffected, CLIsAffected, locationsAffected,
 								Integer.toString(totalVoiceIncidentAffected),
 								Integer.toString(totalDataIncidentAffected), "1", service, myHier.get(i).toString(),
 								"Submitted Successfully");
