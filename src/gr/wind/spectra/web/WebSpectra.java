@@ -301,8 +301,6 @@ public class WebSpectra implements InterfaceWebSpectra
 			wb.establishDBConnection();
 			logger.trace("ReqID: " + RequestID + " - Submit Outage: Establishing DB Connection");
 			List<ProductOfSubmission> prodElementsList;
-			String locationsAffected = null;
-			ArrayList<String> locationsAffectedList = new ArrayList<>();
 
 			prodElementsList = new ArrayList<>();
 			int OutageID_Integer = 0;
@@ -515,6 +513,10 @@ public class WebSpectra implements InterfaceWebSpectra
 			{
 				for (int i = 0; i < myHier.size(); i++)
 				{
+					// For each service & each hierarchy initialise the below location variables
+					String locationsAffected = null;
+					ArrayList<String> locationsAffectedList = new ArrayList<>();
+
 					// Add One
 					OutageID_Integer += 1;
 
@@ -614,7 +616,7 @@ public class WebSpectra implements InterfaceWebSpectra
 					if (uniqueLocationsSet.size() > 0)
 					{
 						locationsAffected = String.join("|", uniqueLocationsSet);
-						System.out.println("locationsAffected = " + locationsAffected);
+						// System.out.println("locationsAffected = " + locationsAffected);
 					}
 					// Convert it to String (only for the sake of the below method
 					// (InsertValuesInTableGetSequence) - In the database it is still an integer
