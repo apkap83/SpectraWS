@@ -48,15 +48,18 @@ public class WebSpectra implements InterfaceWebSpectra
 	@WebMethod(exclude = true)
 	public void establishDBConnection() throws Exception
 	{
-		try
+		if (conn == null)
 		{
-			this.conObj = new DB_Connection();
-			this.conn = this.conObj.connect();
-			this.dbs = new DB_Operations(conn);
-		} catch (Exception ex)
-		{
-			logger.fatal("Could not open connection with database!");
-			throw new Exception(ex.getMessage());
+			try
+			{
+				this.conObj = new DB_Connection();
+				this.conn = this.conObj.connect();
+				this.dbs = new DB_Operations(conn);
+			} catch (Exception ex)
+			{
+				logger.fatal("Could not open connection with database!");
+				throw new Exception(ex.getMessage());
+			}
 		}
 	}
 
