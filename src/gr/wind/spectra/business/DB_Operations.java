@@ -10,6 +10,7 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 //Import log4j classes.
@@ -60,6 +61,12 @@ public class DB_Operations
 	public boolean insertValuesInTable(String table, String[] columnNames, String[] columnValues, String[] types)
 			throws SQLException, ParseException
 	{
+
+		System.out.println("DEBUGGING WITH KALOGRANIS");
+		System.out.println(Arrays.toString(columnNames));
+		System.out.println(Arrays.toString(columnValues));
+		System.out.println(Arrays.toString(types));
+
 		boolean statusOfOperation = false;
 		String sqlString = "INSERT INTO " + table + Help_Func.columnsToInsertStatement(columnNames)
 				+ Help_Func.valuesToInsertStatement(columnValues);

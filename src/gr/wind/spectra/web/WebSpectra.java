@@ -33,7 +33,6 @@ public class WebSpectra implements InterfaceWebSpectra
 {
 	// Logger instance
 	private static final Logger logger = LogManager.getLogger(gr.wind.spectra.web.WebSpectra.class.getName());
-
 	private static final String hierSep = "->";
 	private DB_Connection conObj;
 	private Connection conn;
@@ -44,7 +43,6 @@ public class WebSpectra implements InterfaceWebSpectra
 
 	}
 
-	@Override
 	@WebMethod(exclude = true)
 	public void establishDBConnection() throws Exception
 	{
@@ -619,7 +617,10 @@ public class WebSpectra implements InterfaceWebSpectra
 					if (uniqueLocationsSet.size() > 0)
 					{
 						locationsAffected = String.join("|", uniqueLocationsSet);
-						// System.out.println("locationsAffected = " + locationsAffected);
+						System.out.println("locationsAffected = " + locationsAffected);
+					} else
+					{
+						locationsAffected = "none";
 					}
 					// Convert it to String (only for the sake of the below method
 					// (InsertValuesInTableGetSequence) - In the database it is still an integer

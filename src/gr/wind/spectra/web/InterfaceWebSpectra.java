@@ -20,9 +20,6 @@ import gr.wind.spectra.model.ProductOfSubmission;
 public interface InterfaceWebSpectra
 {
 
-	@WebMethod(exclude = true)
-	void establishDBConnection() throws Exception;
-
 	@WebMethod()
 	@WebResult(name = "Result")
 	List<ProductOfGetHierarchy> getHierarchy(
