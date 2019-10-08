@@ -297,6 +297,12 @@ public class WebSpectra implements InterfaceWebSpectra
 			throws Exception, InvalidInputException
 	{
 		WebSpectra wb = new WebSpectra();
+
+		// The below variabes are used for location determination - on a per Incident basis
+		String locationsAffected = null;
+		ArrayList<String> locationsAffectedList = new ArrayList<>();
+		Set<String> uniqueLocationsSet = null;
+
 		try
 		{
 			wb.establishDBConnection();
@@ -460,14 +466,50 @@ public class WebSpectra implements InterfaceWebSpectra
 					if (service.equals("Voice"))
 					{
 						dataCustomersAffected = "0";
+
+						// Get Unique Locations affected from Voice_Resource_Path
+						List<String> myList = wb.dbs.getOneColumnUniqueResultSet("Voice_Resource_Path", "SiteName",
+								Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
+										myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
+								Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
+										myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
+								Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
+										myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
+						locationsAffectedList.addAll(myList);
+
 					} else if (service.equals("Data"))
 					{
 						voiceCustomersAffected = "0";
+
+						// Get Unique Locations affected from Internet_Resource_Path
+						List<String> myList = wb.dbs.getOneColumnUniqueResultSet("Internet_Resource_Path", "SiteName",
+								Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
+										myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
+								Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
+										myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
+								Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
+										myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
+						locationsAffectedList.addAll(myList);
+
 					} else if (service.equals("IPTV"))
 					{
 						dataCustomersAffected = "0";
 						voiceCustomersAffected = "0";
 					}
+
+					// Pick Unique values from locationsAffectedList
+					uniqueLocationsSet = new HashSet<String>(locationsAffectedList);
+
+					// Concatenating uniqueLocationsSet with pipe delimeter
+					if (uniqueLocationsSet.size() > 0)
+					{
+						locationsAffected = String.join("|", uniqueLocationsSet);
+						System.out.println("locationsAffected = " + locationsAffected);
+					} else
+					{
+						locationsAffected = "none";
+					}
+
 					incidentDataCustomersAffected += Integer.parseInt(dataCustomersAffected);
 					incidentVoiceCustomersAffected += Integer.parseInt(voiceCustomersAffected);
 				}
@@ -514,10 +556,6 @@ public class WebSpectra implements InterfaceWebSpectra
 			{
 				for (int i = 0; i < myHier.size(); i++)
 				{
-					// For each service & each hierarchy initialise the below location variables
-					String locationsAffected = null;
-					ArrayList<String> locationsAffectedList = new ArrayList<>();
-
 					// Add One
 					OutageID_Integer += 1;
 
@@ -579,49 +617,16 @@ public class WebSpectra implements InterfaceWebSpectra
 					if (service.equals("Voice"))
 					{
 						dataCustomersAffected = "0";
-
-						// Get Unique Locations affected from Voice_Resource_Path
-						List<String> myList = wb.dbs.getOneColumnUniqueResultSet("Voice_Resource_Path", "SiteName",
-								Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
-										myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
-								Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
-										myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
-								Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
-										myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
-						locationsAffectedList.addAll(myList);
 					} else if (service.equals("Data"))
 					{
 						voiceCustomersAffected = "0";
 						CLIsAffected = "0";
-
-						// Get Unique Locations affected from Internet_Resource_Path
-						List<String> myList = wb.dbs.getOneColumnUniqueResultSet("Internet_Resource_Path", "SiteName",
-								Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
-										myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
-								Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
-										myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
-								Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
-										myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
-						locationsAffectedList.addAll(myList);
-
 					} else if (service.equals("IPTV"))
 					{
 						dataCustomersAffected = "0";
 						voiceCustomersAffected = "0";
 					}
 
-					// Pick Unique values from locationsAffectedList
-					Set<String> uniqueLocationsSet = new HashSet<String>(locationsAffectedList);
-
-					// Concatenating uniqueLocationsSet with pipe delimeter
-					if (uniqueLocationsSet.size() > 0)
-					{
-						locationsAffected = String.join("|", uniqueLocationsSet);
-						System.out.println("locationsAffected = " + locationsAffected);
-					} else
-					{
-						locationsAffected = "none";
-					}
 					// Convert it to String (only for the sake of the below method
 					// (InsertValuesInTableGetSequence) - In the database it is still an integer
 					String OutageID_String = Integer.toString(OutageID_Integer);
@@ -633,6 +638,9 @@ public class WebSpectra implements InterfaceWebSpectra
 							+ Integer.parseInt(numberOfVoiceCustAffectedFromPreviousIncidents);
 					int totalDataIncidentAffected = incidentDataCustomersAffected
 							+ Integer.parseInt(numberOfDataCustAffectedFromPreviousIncidents);
+
+					// Concatenate locations with pipe
+					locationsAffected = String.join("|", uniqueLocationsSet);
 
 					// Insert Values in Database
 					//System.out.println("25 SEP 2019 Start Time = " + StartTime);
@@ -657,6 +665,9 @@ public class WebSpectra implements InterfaceWebSpectra
 
 					if (Integer.parseInt(OutageID_String) > 0)
 					{
+						// Concatenate locations with comma
+						locationsAffected = String.join(", ", uniqueLocationsSet);
+
 						ProductOfSubmission ps = new ProductOfSubmission(RequestID, OutageID_String, IncidentID,
 								voiceCustomersAffected, dataCustomersAffected, CLIsAffected, locationsAffected,
 								Integer.toString(totalVoiceIncidentAffected),
