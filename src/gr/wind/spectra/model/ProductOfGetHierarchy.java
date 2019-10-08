@@ -58,6 +58,12 @@ public class ProductOfGetHierarchy
 		this.hierarchyFullPathList = hierarchyFullPathList;
 		this.hierElements = hierarchyProvided.split("->");
 
+		// If there are no items to be returned, then we assume that you are at MaxLevel
+		if (items.size() == 0)
+		{
+			this.type = "MaxLevel";
+		}
+
 		System.out.println("hierarchyFullPathList = " + Arrays.toString(hierarchyFullPathList));
 
 		// If hierarchyProvided is null then return only values provided

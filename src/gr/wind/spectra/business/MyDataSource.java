@@ -37,8 +37,11 @@ public class MyDataSource
 		config.setPassword(PASSWORD);
 		config.setMaxLifetime(0);
 		config.addDataSourceProperty("cachePrepStmts", "true");
-		config.addDataSourceProperty("prepStmtCacheSize", "250");
+		config.addDataSourceProperty("prepStmtCacheSize", "700");
 		config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+
+		config.addDataSourceProperty("useServerPrepStmts", "true");
+
 		ds = new HikariDataSource(config);
 	}
 
