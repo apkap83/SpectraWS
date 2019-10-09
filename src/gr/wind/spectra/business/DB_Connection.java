@@ -46,6 +46,12 @@ public class DB_Connection
 			 */
 
 			// Using HikariCP - MyDataSource Class (fastest Java JDBC datasource!)
+
+			if (Help_Func.PropertiesDBFileModified())
+			{
+				MyDataSource.getUpdatedResourceData();
+			}
+
 			conn = MyDataSource.getConnection();
 			/**
 			 * Implemented Connection Pooling! Requires Glassfish configuration (JDBC

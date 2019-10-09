@@ -1,5 +1,10 @@
 package gr.wind.spectra.business;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -8,6 +13,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
 import java.util.regex.Pattern;
 
 import gr.wind.spectra.web.InvalidInputException;
@@ -21,6 +27,66 @@ public class Help_Func
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
 		return sdf.format(cal.getTime());
+	}
+
+	public static boolean PropertiesDBFileModified() throws IOException
+	{
+		// Properties file
+		File databasePropertiesFile = new File(
+				"/opt/glassfish5/glassfish/domains/domain1/lib/classes/database.properties");
+
+		// Its modification time
+		long modTimeOfPropertiesFile_LongFormat = databasePropertiesFile.lastModified();
+		String modTimeOfPropertiesFile = String.valueOf(modTimeOfPropertiesFile_LongFormat);
+
+		String modTimeWritten = "";
+		// File that contains the latest mod time
+		File file = new File("/opt/glassfish5/glassfish/domains/domain1/logs/ModificationTimeFor_database.properties");
+		Scanner sc = null;
+		try
+		{
+			sc = new Scanner(file);
+		} catch (FileNotFoundException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		while (sc.hasNextLine())
+		{
+			modTimeWritten = sc.nextLine();
+		}
+
+		modTimeWritten = modTimeWritten.replace("\n", "").replace("\r", "");
+
+		// Mod time is the same
+		if (modTimeOfPropertiesFile.equals(modTimeWritten))
+		{
+			System.out.println("modTimeOfPropertiesFile = " + modTimeOfPropertiesFile);
+			System.out.println("modTimeWritten = " + modTimeWritten);
+			System.out.println("FALSE");
+			return false;
+		} else // Mod time is different!
+		{
+			System.out.println("modTimeOfPropertiesFile = " + modTimeOfPropertiesFile);
+			System.out.println("modTimeWritten = " + modTimeWritten);
+			System.out.println("TRUE");
+			//  Update modification time that is written in file
+			BufferedWriter writer = new BufferedWriter(new FileWriter(
+					"/opt/glassfish5/glassfish/domains/domain1/logs/ModificationTimeFor_database.properties"));
+			try
+			{
+				writer.write(modTimeOfPropertiesFile);
+				writer.close();
+			} catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			return true;
+		}
+
 	}
 
 	public static String columnsToInsertStatement(String[] columns)
