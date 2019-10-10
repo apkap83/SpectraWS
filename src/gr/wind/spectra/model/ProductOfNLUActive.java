@@ -5,13 +5,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name = "Element")
-@XmlType(name = "basicStruct8", propOrder = { "requestID", "CLI", "problem_severity", "affected_services", "scheduled",
-		"duration", "end_time", "impact", "flag1", "flag2", "flag3" })
+@XmlType(name = "basicStruct8", propOrder = { "requestID", "CLI", "affected", "incidentID", "problem_severity",
+		"affected_services", "scheduled", "duration", "end_time", "impact", "flag1", "flag2", "flag3" })
 public class ProductOfNLUActive
 {
 
 	private String requestID;
 	private String CLI;
+	private String affected;
+	private String incidentID;
 	private String problem_severity = "NULL";
 	private String affected_services = "NULL";
 	private String scheduled = "NULL";
@@ -27,8 +29,9 @@ public class ProductOfNLUActive
 		// TODO Auto-generated constructor stub
 	}
 
-	public ProductOfNLUActive(String requestID, String CLI, String problem_severity, String affected_services,
-			String scheduled, String duration, String end_time, String impact, String flag1, String flag2, String flag3)
+	public ProductOfNLUActive(String requestID, String CLI, String affected, String incidentID, String problem_severity,
+			String affected_services, String scheduled, String duration, String end_time, String impact, String flag1,
+			String flag2, String flag3)
 	{
 		if (requestID != null)
 		{
@@ -37,6 +40,14 @@ public class ProductOfNLUActive
 		if (CLI != null)
 		{
 			this.CLI = CLI;
+		}
+		if (affected != null)
+		{
+			this.affected = affected;
+		}
+		if (incidentID != null)
+		{
+			this.incidentID = incidentID;
 		}
 		if (problem_severity != null)
 		{
@@ -91,6 +102,26 @@ public class ProductOfNLUActive
 	public String getCLI()
 	{
 		return CLI;
+	}
+
+	public String getAffected()
+	{
+		return affected;
+	}
+
+	public void setAffected(String affected)
+	{
+		this.affected = affected;
+	}
+
+	public String getIncidentID()
+	{
+		return incidentID;
+	}
+
+	public void setIncidentID(String incidentID)
+	{
+		this.incidentID = incidentID;
 	}
 
 	public void setCLI(String cLI)

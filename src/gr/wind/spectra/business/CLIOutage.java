@@ -86,7 +86,7 @@ public class CLIOutage
 		boolean foundAtLeastOneCLIAffected = false;
 		boolean voiceAffected = false;
 		boolean dataAffected = false;
-
+		String IncidentID = "";
 		String allAffectedServices = "";
 
 		// Check if we have at least one OPEN incident
@@ -140,7 +140,7 @@ public class CLIOutage
 					boolean isOutageWithinScheduledRange = false;
 
 					String WillBePublished = rs.getString("WillBePublished");
-					String IncidentID = rs.getString("IncidentID");
+					IncidentID = rs.getString("IncidentID");
 					int OutageID = rs.getInt("OutageID");
 					HierarchySelected = rs.getString("HierarchySelected");
 					Priority = rs.getString("Priority");
@@ -276,7 +276,10 @@ public class CLIOutage
 			{
 				logger.info("ReqID: " + RequestID + " - No Service affection for CLI: " + CLIProvided + " | "
 						+ ServiceType);
-				throw new InvalidInputException("No service affection", "Info 425");
+				ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "No", "none", "none", "none", "none",
+						"none", "none", "none", "NULL", "NULL", "NULL");
+
+				//throw new InvalidInputException("No service affection", "Info 425");
 			} else
 			{
 				// Indicate Voice, Data or Voice|Data service affection
@@ -291,15 +294,17 @@ public class CLIOutage
 					allAffectedServices = "Data";
 				}
 
-				ponla = new ProductOfNLUActive(this.requestID, CLIProvided, Priority, allAffectedServices, Scheduled,
-						Duration, EndTimeString, Impact, "NULL", "NULL", "NULL");
+				ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "Yes", IncidentID, Priority,
+						allAffectedServices, Scheduled, Duration, EndTimeString, Impact, "NULL", "NULL", "NULL");
 			}
 
 		} else
 		{
 			logger.info(
 					"ReqID: " + RequestID + " - No Service affection for CLI: " + CLIProvided + " | " + ServiceType);
-			throw new InvalidInputException("No service affection", "Info 425");
+			//throw new InvalidInputException("No service affection", "Info 425");
+			ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "No", "none", "none", "none", "none", "none",
+					"none", "none", "NULL", "NULL", "NULL");
 		}
 
 		return ponla;
