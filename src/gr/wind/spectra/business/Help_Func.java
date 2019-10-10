@@ -16,11 +16,16 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import gr.wind.spectra.web.InvalidInputException;
 
 public class Help_Func
 {
 	public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+	// Logger instance
+	private static final Logger logger = LogManager.getLogger(gr.wind.spectra.business.Help_Func.class.getName());
 
 	public static String now()
 	{
@@ -62,16 +67,17 @@ public class Help_Func
 		// Mod time is the same
 		if (modTimeOfPropertiesFile.equals(modTimeWritten))
 		{
-			System.out.println("modTimeOfPropertiesFile = " + modTimeOfPropertiesFile);
-			System.out.println("modTimeWritten = " + modTimeWritten);
-			System.out.println("FALSE");
+			//System.out.println("modTimeOfPropertiesFile = " + modTimeOfPropertiesFile);
+			//System.out.println("modTimeWritten = " + modTimeWritten);
+			//System.out.println("FALSE");
 			return false;
 		} else // Mod time is different!
 		{
-			System.out.println("modTimeOfPropertiesFile = " + modTimeOfPropertiesFile);
-			System.out.println("modTimeWritten = " + modTimeWritten);
-			System.out.println("TRUE");
+			//System.out.println("modTimeOfPropertiesFile = " + modTimeOfPropertiesFile);
+			//System.out.println("modTimeWritten = " + modTimeWritten);
+			//System.out.println("TRUE");
 			//  Update modification time that is written in file
+			logger.info("Database properties files was modified!");
 			BufferedWriter writer = new BufferedWriter(new FileWriter(
 					"/opt/glassfish5/glassfish/domains/domain1/logs/ModificationTimeFor_database.properties"));
 			try

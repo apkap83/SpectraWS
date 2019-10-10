@@ -32,8 +32,8 @@ public class MyDataSource
 		// /opt/glassfish5/glassfish/domains/domain1/lib/classes/database.properties
 
 		DATABASE_URL1 = ResourceBundle.getBundle("database").getString("DATABASE_URL");
-		USERNAME1 = ResourceBundle.getBundle("database").getString("USERNAME");
-		PASSWORD1 = ResourceBundle.getBundle("database").getString("PASSWORD");
+		USERNAME1 = ResourceBundle.getBundle("database_credentials").getString("USERNAME");
+		PASSWORD1 = ResourceBundle.getBundle("database_credentials").getString("PASSWORD");
 
 		config.setJdbcUrl(DATABASE_URL1);
 		config.setDriverClassName("com.mysql.cj.jdbc.Driver");
@@ -58,8 +58,8 @@ public class MyDataSource
 		ds.close();
 		ResourceBundle.clearCache();
 		DATABASE_URL2 = ResourceBundle.getBundle("database").getString("DATABASE_URL");
-		USERNAME2 = ResourceBundle.getBundle("database").getString("USERNAME");
-		PASSWORD2 = ResourceBundle.getBundle("database").getString("PASSWORD");
+		USERNAME2 = ResourceBundle.getBundle("database_credentials").getString("USERNAME");
+		PASSWORD2 = ResourceBundle.getBundle("database_credentials").getString("PASSWORD");
 
 		System.out.println("New DATABASE_URL = " + DATABASE_URL2);
 

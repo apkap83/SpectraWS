@@ -54,6 +54,9 @@
             <AppenderRef ref="remedyRequestsLog" />
         </Logger>
 
+        <Logger name="gr.wind.spectra.business.Help_Func" additivity="false" level="info">
+            <AppenderRef ref="Console" />
+        </Logger>
                  
         <Root level="all">
             <AppenderRef ref="Console"/>
