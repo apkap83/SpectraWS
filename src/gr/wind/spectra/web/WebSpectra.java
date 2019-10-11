@@ -116,6 +116,7 @@ public class WebSpectra implements InterfaceWebSpectra
 				// wb.dbs.GetOneColumnUniqueResultSet("HierarchyTablePerTechnology2",
 				// "RootHierarchyNode",
 				// "1 = 1");
+				logger.trace("ReqID: " + RequestID + " - Get Hierarchy: Hierarchy Requested: <empty>");
 
 				ElementsList = wb.dbs.getOneColumnUniqueResultSet("HierarchyTablePerTechnology2", "RootHierarchyNode",
 						new String[] {}, new String[] {}, new String[] {});
@@ -128,6 +129,7 @@ public class WebSpectra implements InterfaceWebSpectra
 				prodElementsList.add(pr);
 			} else
 			{
+				logger.trace("ReqID: " + RequestID + " - Get Hierarchy: Hierarchy Requested: " + Hierarchy);
 				ArrayList<String> nodeNamesArrayList = new ArrayList<String>();
 				ArrayList<String> nodeValuesArrayList = new ArrayList<String>();
 
@@ -673,8 +675,10 @@ public class WebSpectra implements InterfaceWebSpectra
 								Integer.toString(totalVoiceIncidentAffected),
 								Integer.toString(totalDataIncidentAffected), "1", service, myHier.get(i).toString(),
 								"Submitted Successfully");
-
 						prodElementsList.add(ps);
+
+						logger.info("ReqID: " + RequestID + " - Submitted Outage: INCID: " + IncidentID
+								+ " | OutageID: " + OutageID_String);
 					}
 				}
 			}
@@ -1053,7 +1057,7 @@ public class WebSpectra implements InterfaceWebSpectra
 					} else
 					{
 						logger.info("ReqID: " + RequestID + " - Close Outage: INCID: " + IncidentID + " | OutageID: "
-								+ OutageID + " is OPEN & NOT Scheduled");
+								+ OutageID + " is OPEN & not Scheduled");
 						// If it is NOT scheduled then the End Time should be updated
 						numOfRowsUpdated = wb.dbs.updateColumnOnSpecificCriteria("SubmittedIncidents",
 								new String[] { "IncidentStatus", "EndTime", "CloseReqID" },
