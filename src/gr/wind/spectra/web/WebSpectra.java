@@ -1179,7 +1179,7 @@ public class WebSpectra implements InterfaceWebSpectra
 
 			wb.establishDBConnection();
 			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - NLU Active: Establishing DB Connection");
-			logger.info(req.getRemoteAddr() + " - ReqID: " + RequestID + " - NLU Active: Question for CLI Outage of "
+			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - NLU Active: Question for CLI Outage of "
 					+ CLI);
 			// Check if Authentication credentials are correct.
 			if (!wb.dbs.authenticateRequest(UserName, Password))
