@@ -2,6 +2,7 @@
     <wb-module deploy-name="SpectraWS">
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/MyLibs"/>
         <property name="context-root" value="SpectraWS"/>
         <property name="java-output-path" value="/SpectraWS/build/classes"/>
     </wb-module>

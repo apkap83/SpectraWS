@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="MyLibs"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_201">
 		<attributes>
 			<attribute name="owner.project.facets" value="java"/>
@@ -13,50 +14,50 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/commons-codec-1.13.jar">
+	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/MyLibs/commons-codec-1.13.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/HikariCP-3.3.1.jar">
+	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/MyLibs/HikariCP-3.3.1.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/mysql-connector-java-8.0.16.jar">
+	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/MyLibs/mysql-connector-java-8.0.16.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/log4j-api-2.12.1.jar">
+	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/MyLibs/log4j-api-2.12.1.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/log4j-core-2.12.1.jar">
+	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/MyLibs/log4j-core-2.12.1.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-dbcp2-2.7.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/slf4j-api-2.0.0-alpha0.jar">
+	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/MyLibs/commons-dbcp2-2.7.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/MyLibs/slf4j-api-2.0.0-alpha0.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/slf4j-simple-2.0.0-alpha0.jar">
+	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/MyLibs/slf4j-simple-2.0.0-alpha0.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/opencsv-3.3.jar" sourcepath="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/opencsv-3.3-sources.jar">
+	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/MyLibs/opencsv-3.3.jar" sourcepath="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/opencsv-3.3-sources.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:file:/C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/opencsv-3.3-javadoc.jar!/"/>
 			<attribute name="source_encoding" value="UTF-8"/>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/WebContent/WEB-INF/lib/opencsv-3.3-sources.jar">
+	<classpathentry kind="lib" path="C:/Users/AP.KAPETANIOS/eclipse_enterprise/Spectra_WS/MyLibs/opencsv-3.3-javadoc.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>

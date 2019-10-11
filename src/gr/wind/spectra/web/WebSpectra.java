@@ -3,16 +3,21 @@ package gr.wind.spectra.web;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Resource;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebParam.Mode;
 import javax.jws.WebResult;
 import javax.jws.WebService;
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.ws.WebServiceContext;
+import javax.xml.ws.handler.MessageContext;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,6 +42,11 @@ public class WebSpectra implements InterfaceWebSpectra
 	private DB_Connection conObj;
 	private Connection conn;
 	private DB_Operations dbs;
+	private HttpServletRequest req;
+
+	// Those directive is for IP retrieval of web request
+	@Resource
+	WebServiceContext wsContext;
 
 	public WebSpectra()
 	{
@@ -46,6 +56,8 @@ public class WebSpectra implements InterfaceWebSpectra
 	@WebMethod(exclude = true)
 	public void establishDBConnection() throws Exception
 	{
+		//System.out.println("Client IP = " + req.getRemoteAddr());
+
 		if (conn == null)
 		{
 			try
@@ -85,16 +97,22 @@ public class WebSpectra implements InterfaceWebSpectra
 		WebSpectra wb = new WebSpectra();
 		try
 		{
+			// Those 2 directives is for IP retrieval of web request
+			MessageContext mc = wsContext.getMessageContext();
+			req = (HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST);
+
 			wb.establishDBConnection();
-			logger.trace("ReqID: " + RequestID + " - Get Hierarchy: Establishing DB Connection");
+			logger.trace(
+					req.getRemoteAddr() + " - ReqID: " + RequestID + " - Get Hierarchy: Establishing DB Connection");
 			List<String> ElementsList = new ArrayList<String>();
 			List<ProductOfGetHierarchy> prodElementsList = new ArrayList<>();
 
 			// Check if Authentication credentials are correct.
 			if (!wb.dbs.authenticateRequest(UserName, Password))
 			{
-				logger.error("ReqID: " + RequestID + "Get Hierarchy: - Wrong credentials provided - UserName: "
-						+ UserName + " Password: " + Password);
+				logger.error(req.getRemoteAddr() + " - ReqID: " + RequestID
+						+ "Get Hierarchy: - Wrong credentials provided - UserName: " + UserName + " Password: "
+						+ Password);
 				throw new InvalidInputException("User name or Password incorrect!", "Error 100");
 			}
 
@@ -116,7 +134,8 @@ public class WebSpectra implements InterfaceWebSpectra
 				// wb.dbs.GetOneColumnUniqueResultSet("HierarchyTablePerTechnology2",
 				// "RootHierarchyNode",
 				// "1 = 1");
-				logger.trace("ReqID: " + RequestID + " - Get Hierarchy: Hierarchy Requested: <empty>");
+				logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID
+						+ " - Get Hierarchy: Hierarchy Requested: <empty>");
 
 				ElementsList = wb.dbs.getOneColumnUniqueResultSet("HierarchyTablePerTechnology2", "RootHierarchyNode",
 						new String[] {}, new String[] {}, new String[] {});
@@ -129,7 +148,8 @@ public class WebSpectra implements InterfaceWebSpectra
 				prodElementsList.add(pr);
 			} else
 			{
-				logger.trace("ReqID: " + RequestID + " - Get Hierarchy: Hierarchy Requested: " + Hierarchy);
+				logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Get Hierarchy: Hierarchy Requested: "
+						+ Hierarchy);
 				ArrayList<String> nodeNamesArrayList = new ArrayList<String>();
 				ArrayList<String> nodeValuesArrayList = new ArrayList<String>();
 
@@ -269,7 +289,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			return prodElementsList;
 		} finally
 		{
-			logger.trace("ReqID: " + RequestID + " - Get Hierarchy: Closing DB Connection");
+			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Get Hierarchy: Closing DB Connection");
 			wb.conObj.closeDBConnection();
 		}
 
@@ -307,8 +327,13 @@ public class WebSpectra implements InterfaceWebSpectra
 
 		try
 		{
+			// Those 2 directives is for IP retrieval of web request
+			MessageContext mc = wsContext.getMessageContext();
+			req = (HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST);
+
 			wb.establishDBConnection();
-			logger.trace("ReqID: " + RequestID + " - Submit Outage: Establishing DB Connection");
+			logger.trace(
+					req.getRemoteAddr() + " - ReqID: " + RequestID + " - Submit Outage: Establishing DB Connection");
 			List<ProductOfSubmission> prodElementsList;
 
 			prodElementsList = new ArrayList<>();
@@ -316,8 +341,9 @@ public class WebSpectra implements InterfaceWebSpectra
 			// Check if Authentication credentials are correct.
 			if (!wb.dbs.authenticateRequest(UserName, Password))
 			{
-				logger.error("ReqID: " + RequestID + "Submit Outage: - Wrong credentials provided - UserName: "
-						+ UserName + " Password: " + Password);
+				logger.error(req.getRemoteAddr() + " - ReqID: " + RequestID
+						+ "Submit Outage: - Wrong credentials provided - UserName: " + UserName + " Password: "
+						+ Password);
 				throw new InvalidInputException("User name or Password incorrect!", "Error 100");
 			}
 
@@ -677,8 +703,8 @@ public class WebSpectra implements InterfaceWebSpectra
 								"Submitted Successfully");
 						prodElementsList.add(ps);
 
-						logger.info("ReqID: " + RequestID + " - Submitted Outage: INCID: " + IncidentID
-								+ " | OutageID: " + OutageID_String);
+						logger.info(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Submitted Outage: INCID: "
+								+ IncidentID + " | OutageID: " + OutageID_String);
 					}
 				}
 			}
@@ -687,7 +713,7 @@ public class WebSpectra implements InterfaceWebSpectra
 
 		} finally
 		{
-			logger.trace("ReqID: " + RequestID + " - Submit Outage: Closing DB Connection");
+			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Submit Outage: Closing DB Connection");
 			wb.conObj.closeDBConnection();
 		}
 	}
@@ -707,8 +733,13 @@ public class WebSpectra implements InterfaceWebSpectra
 
 		try
 		{
+			// Those 2 directives is for IP retrieval of web request
+			MessageContext mc = wsContext.getMessageContext();
+			req = (HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST);
+
 			wb.establishDBConnection();
-			logger.trace("ReqID: " + RequestID + " - Get Outage Status: Establishing DB Connection");
+			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID
+					+ " - Get Outage Status: Establishing DB Connection");
 			List<ProductOfGetOutage> prodElementsList;
 			prodElementsList = new ArrayList<>();
 
@@ -719,8 +750,9 @@ public class WebSpectra implements InterfaceWebSpectra
 			// Check if Authentication credentials are correct.
 			if (!wb.dbs.authenticateRequest(UserName, Password))
 			{
-				logger.error("ReqID: " + RequestID + "Get Outage Status: - Wrong credentials provided - UserName: "
-						+ UserName + " Password: " + Password);
+				logger.error(req.getRemoteAddr() + " - ReqID: " + RequestID
+						+ "Get Outage Status: - Wrong credentials provided - UserName: " + UserName + " Password: "
+						+ Password);
 				throw new InvalidInputException("User name or Password incorrect!", "Error 100");
 			}
 
@@ -784,7 +816,8 @@ public class WebSpectra implements InterfaceWebSpectra
 			return prodElementsList;
 		} finally
 		{
-			logger.trace("ReqID: " + RequestID + " - Get Outage Status: Closing DB Connection");
+			logger.trace(
+					req.getRemoteAddr() + " - ReqID: " + RequestID + " - Get Outage Status: Closing DB Connection");
 			wb.conObj.closeDBConnection();
 		}
 	}
@@ -811,13 +844,19 @@ public class WebSpectra implements InterfaceWebSpectra
 
 		try
 		{
+			// Those 2 directives is for IP retrieval of web request
+			MessageContext mc = wsContext.getMessageContext();
+			req = (HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST);
+
 			wb.establishDBConnection();
-			logger.trace("ReqID: " + RequestID + " - Modify Outage: Establishing DB Connection");
+			logger.trace(
+					req.getRemoteAddr() + " - ReqID: " + RequestID + " - Modify Outage: Establishing DB Connection");
 			// Check if Authentication credentials are correct.
 			if (!wb.dbs.authenticateRequest(UserName, Password))
 			{
-				logger.error("ReqID: " + RequestID + "Modify Outage: - Wrong credentials provided - UserName: "
-						+ UserName + " Password: " + Password);
+				logger.error(req.getRemoteAddr() + " - ReqID: " + RequestID
+						+ "Modify Outage: - Wrong credentials provided - UserName: " + UserName + " Password: "
+						+ Password);
 				throw new InvalidInputException("User name or Password incorrect!", "Error 100");
 			}
 
@@ -959,6 +998,9 @@ public class WebSpectra implements InterfaceWebSpectra
 				if (numOfRowsUpdated == 1)
 				{
 					pom = new ProductOfModify(RequestID, IncidentID, OutageID, "930", "Successfully Modified Incident");
+					logger.info(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Modify Outage: " + OutageID
+							+ " -> " + Arrays.toString(arrayOfColumnsForUpdate) + " -> "
+							+ Arrays.toString(arrayOfValuesForUpdate));
 				} else
 				{
 					System.out.println("Modifying: numOfRowsUpdated = " + numOfRowsUpdated);
@@ -975,7 +1017,7 @@ public class WebSpectra implements InterfaceWebSpectra
 		} finally
 		{
 			// Close DB Connection
-			logger.trace("ReqID: " + RequestID + " - Modify Outage: Closing DB Connection");
+			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Modify Outage: Closing DB Connection");
 			wb.conObj.closeDBConnection();
 		}
 	}
@@ -995,16 +1037,21 @@ public class WebSpectra implements InterfaceWebSpectra
 	{
 		WebSpectra wb = new WebSpectra();
 		int numOfRowsUpdated = 0;
-		logger.info("ReqID: " + RequestID + " - Close Outage: INCID: " + IncidentID + " OutageID: " + OutageID);
 		try
 		{
+			// Those 2 directives is for IP retrieval of web request
+			MessageContext mc = wsContext.getMessageContext();
+			req = (HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST);
+
 			wb.establishDBConnection();
-			logger.trace("ReqID: " + RequestID + " - Close Outage: Establishing DB Connection");
+			logger.trace(
+					req.getRemoteAddr() + " - ReqID: " + RequestID + " - Close Outage: Establishing DB Connection");
 			// Check if Authentication credentials are correct.
 			if (!wb.dbs.authenticateRequest(UserName, Password))
 			{
-				logger.error("ReqID: " + RequestID + " - Close Outage: - Wrong credentials provided - UserName: "
-						+ UserName + " Password: " + Password);
+				logger.error(req.getRemoteAddr() + " - ReqID: " + RequestID
+						+ " - Close Outage: - Wrong credentials provided - UserName: " + UserName + " Password: "
+						+ Password);
 				throw new InvalidInputException("User name or Password incorrect!", "Error 100");
 			}
 
@@ -1026,8 +1073,8 @@ public class WebSpectra implements InterfaceWebSpectra
 
 			if (incidentPlusOutageExists)
 			{
-				logger.info(
-						"ReqID: " + RequestID + " - Close Outage: for INCID: " + IncidentID + " OutageID: " + OutageID);
+				logger.info(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Close Outage: for INCID: " + IncidentID
+						+ " OutageID: " + OutageID);
 
 				// Check if the combination of IncidentID & OutageID is still OPEN
 				boolean incidentPlusOutageIsOpen = wb.dbs.checkIfCriteriaExists("SubmittedIncidents",
@@ -1046,8 +1093,8 @@ public class WebSpectra implements InterfaceWebSpectra
 					// If it is scheduled then the End Time should NOT be updated
 					if (incidentIsScheduled)
 					{
-						logger.info("ReqID: " + RequestID + " - Close Outage: INCID: " + IncidentID + " | OutageID: "
-								+ OutageID + " is OPEN & Scheduled");
+						logger.info(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Close Outage: INCID: "
+								+ IncidentID + " | OutageID: " + OutageID + " is OPEN & Scheduled");
 						// Update Operation
 						numOfRowsUpdated = wb.dbs.updateColumnOnSpecificCriteria("SubmittedIncidents",
 								new String[] { "IncidentStatus" }, new String[] { "CLOSED" }, new String[] { "String" },
@@ -1056,8 +1103,8 @@ public class WebSpectra implements InterfaceWebSpectra
 
 					} else
 					{
-						logger.info("ReqID: " + RequestID + " - Close Outage: INCID: " + IncidentID + " | OutageID: "
-								+ OutageID + " is OPEN & not Scheduled");
+						logger.info(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Close Outage: INCID: "
+								+ IncidentID + " | OutageID: " + OutageID + " is OPEN & not Scheduled");
 						// If it is NOT scheduled then the End Time should be updated
 						numOfRowsUpdated = wb.dbs.updateColumnOnSpecificCriteria("SubmittedIncidents",
 								new String[] { "IncidentStatus", "EndTime", "CloseReqID" },
@@ -1069,14 +1116,14 @@ public class WebSpectra implements InterfaceWebSpectra
 					// Only one line should always be updated in this operation
 					if (numOfRowsUpdated == 1)
 					{
-						logger.info("ReqID: " + RequestID + " - Close Outage: INCID: " + IncidentID + "| OutageID: "
-								+ OutageID + " successfully CLOSED");
+						logger.info(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Close Outage: INCID: "
+								+ IncidentID + "| OutageID: " + OutageID + " successfully CLOSED");
 						poca = new ProductOfCloseOutage(RequestID, IncidentID, OutageID, "990",
 								"Successfully Closed Incident");
 					} else
 					{
-						logger.error("ReqID: " + RequestID + " - Close Outage: INCID: " + IncidentID + "| OutageID: "
-								+ OutageID + " FAILED (more than 1 lines updated)");
+						logger.error(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Close Outage: INCID: "
+								+ IncidentID + "| OutageID: " + OutageID + " FAILED (more than 1 lines updated)");
 						poca = new ProductOfCloseOutage(RequestID, IncidentID, OutageID, "423",
 								"Error Closing Incident");
 					}
@@ -1086,15 +1133,16 @@ public class WebSpectra implements InterfaceWebSpectra
 					String closedTime = wb.dbs.getOneValue("SubmittedIncidents", "EndTime",
 							new String[] { "IncidentID", "OutageID" }, new String[] { IncidentID, OutageID },
 							new String[] { "String", "String" });
-					logger.error("ReqID: " + RequestID + " - Close Outage: INCID: " + IncidentID + " | OutageID: "
-							+ OutageID + " is already closed since: " + closedTime);
+					logger.error(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Close Outage: INCID: "
+							+ IncidentID + " | OutageID: " + OutageID + " is already closed since: " + closedTime);
 					throw new InvalidInputException("The combination of IncidentID: " + IncidentID + " and OutageID: "
 							+ OutageID + " has already been closed since: " + closedTime, "Error 820");
 				}
 			} else
 			{
-				logger.error("ReqID: " + RequestID + " - Close Outage: The combination of IncidentID: " + IncidentID
-						+ " | OutageID: " + OutageID + " does not exist");
+				logger.error(req.getRemoteAddr() + " - ReqID: " + RequestID
+						+ " - Close Outage: The combination of IncidentID: " + IncidentID + " | OutageID: " + OutageID
+						+ " does not exist");
 				throw new InvalidInputException("The combination of IncidentID: " + IncidentID + " and OutageID: "
 						+ OutageID + " does not exist!", "Error 950");
 			}
@@ -1102,7 +1150,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			return poca;
 		} finally
 		{
-			logger.trace("ReqID: " + RequestID + " - Close Outage: Closing DB Connection");
+			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Close Outage: Closing DB Connection");
 			wb.conObj.closeDBConnection();
 		}
 	}
@@ -1125,13 +1173,20 @@ public class WebSpectra implements InterfaceWebSpectra
 		ProductOfNLUActive ponla = null;
 		try
 		{
+			// Those 2 directives is for IP retrieval of web request
+			MessageContext mc = wsContext.getMessageContext();
+			req = (HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST);
+
 			wb.establishDBConnection();
-			logger.trace("ReqID: " + RequestID + " - NLU Active: Establishing DB Connection");
+			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - NLU Active: Establishing DB Connection");
+			logger.info(req.getRemoteAddr() + " - ReqID: " + RequestID + " - NLU Active: Question for CLI Outage of "
+					+ CLI);
 			// Check if Authentication credentials are correct.
 			if (!wb.dbs.authenticateRequest(UserName, Password))
 			{
-				logger.error("ReqID: " + RequestID + "NLU Active: - Wrong credentials provided - UserName: " + UserName
-						+ " Password: " + Password);
+				logger.error(req.getRemoteAddr() + " - ReqID: " + RequestID
+						+ "NLU Active: - Wrong credentials provided - UserName: " + UserName + " Password: "
+						+ Password);
 				throw new InvalidInputException("User name or Password incorrect!", "Error 100");
 			}
 
@@ -1155,7 +1210,7 @@ public class WebSpectra implements InterfaceWebSpectra
 
 		} finally
 		{
-			logger.trace("ReqID: " + RequestID + " - NLU Active: Closing DB Connection");
+			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - NLU Active: Closing DB Connection");
 			wb.conObj.closeDBConnection();
 		}
 		return ponla;
