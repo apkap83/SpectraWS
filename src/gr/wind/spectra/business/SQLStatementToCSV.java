@@ -48,7 +48,7 @@ public class SQLStatementToCSV extends Thread
 		{
 			this.conObj = new DB_Connection();
 			this.conn = this.conObj.connect();
-//			this.dbs = new DB_Operations(conn);
+			//			this.dbs = new DB_Operations(conn);
 		} catch (Exception ex)
 		{
 			throw new Exception(ex.getMessage());
@@ -58,7 +58,6 @@ public class SQLStatementToCSV extends Thread
 	@Override
 	public void run()
 	{
-		// TODO Auto-generated method stub
 		try
 		{
 			try
@@ -66,7 +65,6 @@ public class SQLStatementToCSV extends Thread
 				this.establishDBConnection();
 			} catch (Exception e1)
 			{
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			logger.info("Thread execution in ResultSetToCSV Class Started!");
@@ -93,13 +91,11 @@ public class SQLStatementToCSV extends Thread
 				System.out.println("Thread execution in ResultSetToCSV Class Finished!");
 			} catch (IOException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
 		} catch (SQLException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

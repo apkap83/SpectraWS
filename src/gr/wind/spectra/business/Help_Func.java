@@ -53,7 +53,6 @@ public class Help_Func
 			sc = new Scanner(file);
 		} catch (FileNotFoundException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -86,7 +85,6 @@ public class Help_Func
 				writer.close();
 			} catch (IOException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 

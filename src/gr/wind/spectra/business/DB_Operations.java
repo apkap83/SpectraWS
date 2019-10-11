@@ -237,7 +237,6 @@ public class DB_Operations
 			}
 		} catch (Exception e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -448,7 +447,6 @@ public class DB_Operations
 				//					System.out.println("passwordIsCorrect " + passwordIsCorrect);
 			} catch (Exception e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 

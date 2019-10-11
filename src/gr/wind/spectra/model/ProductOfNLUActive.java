@@ -26,7 +26,6 @@ public class ProductOfNLUActive
 
 	public ProductOfNLUActive()
 	{
-		// TODO Auto-generated constructor stub
 	}
 
 	public ProductOfNLUActive(String requestID, String CLI, String affected, String incidentID, String problem_severity,

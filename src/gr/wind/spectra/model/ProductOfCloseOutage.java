@@ -16,7 +16,6 @@ public class ProductOfCloseOutage
 
 	public ProductOfCloseOutage()
 	{
-		// TODO Auto-generated constructor stub
 	}
 
 	public ProductOfCloseOutage(String requestID, String incidentID, String outageID, String statusCode,
