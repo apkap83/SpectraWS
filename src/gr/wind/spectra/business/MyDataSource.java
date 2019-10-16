@@ -41,7 +41,7 @@ public class MyDataSource
 		config.setPassword(PASSWORD1);
 		config.setMaxLifetime(600000);
 		config.setConnectionTimeout(30000);
-		config.setMinimumIdle(25);
+		config.setMaximumPoolSize(25);
 		config.addDataSourceProperty("cachePrepStmts", "true");
 		config.addDataSourceProperty("prepStmtCacheSize", "700");
 		config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
@@ -70,7 +70,7 @@ public class MyDataSource
 		config.setPassword(PASSWORD2);
 		config.setMaxLifetime(600000);
 		config.setConnectionTimeout(30000);
-		config.setMinimumIdle(25);
+		config.setMaximumPoolSize(25);
 		config.addDataSourceProperty("cachePrepStmts", "true");
 		config.addDataSourceProperty("prepStmtCacheSize", "700");
 		config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
