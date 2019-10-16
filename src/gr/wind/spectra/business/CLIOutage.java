@@ -20,15 +20,17 @@ import gr.wind.spectra.web.InvalidInputException;
 public class CLIOutage
 {
 	private DB_Operations dbs;
+	private s_DB_Operations s_dbs;
 	private String requestID;
 	DateFormat dateFormat = new SimpleDateFormat(Help_Func.DATE_FORMAT);
 
 	// Logger instance
 	private static final Logger logger = LogManager.getLogger(gr.wind.spectra.business.CLIOutage.class.getName());
 
-	public CLIOutage(DB_Operations dbs, String requestID) throws Exception
+	public CLIOutage(DB_Operations dbs, s_DB_Operations s_dbs, String requestID) throws Exception
 	{
 		this.dbs = dbs;
+		this.s_dbs = s_dbs;
 		this.requestID = requestID;
 	}
 
@@ -90,11 +92,11 @@ public class CLIOutage
 		String allAffectedServices = "";
 
 		// Check if we have at least one OPEN incident
-		boolean weHaveOpenIncident = dbs.checkIfStringExistsInSpecificColumn("SubmittedIncidents", "IncidentStatus",
+		boolean weHaveOpenIncident = s_dbs.checkIfStringExistsInSpecificColumn("SubmittedIncidents", "IncidentStatus",
 				"OPEN");
 
 		// Check number of open incidents
-		String numOfOpenIncidentsCurrently = dbs.numberOfRowsFound("SubmittedIncidents",
+		String numOfOpenIncidentsCurrently = s_dbs.numberOfRowsFound("SubmittedIncidents",
 				new String[] { "IncidentStatus" }, new String[] { "OPEN" }, new String[] { "String" });
 
 		// If the submitted service type is empty then fill it with "Voice|Data"
@@ -130,7 +132,7 @@ public class CLIOutage
 			{
 				ResultSet rs = null;
 				// Get Lines with IncidentStatus = "OPEN"
-				rs = dbs.getRows("SubmittedIncidents",
+				rs = s_dbs.getRows("SubmittedIncidents",
 						new String[] { "WillBePublished", "IncidentID", "OutageID", "HierarchySelected", "Priority",
 								"AffectedServices", "Scheduled", "Duration", "StartTime", "EndTime", "Impact" },
 						new String[] { "IncidentStatus" }, new String[] { "OPEN" }, new String[] { "String" });

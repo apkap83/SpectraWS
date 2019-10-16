@@ -46,11 +46,25 @@
             <AppenderRef ref="remedyRequestsLog" />
         </Logger>
 
+        <Logger name="gr.wind.spectra.business.s_DB_Operations" additivity="false" level="info">
+            <AppenderRef ref="remedyRequestsLog" />
+        </Logger>
+
+
         <Logger name="gr.wind.spectra.business.DB_Connection" additivity="false" level="info">
             <AppenderRef ref="remedyRequestsLog" />
         </Logger>
 
+        <Logger name="gr.wind.spectra.business.s_DB_Connection" additivity="false" level="info">
+            <AppenderRef ref="remedyRequestsLog" />
+        </Logger>
+
+
         <Logger name="gr.wind.spectra.business.MyDataSource" additivity="false" level="info">
+            <AppenderRef ref="remedyRequestsLog" />
+        </Logger>
+
+        <Logger name="gr.wind.spectra.business.s_MyDataSource" additivity="false" level="info">
             <AppenderRef ref="remedyRequestsLog" />
         </Logger>
 

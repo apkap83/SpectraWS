@@ -26,6 +26,8 @@ import gr.wind.spectra.business.CLIOutage;
 import gr.wind.spectra.business.DB_Connection;
 import gr.wind.spectra.business.DB_Operations;
 import gr.wind.spectra.business.Help_Func;
+import gr.wind.spectra.business.s_DB_Connection;
+import gr.wind.spectra.business.s_DB_Operations;
 import gr.wind.spectra.model.ProductOfCloseOutage;
 import gr.wind.spectra.model.ProductOfGetHierarchy;
 import gr.wind.spectra.model.ProductOfGetOutage;
@@ -39,9 +41,15 @@ public class WebSpectra implements InterfaceWebSpectra
 	// Logger instance
 	private static final Logger logger = LogManager.getLogger(gr.wind.spectra.web.WebSpectra.class.getName());
 	private static final String hierSep = "->";
-	private DB_Connection conObj;
+
 	private Connection conn;
+	private DB_Connection conObj;
 	private DB_Operations dbs;
+
+	private Connection s_conn;
+	private s_DB_Connection s_conObj;
+	private s_DB_Operations s_dbs;
+
 	private HttpServletRequest req;
 
 	// Those directive is for IP retrieval of web request
@@ -65,6 +73,26 @@ public class WebSpectra implements InterfaceWebSpectra
 				this.conObj = new DB_Connection();
 				this.conn = this.conObj.connect();
 				this.dbs = new DB_Operations(conn);
+			} catch (Exception ex)
+			{
+				logger.fatal("Could not open connection with database!");
+				throw new Exception(ex.getMessage());
+			}
+		}
+	}
+
+	@WebMethod(exclude = true)
+	public void establishStaticTablesDBConnection() throws Exception
+	{
+		//System.out.println("Client IP = " + req.getRemoteAddr());
+
+		if (s_conn == null)
+		{
+			try
+			{
+				this.s_conObj = new s_DB_Connection();
+				this.s_conn = this.s_conObj.connect();
+				this.s_dbs = new s_DB_Operations(s_conn);
 			} catch (Exception ex)
 			{
 				logger.fatal("Could not open connection with database!");
@@ -102,13 +130,15 @@ public class WebSpectra implements InterfaceWebSpectra
 			req = (HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST);
 
 			wb.establishDBConnection();
+			wb.establishStaticTablesDBConnection();
+
 			logger.trace(
 					req.getRemoteAddr() + " - ReqID: " + RequestID + " - Get Hierarchy: Establishing DB Connection");
 			List<String> ElementsList = new ArrayList<String>();
 			List<ProductOfGetHierarchy> prodElementsList = new ArrayList<>();
 
 			// Check if Authentication credentials are correct.
-			if (!wb.dbs.authenticateRequest(UserName, Password))
+			if (!wb.s_dbs.authenticateRequest(UserName, Password))
 			{
 				logger.error(req.getRemoteAddr() + " - ReqID: " + RequestID
 						+ "Get Hierarchy: - Wrong credentials provided - UserName: " + UserName + " Password: "
@@ -291,6 +321,7 @@ public class WebSpectra implements InterfaceWebSpectra
 		{
 			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Get Hierarchy: Closing DB Connection");
 			wb.conObj.closeDBConnection();
+			wb.s_conObj.closeDBConnection();
 		}
 
 	}
@@ -332,6 +363,8 @@ public class WebSpectra implements InterfaceWebSpectra
 			req = (HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST);
 
 			wb.establishDBConnection();
+			wb.establishStaticTablesDBConnection();
+
 			logger.trace(
 					req.getRemoteAddr() + " - ReqID: " + RequestID + " - Submit Outage: Establishing DB Connection");
 			List<ProductOfSubmission> prodElementsList;
@@ -339,7 +372,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			prodElementsList = new ArrayList<>();
 			int OutageID_Integer = 0;
 			// Check if Authentication credentials are correct.
-			if (!wb.dbs.authenticateRequest(UserName, Password))
+			if (!wb.s_dbs.authenticateRequest(UserName, Password))
 			{
 				logger.error(req.getRemoteAddr() + " - ReqID: " + RequestID
 						+ "Submit Outage: - Wrong credentials provided - UserName: " + UserName + " Password: "
@@ -408,7 +441,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			List<String> myHier = Help_Func.getHierarchySelections(HierarchySelected);
 
 			// Get Max Outage ID (type int)
-			OutageID_Integer = wb.dbs.getMaxIntegerValue("SubmittedIncidents", "OutageID");
+			OutageID_Integer = wb.s_dbs.getMaxIntegerValue("SubmittedIncidents", "OutageID");
 
 			// Services affected
 			String[] servicesAffected = AffectedServices.split("\\|");
@@ -549,7 +582,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			{
 				for (int i = 0; i < myHier.size(); i++)
 				{
-					boolean incidentAlreadyExists = wb.dbs.checkIfCriteriaExists("SubmittedIncidents",
+					boolean incidentAlreadyExists = wb.s_dbs.checkIfCriteriaExists("SubmittedIncidents",
 							new String[] { "IncidentStatus", "IncidentID", "AffectedServices", "HierarchySelected" },
 							new String[] { "OPEN", IncidentID, service, myHier.get(i).toString() },
 							new String[] { "String", "String", "String", "String" });
@@ -568,13 +601,13 @@ public class WebSpectra implements InterfaceWebSpectra
 			String numberOfVoiceCustAffectedFromPreviousIncidents = "0";
 			String numberOfDataCustAffectedFromPreviousIncidents = "0";
 
-			if (wb.dbs.checkIfCriteriaExists("SubmittedIncidents", new String[] { "IncidentID" },
+			if (wb.s_dbs.checkIfCriteriaExists("SubmittedIncidents", new String[] { "IncidentID" },
 					new String[] { IncidentID }, new String[] { "String" }))
 			{
-				numberOfVoiceCustAffectedFromPreviousIncidents = wb.dbs.maxNumberOfCustomersAffected(
+				numberOfVoiceCustAffectedFromPreviousIncidents = wb.s_dbs.maxNumberOfCustomersAffected(
 						"SubmittedIncidents", "IncidentAffectedVoiceCustomers", new String[] { "IncidentID" },
 						new String[] { IncidentID });
-				numberOfDataCustAffectedFromPreviousIncidents = wb.dbs.maxNumberOfCustomersAffected(
+				numberOfDataCustAffectedFromPreviousIncidents = wb.s_dbs.maxNumberOfCustomersAffected(
 						"SubmittedIncidents", "IncidentAffectedDataCustomers", new String[] { "IncidentID" },
 						new String[] { IncidentID });
 
@@ -673,7 +706,7 @@ public class WebSpectra implements InterfaceWebSpectra
 					// Insert Values in Database
 					//System.out.println("25 SEP 2019 Start Time = " + StartTime);
 					//System.out.println("25 SEP 2019 Start Time = " + EndTime);
-					wb.dbs.insertValuesInTable("SubmittedIncidents",
+					wb.s_dbs.insertValuesInTable("SubmittedIncidents",
 							new String[] { "OpenReqID", "DateTime", "WillBePublished", "OutageID", "IncidentStatus",
 									"RequestTimestamp", "SystemID", "UserID", "IncidentID", "Scheduled", "StartTime",
 									"EndTime", "Duration", "AffectedServices", "Impact", "Priority",
@@ -715,6 +748,7 @@ public class WebSpectra implements InterfaceWebSpectra
 		{
 			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Submit Outage: Closing DB Connection");
 			wb.conObj.closeDBConnection();
+			wb.s_conObj.closeDBConnection();
 		}
 	}
 
@@ -737,7 +771,9 @@ public class WebSpectra implements InterfaceWebSpectra
 			MessageContext mc = wsContext.getMessageContext();
 			req = (HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST);
 
-			wb.establishDBConnection();
+			//wb.establishDBConnection();
+			wb.establishStaticTablesDBConnection();
+
 			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID
 					+ " - Get Outage Status: Establishing DB Connection");
 			List<ProductOfGetOutage> prodElementsList;
@@ -748,7 +784,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			Help_Func.validateNotEmpty("IncidentStatus", IncidentStatus);
 
 			// Check if Authentication credentials are correct.
-			if (!wb.dbs.authenticateRequest(UserName, Password))
+			if (!wb.s_dbs.authenticateRequest(UserName, Password))
 			{
 				logger.error(req.getRemoteAddr() + " - ReqID: " + RequestID
 						+ "Get Outage Status: - Wrong credentials provided - UserName: " + UserName + " Password: "
@@ -764,10 +800,10 @@ public class WebSpectra implements InterfaceWebSpectra
 				// numOfRows = wb.dbs.NumberOfRowsFound("SubmittedIncidents", "IncidentStatus =
 				// '" + IncidentStatus + "'");
 
-				numOfRows = wb.dbs.numberOfRowsFound("SubmittedIncidents", new String[] { "IncidentStatus" },
+				numOfRows = wb.s_dbs.numberOfRowsFound("SubmittedIncidents", new String[] { "IncidentStatus" },
 						new String[] { IncidentStatus }, new String[] { "String" });
 
-				rs = wb.dbs.getRows("SubmittedIncidents",
+				rs = wb.s_dbs.getRows("SubmittedIncidents",
 						new String[] { "OutageID", "IncidentStatus", "RequestTimestamp", "SystemID", "UserID",
 								"IncidentID", "Scheduled", "StartTime", "EndTime", "Duration", "AffectedServices",
 								"Impact", "Priority", "Hierarchyselected", "AffectedVoiceCustomers",
@@ -777,11 +813,11 @@ public class WebSpectra implements InterfaceWebSpectra
 						new String[] { "IncidentStatus" }, new String[] { IncidentStatus }, new String[] { "String" });
 			} else
 			{
-				numOfRows = wb.dbs.numberOfRowsFound("SubmittedIncidents",
+				numOfRows = wb.s_dbs.numberOfRowsFound("SubmittedIncidents",
 						new String[] { "IncidentID", "IncidentStatus" }, new String[] { IncidentID, IncidentStatus },
 						new String[] { "String", "String" });
 
-				rs = wb.dbs.getRows("SubmittedIncidents",
+				rs = wb.s_dbs.getRows("SubmittedIncidents",
 						new String[] { "OutageID", "IncidentStatus", "RequestTimestamp", "SystemID", "UserID",
 								"IncidentID", "Scheduled", "StartTime", "EndTime", "Duration", "AffectedServices",
 								"Impact", "Priority", "Hierarchyselected", "AffectedVoiceCustomers",
@@ -818,7 +854,8 @@ public class WebSpectra implements InterfaceWebSpectra
 		{
 			logger.trace(
 					req.getRemoteAddr() + " - ReqID: " + RequestID + " - Get Outage Status: Closing DB Connection");
-			wb.conObj.closeDBConnection();
+			//wb.conObj.closeDBConnection();
+			wb.s_conObj.closeDBConnection();
 		}
 	}
 
@@ -848,11 +885,13 @@ public class WebSpectra implements InterfaceWebSpectra
 			MessageContext mc = wsContext.getMessageContext();
 			req = (HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST);
 
-			wb.establishDBConnection();
+			//wb.establishDBConnection();
+			wb.establishStaticTablesDBConnection();
+
 			logger.trace(
 					req.getRemoteAddr() + " - ReqID: " + RequestID + " - Modify Outage: Establishing DB Connection");
 			// Check if Authentication credentials are correct.
-			if (!wb.dbs.authenticateRequest(UserName, Password))
+			if (!wb.s_dbs.authenticateRequest(UserName, Password))
 			{
 				logger.error(req.getRemoteAddr() + " - ReqID: " + RequestID
 						+ "Modify Outage: - Wrong credentials provided - UserName: " + UserName + " Password: "
@@ -899,7 +938,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			}
 
 			// Check if the combination of IncidentID & OutageID exists
-			boolean incidentPlusOutageExists = wb.dbs.checkIfCriteriaExists("SubmittedIncidents",
+			boolean incidentPlusOutageExists = wb.s_dbs.checkIfCriteriaExists("SubmittedIncidents",
 					new String[] { "IncidentID", "OutageID" }, new String[] { IncidentID, OutageID },
 					new String[] { "String", "String" });
 
@@ -907,7 +946,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			{
 				// Check if the combination of IncidentID & OutageID refers to a scheduled
 				// Incident (Scheduled = "Yes")
-				boolean incidentIsScheduled = wb.dbs.checkIfCriteriaExists("SubmittedIncidents",
+				boolean incidentIsScheduled = wb.s_dbs.checkIfCriteriaExists("SubmittedIncidents",
 						new String[] { "IncidentID", "OutageID", "Scheduled" },
 						new String[] { IncidentID, OutageID, "Yes" }, new String[] { "String", "String", "String" });
 				// Create a new list with the updated columns - based on what is empty or not
@@ -977,7 +1016,7 @@ public class WebSpectra implements InterfaceWebSpectra
 				}
 
 				// Check if Incident is still open
-				boolean isIncidentClosed = wb.dbs.checkIfCriteriaExists("SubmittedIncidents",
+				boolean isIncidentClosed = wb.s_dbs.checkIfCriteriaExists("SubmittedIncidents",
 						new String[] { "IncidentStatus", "IncidentID", "OutageID" },
 						new String[] { "CLOSED", IncidentID, OutageID }, new String[] { "String", "String", "String" });
 
@@ -990,7 +1029,7 @@ public class WebSpectra implements InterfaceWebSpectra
 				}
 
 				// Update Operation
-				int numOfRowsUpdated = wb.dbs.updateColumnOnSpecificCriteria("SubmittedIncidents",
+				int numOfRowsUpdated = wb.s_dbs.updateColumnOnSpecificCriteria("SubmittedIncidents",
 						arrayOfColumnsForUpdate, arrayOfValuesForUpdate, arrayOfDataTypesForUpdate,
 						new String[] { "IncidentID", "OutageID" }, new String[] { IncidentID, OutageID },
 						new String[] { "String", "Integer" });
@@ -1018,7 +1057,8 @@ public class WebSpectra implements InterfaceWebSpectra
 		{
 			// Close DB Connection
 			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Modify Outage: Closing DB Connection");
-			wb.conObj.closeDBConnection();
+			//wb.conObj.closeDBConnection();
+			wb.s_conObj.closeDBConnection();
 		}
 	}
 
@@ -1043,11 +1083,13 @@ public class WebSpectra implements InterfaceWebSpectra
 			MessageContext mc = wsContext.getMessageContext();
 			req = (HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST);
 
-			wb.establishDBConnection();
+			//wb.establishDBConnection();
+			wb.establishStaticTablesDBConnection();
+
 			logger.trace(
 					req.getRemoteAddr() + " - ReqID: " + RequestID + " - Close Outage: Establishing DB Connection");
 			// Check if Authentication credentials are correct.
-			if (!wb.dbs.authenticateRequest(UserName, Password))
+			if (!wb.s_dbs.authenticateRequest(UserName, Password))
 			{
 				logger.error(req.getRemoteAddr() + " - ReqID: " + RequestID
 						+ " - Close Outage: - Wrong credentials provided - UserName: " + UserName + " Password: "
@@ -1067,7 +1109,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			Help_Func.validateNotEmpty("OutageID", OutageID);
 
 			// Check if the combination of IncidentID & OutageID exists
-			boolean incidentPlusOutageExists = wb.dbs.checkIfCriteriaExists("SubmittedIncidents",
+			boolean incidentPlusOutageExists = wb.s_dbs.checkIfCriteriaExists("SubmittedIncidents",
 					new String[] { "IncidentID", "OutageID" }, new String[] { IncidentID, OutageID },
 					new String[] { "String", "String" });
 
@@ -1077,7 +1119,7 @@ public class WebSpectra implements InterfaceWebSpectra
 						+ " OutageID: " + OutageID);
 
 				// Check if the combination of IncidentID & OutageID is still OPEN
-				boolean incidentPlusOutageIsOpen = wb.dbs.checkIfCriteriaExists("SubmittedIncidents",
+				boolean incidentPlusOutageIsOpen = wb.s_dbs.checkIfCriteriaExists("SubmittedIncidents",
 						new String[] { "IncidentID", "OutageID", "IncidentStatus" },
 						new String[] { IncidentID, OutageID, "OPEN" }, new String[] { "String", "String", "String" });
 
@@ -1085,7 +1127,7 @@ public class WebSpectra implements InterfaceWebSpectra
 				if (incidentPlusOutageIsOpen)
 				{
 					// Check if the Incidents is Scheduled
-					boolean incidentIsScheduled = wb.dbs.checkIfCriteriaExists("SubmittedIncidents",
+					boolean incidentIsScheduled = wb.s_dbs.checkIfCriteriaExists("SubmittedIncidents",
 							new String[] { "IncidentID", "OutageID", "IncidentStatus", "Scheduled" },
 							new String[] { IncidentID, OutageID, "OPEN", "Yes" },
 							new String[] { "String", "String", "String", "String" });
@@ -1096,7 +1138,7 @@ public class WebSpectra implements InterfaceWebSpectra
 						logger.info(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Close Outage: INCID: "
 								+ IncidentID + " | OutageID: " + OutageID + " is OPEN & Scheduled");
 						// Update Operation
-						numOfRowsUpdated = wb.dbs.updateColumnOnSpecificCriteria("SubmittedIncidents",
+						numOfRowsUpdated = wb.s_dbs.updateColumnOnSpecificCriteria("SubmittedIncidents",
 								new String[] { "IncidentStatus" }, new String[] { "CLOSED" }, new String[] { "String" },
 								new String[] { "IncidentID", "OutageID" }, new String[] { IncidentID, OutageID },
 								new String[] { "String", "Integer" });
@@ -1106,7 +1148,7 @@ public class WebSpectra implements InterfaceWebSpectra
 						logger.info(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Close Outage: INCID: "
 								+ IncidentID + " | OutageID: " + OutageID + " is OPEN & not Scheduled");
 						// If it is NOT scheduled then the End Time should be updated
-						numOfRowsUpdated = wb.dbs.updateColumnOnSpecificCriteria("SubmittedIncidents",
+						numOfRowsUpdated = wb.s_dbs.updateColumnOnSpecificCriteria("SubmittedIncidents",
 								new String[] { "IncidentStatus", "EndTime", "CloseReqID" },
 								new String[] { "CLOSED", Help_Func.now(), RequestID },
 								new String[] { "String", "Date", "String" }, new String[] { "IncidentID", "OutageID" },
@@ -1152,6 +1194,7 @@ public class WebSpectra implements InterfaceWebSpectra
 		{
 			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Close Outage: Closing DB Connection");
 			wb.conObj.closeDBConnection();
+			wb.s_conObj.closeDBConnection();
 		}
 	}
 
@@ -1178,11 +1221,13 @@ public class WebSpectra implements InterfaceWebSpectra
 			req = (HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST);
 
 			wb.establishDBConnection();
+			wb.establishStaticTablesDBConnection();
+
 			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - NLU Active: Establishing DB Connection");
 			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - NLU Active: Question for CLI Outage of "
 					+ CLI);
 			// Check if Authentication credentials are correct.
-			if (!wb.dbs.authenticateRequest(UserName, Password))
+			if (!wb.s_dbs.authenticateRequest(UserName, Password))
 			{
 				logger.error(req.getRemoteAddr() + " - ReqID: " + RequestID
 						+ "NLU Active: - Wrong credentials provided - UserName: " + UserName + " Password: "
@@ -1205,13 +1250,14 @@ public class WebSpectra implements InterfaceWebSpectra
 				Help_Func.validateDelimitedValues("Service", Service, "\\|", new String[] { "Voice", "Data", "IPTV" });
 			}
 
-			CLIOutage co = new CLIOutage(wb.dbs, RequestID);
+			CLIOutage co = new CLIOutage(wb.dbs, wb.s_dbs, RequestID);
 			ponla = co.checkCLIOutage(RequestID, CLI, Service);
 
 		} finally
 		{
 			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - NLU Active: Closing DB Connection");
 			wb.conObj.closeDBConnection();
+			wb.s_conObj.closeDBConnection();
 		}
 		return ponla;
 	}
