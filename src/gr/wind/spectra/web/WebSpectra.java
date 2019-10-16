@@ -320,8 +320,14 @@ public class WebSpectra implements InterfaceWebSpectra
 		} finally
 		{
 			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Get Hierarchy: Closing DB Connection");
-			wb.conObj.closeDBConnection();
-			wb.s_conObj.closeDBConnection();
+			if (wb.conObj != null)
+			{
+				wb.conObj.closeDBConnection();
+			}
+			if (wb.s_conObj != null)
+			{
+				wb.s_conObj.closeDBConnection();
+			}
 		}
 
 	}
@@ -747,8 +753,14 @@ public class WebSpectra implements InterfaceWebSpectra
 		} finally
 		{
 			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Submit Outage: Closing DB Connection");
-			wb.conObj.closeDBConnection();
-			wb.s_conObj.closeDBConnection();
+			if (wb.conObj != null)
+			{
+				wb.conObj.closeDBConnection();
+			}
+			if (wb.s_conObj != null)
+			{
+				wb.s_conObj.closeDBConnection();
+			}
 		}
 	}
 
@@ -854,8 +866,14 @@ public class WebSpectra implements InterfaceWebSpectra
 		{
 			logger.trace(
 					req.getRemoteAddr() + " - ReqID: " + RequestID + " - Get Outage Status: Closing DB Connection");
-			//wb.conObj.closeDBConnection();
-			wb.s_conObj.closeDBConnection();
+			if (wb.conObj != null)
+			{
+				wb.conObj.closeDBConnection();
+			}
+			if (wb.s_conObj != null)
+			{
+				wb.s_conObj.closeDBConnection();
+			}
 		}
 	}
 
@@ -1057,8 +1075,14 @@ public class WebSpectra implements InterfaceWebSpectra
 		{
 			// Close DB Connection
 			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Modify Outage: Closing DB Connection");
-			//wb.conObj.closeDBConnection();
-			wb.s_conObj.closeDBConnection();
+			if (wb.conObj != null)
+			{
+				wb.conObj.closeDBConnection();
+			}
+			if (wb.s_conObj != null)
+			{
+				wb.s_conObj.closeDBConnection();
+			}
 		}
 	}
 
@@ -1172,7 +1196,7 @@ public class WebSpectra implements InterfaceWebSpectra
 				} else // If incident is not in status OPEN
 				{
 
-					String closedTime = wb.dbs.getOneValue("SubmittedIncidents", "EndTime",
+					String closedTime = wb.s_dbs.getOneValue("SubmittedIncidents", "EndTime",
 							new String[] { "IncidentID", "OutageID" }, new String[] { IncidentID, OutageID },
 							new String[] { "String", "String" });
 					logger.error(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Close Outage: INCID: "
@@ -1193,8 +1217,14 @@ public class WebSpectra implements InterfaceWebSpectra
 		} finally
 		{
 			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Close Outage: Closing DB Connection");
-			wb.conObj.closeDBConnection();
-			wb.s_conObj.closeDBConnection();
+			if (wb.conObj != null)
+			{
+				wb.conObj.closeDBConnection();
+			}
+			if (wb.s_conObj != null)
+			{
+				wb.s_conObj.closeDBConnection();
+			}
 		}
 	}
 
@@ -1256,8 +1286,14 @@ public class WebSpectra implements InterfaceWebSpectra
 		} finally
 		{
 			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - NLU Active: Closing DB Connection");
-			wb.conObj.closeDBConnection();
-			wb.s_conObj.closeDBConnection();
+			if (wb.conObj != null)
+			{
+				wb.conObj.closeDBConnection();
+			}
+			if (wb.s_conObj != null)
+			{
+				wb.s_conObj.closeDBConnection();
+			}
 		}
 		return ponla;
 	}
