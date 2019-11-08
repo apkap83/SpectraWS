@@ -138,7 +138,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			List<ProductOfGetHierarchy> prodElementsList = new ArrayList<>();
 
 			// Check if Authentication credentials are correct.
-			if (!wb.s_dbs.authenticateRequest(UserName, Password))
+			if (!wb.s_dbs.authenticateRequest(UserName, Password, "remedyService"))
 			{
 				logger.error(req.getRemoteAddr() + " - ReqID: " + RequestID
 						+ "Get Hierarchy: - Wrong credentials provided - UserName: " + UserName + " Password: "
@@ -378,7 +378,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			prodElementsList = new ArrayList<>();
 			int OutageID_Integer = 0;
 			// Check if Authentication credentials are correct.
-			if (!wb.s_dbs.authenticateRequest(UserName, Password))
+			if (!wb.s_dbs.authenticateRequest(UserName, Password, "remedyService"))
 			{
 				logger.error(req.getRemoteAddr() + " - ReqID: " + RequestID
 						+ "Submit Outage: - Wrong credentials provided - UserName: " + UserName + " Password: "
@@ -796,7 +796,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			Help_Func.validateNotEmpty("IncidentStatus", IncidentStatus);
 
 			// Check if Authentication credentials are correct.
-			if (!wb.s_dbs.authenticateRequest(UserName, Password))
+			if (!wb.s_dbs.authenticateRequest(UserName, Password, "remedyService"))
 			{
 				logger.error(req.getRemoteAddr() + " - ReqID: " + RequestID
 						+ "Get Outage Status: - Wrong credentials provided - UserName: " + UserName + " Password: "
@@ -909,7 +909,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			logger.trace(
 					req.getRemoteAddr() + " - ReqID: " + RequestID + " - Modify Outage: Establishing DB Connection");
 			// Check if Authentication credentials are correct.
-			if (!wb.s_dbs.authenticateRequest(UserName, Password))
+			if (!wb.s_dbs.authenticateRequest(UserName, Password, "remedyService"))
 			{
 				logger.error(req.getRemoteAddr() + " - ReqID: " + RequestID
 						+ "Modify Outage: - Wrong credentials provided - UserName: " + UserName + " Password: "
@@ -1113,7 +1113,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			logger.trace(
 					req.getRemoteAddr() + " - ReqID: " + RequestID + " - Close Outage: Establishing DB Connection");
 			// Check if Authentication credentials are correct.
-			if (!wb.s_dbs.authenticateRequest(UserName, Password))
+			if (!wb.s_dbs.authenticateRequest(UserName, Password, "remedyService"))
 			{
 				logger.error(req.getRemoteAddr() + " - ReqID: " + RequestID
 						+ " - Close Outage: - Wrong credentials provided - UserName: " + UserName + " Password: "
@@ -1237,7 +1237,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			@WebParam(name = "SystemID") @XmlElement(required = true) String SystemID,
 			@WebParam(name = "RequestTimestamp") @XmlElement(required = true) String RequestTimestamp,
 			@WebParam(name = "CLI") @XmlElement(required = true) String CLI,
-			@WebParam(name = "Service") @XmlElement(required = true) String Service,
+			@WebParam(name = "Service") @XmlElement(required = false) String Service,
 			@WebParam(name = "ServiceL2") @XmlElement(required = false) String ServiceL2,
 			@WebParam(name = "ServiceL3") @XmlElement(required = false) String ServiceL3)
 			throws Exception, InvalidInputException
@@ -1257,7 +1257,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - NLU Active: Question for CLI Outage of "
 					+ CLI);
 			// Check if Authentication credentials are correct.
-			if (!wb.s_dbs.authenticateRequest(UserName, Password))
+			if (!wb.s_dbs.authenticateRequest(UserName, Password, "nluService"))
 			{
 				logger.error(req.getRemoteAddr() + " - ReqID: " + RequestID
 						+ "NLU Active: - Wrong credentials provided - UserName: " + UserName + " Password: "

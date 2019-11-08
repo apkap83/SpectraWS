@@ -412,14 +412,15 @@ public class s_DB_Operations
 		return rs;
 	}
 
-	public boolean authenticateRequest(String userName, String password) throws SQLException
+	public boolean authenticateRequest(String userName, String password, String serviceName) throws SQLException
 	{
 		boolean found = false;
 		String table = "WSAccounts";
-		String sqlString = "SELECT * FROM `" + table + "` WHERE `UserName` = ?";
+		String sqlString = "SELECT * FROM `" + table + "` WHERE `UserName` = ? AND `Service` = ?";
 		logger.trace(sqlString);
 		PreparedStatement pst = conn.prepareStatement(sqlString);
 		pst.setString(1, userName);
+		pst.setString(2, serviceName);
 		// pst.setString(2, password);
 		pst.execute();
 
