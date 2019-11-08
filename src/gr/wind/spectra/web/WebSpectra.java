@@ -26,6 +26,7 @@ import gr.wind.spectra.business.CLIOutage;
 import gr.wind.spectra.business.DB_Connection;
 import gr.wind.spectra.business.DB_Operations;
 import gr.wind.spectra.business.Help_Func;
+import gr.wind.spectra.business.IncidentOutageToCSV;
 import gr.wind.spectra.business.s_DB_Connection;
 import gr.wind.spectra.business.s_DB_Operations;
 import gr.wind.spectra.model.ProductOfCloseOutage;
@@ -1107,7 +1108,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			MessageContext mc = wsContext.getMessageContext();
 			req = (HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST);
 
-			//wb.establishDBConnection();
+			wb.establishDBConnection();
 			wb.establishStaticTablesDBConnection();
 
 			logger.trace(
@@ -1155,6 +1156,10 @@ public class WebSpectra implements InterfaceWebSpectra
 							new String[] { "IncidentID", "OutageID", "IncidentStatus", "Scheduled" },
 							new String[] { IncidentID, OutageID, "OPEN", "Yes" },
 							new String[] { "String", "String", "String", "String" });
+
+					// Production of the CSV Exported File for the Closed Incident.
+					IncidentOutageToCSV IOCSV = new IncidentOutageToCSV(wb.dbs, wb.s_dbs, IncidentID, OutageID);
+					IOCSV.produceReport();
 
 					// If it is scheduled then the End Time should NOT be updated
 					if (incidentIsScheduled)

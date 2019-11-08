@@ -366,6 +366,7 @@ public class DB_Operations
 		logger.trace(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 
+		System.out.println("My Query = " + sqlQuery);
 		for (int i = 0; i < predicateKeys.length; i++)
 		{
 			if (predicateTypes[i].equals("String"))

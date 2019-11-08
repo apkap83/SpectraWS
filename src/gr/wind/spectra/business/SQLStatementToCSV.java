@@ -17,7 +17,7 @@ public class SQLStatementToCSV extends Thread
 {
 	// Define a static logger variable so that it references the
 	// Logger instance named "DB_Connection".
-	private static final Logger logger = LogManager.getLogger(gr.wind.spectra.business.DB_Connection.class);
+	private static final Logger logger = LogManager.getLogger(gr.wind.spectra.business.SQLStatementToCSV.class);
 
 	private DB_Connection conObj;
 	private Connection conn;
@@ -38,7 +38,7 @@ public class SQLStatementToCSV extends Thread
 		this.predicateTypes = predicateTypes;
 
 		sqlQuery = "SELECT " + Help_Func.columnsWithCommas(columnsForExport) + " FROM " + table + " WHERE "
-				+ Help_Func.generateCommaPredicateQuestionMarks(predicateKeys);
+				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
 
 	}
 
@@ -85,7 +85,7 @@ public class SQLStatementToCSV extends Thread
 				}
 
 				ResultSet rs = pst.executeQuery();
-				CSVWriter csvWriter = new CSVWriter(new FileWriter(exportedFileName), '\t');
+				CSVWriter csvWriter = new CSVWriter(new FileWriter(exportedFileName), ',');
 				csvWriter.writeAll(rs, true);
 				csvWriter.close();
 				System.out.println("Thread execution in ResultSetToCSV Class Finished!");
