@@ -39,9 +39,9 @@ public class MyDataSource
 		config.setDriverClassName("com.mysql.cj.jdbc.Driver");
 		config.setUsername(USERNAME1);
 		config.setPassword(PASSWORD1);
-		config.setMaxLifetime(60000);
+		config.setMaxLifetime(600000);
 		config.setConnectionTimeout(30000);
-		config.setMaximumPoolSize(21);
+		config.setMaximumPoolSize(25);
 		config.addDataSourceProperty("cachePrepStmts", "true");
 		config.addDataSourceProperty("prepStmtCacheSize", "700");
 		config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
