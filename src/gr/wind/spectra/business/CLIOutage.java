@@ -181,6 +181,24 @@ public class CLIOutage
 							logger.debug(
 									"ReqID: " + RequestID + " - Scheduled Incident: " + IncidentID + " is NOT ongoing");
 						}
+
+						// If the scheduled period (Start Time - End Time) has passed current local time then change the Incident status to "CLOSED"
+						/*  NOT TESTED YET
+						if (now.isAfter(EndTimeInLocalDateTime))
+						{
+							int numOfRowsUpdated = s_dbs.updateColumnOnSpecificCriteria("SubmittedIncidents",
+									new String[] { "IncidentStatus" }, new String[] { "CLOSED" },
+									new String[] { "String" }, new String[] { "IncidentID", "OutageID" },
+									new String[] { IncidentID, String.valueOf(OutageID) },
+									new String[] { "String", "Integer" });
+
+							if (numOfRowsUpdated > 0)
+							{
+								logger.debug("ReqID: " + RequestID + " - Scheduled Incident: " + IncidentID
+										+ " was marked as CLOSED");
+							}
+						}
+						*/
 					}
 
 					// if service given in web request is Voice
