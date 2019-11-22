@@ -572,7 +572,7 @@ public class WebSpectra implements InterfaceWebSpectra
 					if (uniqueLocationsSet.size() > 0)
 					{
 						locationsAffected = String.join("|", uniqueLocationsSet);
-						System.out.println("locationsAffected = " + locationsAffected);
+						//						System.out.println("locationsAffected = " + locationsAffected);
 					} else
 					{
 						locationsAffected = "none";

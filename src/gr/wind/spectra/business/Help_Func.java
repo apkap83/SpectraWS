@@ -9,7 +9,6 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -769,7 +768,7 @@ public class Help_Func
 		hierarchyBlackList2.add("FTTC_Location_Element");
 		hierarchyBlackList2.add("SiteName");
 
-		System.out.println("hierarchiesSubmitted = " + Arrays.toString(hierarchiesSubmitted.toArray()));
+		//		System.out.println("hierarchiesSubmitted = " + Arrays.toString(hierarchiesSubmitted.toArray()));
 		for (int i = 0; i < hierarchiesSubmitted.size(); i++)
 		{
 			ArrayList<String> hierarchyLevelSubmitted = new ArrayList<String>();
@@ -790,7 +789,7 @@ public class Help_Func
 				hierarchyLevelSubmitted.add(keyValuePairs[0]);
 			}
 
-			System.out.println("hierarchyLevelSubmitted = " + Arrays.toString(hierarchyLevelSubmitted.toArray()));
+			//			System.out.println("hierarchyLevelSubmitted = " + Arrays.toString(hierarchyLevelSubmitted.toArray()));
 
 			if (hierarchyBlackList1.equals(hierarchyLevelSubmitted)
 					|| hierarchyBlackList2.equals(hierarchyLevelSubmitted))
