@@ -754,12 +754,14 @@ public class Help_Func
 	{
 		/**
 		 * Blacklisted for Submission Hierarchies 1.
-		 * Wind_FTTX->OltElementName=ATHOKRDLOLT01->OltSlot=11->OltPort=10->Onu=1 2.
-		 * FTTC_Location_Element->SiteName=AKADIMIAS
+		 * 1. Wind_FTTX->OltElementName=×××××->OltRackNo=×××××->OltSubRackNo=×××××->OltSlot=×××××->OltPort=×××××->Onu=×××××
+		 * 2. FTTC_Location_Element->SiteName=AKADIMIAS
 		 */
 		ArrayList<String> hierarchyBlackList1 = new ArrayList<String>();
 		hierarchyBlackList1.add("Wind_FTTX");
 		hierarchyBlackList1.add("OltElementName");
+		hierarchyBlackList1.add("OltRackNo");
+		hierarchyBlackList1.add("OltSubRackNo");
 		hierarchyBlackList1.add("OltSlot");
 		hierarchyBlackList1.add("OltPort");
 		hierarchyBlackList1.add("Onu");
