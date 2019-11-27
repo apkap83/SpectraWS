@@ -10,6 +10,7 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 //Import log4j classes.
@@ -195,6 +196,12 @@ public class DB_Operations
 			String[] predicateValues, String[] predicateTypes) throws SQLException
 	{
 		// Example: select DISTINCT ID from table where a = 2 and b = 3
+
+		System.out.println("27Nov2019 :      table: " + table);
+		System.out.println("27Nov2019 : columnName: " + columnName);
+		System.out.println("27Nov2019 : predicateKeys:  " + Arrays.toString(predicateKeys));
+		System.out.println("27Nov2019 : predicateValues: " + Arrays.toString(predicateValues));
+		System.out.println("27Nov2019 : predicateTypes:  " + Arrays.toString(predicateTypes));
 
 		List<String> myList = new ArrayList<String>();
 

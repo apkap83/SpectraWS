@@ -552,11 +552,11 @@ public class WebSpectra implements InterfaceWebSpectra
 						// Get Unique Locations affected from Internet_Resource_Path
 						List<String> myList = wb.dbs.getOneColumnUniqueResultSet("Internet_Resource_Path", "SiteName",
 								Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
-										myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
+										myHier.get(i).toString(), fullDataHierarchyPathSplit)),
 								Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
-										myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
+										myHier.get(i).toString(), fullDataHierarchyPathSplit)),
 								Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
-										myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
+										myHier.get(i).toString(), fullDataHierarchyPathSplit)));
 						locationsAffectedList.addAll(myList);
 
 					} else if (service.equals("IPTV"))
