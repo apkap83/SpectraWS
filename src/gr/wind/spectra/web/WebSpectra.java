@@ -1157,10 +1157,6 @@ public class WebSpectra implements InterfaceWebSpectra
 							new String[] { IncidentID, OutageID, "OPEN", "Yes" },
 							new String[] { "String", "String", "String", "String" });
 
-					// Production of the CSV Exported File for the Closed Incident.
-					IncidentOutageToCSV IOCSV = new IncidentOutageToCSV(wb.dbs, wb.s_dbs, IncidentID, OutageID);
-					IOCSV.produceReport();
-
 					// If it is scheduled then the End Time should NOT be updated
 					if (incidentIsScheduled)
 					{
@@ -1189,6 +1185,11 @@ public class WebSpectra implements InterfaceWebSpectra
 					{
 						logger.info(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Close Outage: INCID: "
 								+ IncidentID + "| OutageID: " + OutageID + " successfully CLOSED");
+
+						// Production of the CSV Exported File for the Closed Incident.
+						IncidentOutageToCSV IOCSV = new IncidentOutageToCSV(wb.dbs, wb.s_dbs, IncidentID, OutageID);
+						IOCSV.produceReport();
+
 						poca = new ProductOfCloseOutage(RequestID, IncidentID, OutageID, "990",
 								"Successfully Closed Incident");
 					} else

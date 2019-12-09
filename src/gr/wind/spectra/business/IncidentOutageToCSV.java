@@ -2,6 +2,10 @@ package gr.wind.spectra.business;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import gr.wind.spectra.web.InvalidInputException;
@@ -66,65 +70,97 @@ public class IncidentOutageToCSV
 					fullVoiceSubsHierarchyFromDBSplit);
 		}
 		return newHierarchyValue;
-	}	
-	
-	
+	}
+
 	public void produceReport() throws SQLException, InvalidInputException
 	{
+		//Get current date time
+		LocalDateTime now = LocalDateTime.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+		String currentDate = now.format(formatter);
+
 		ResultSet rs = null;
 		// Get Lines with IncidentStatus = "OPEN"
 		rs = s_dbs.getRows("SubmittedIncidents",
-				new String[] { "HierarchySelected", "StartTime", "EndTime", "Scheduled", "Impact", "AffectedServices" },
-				new String[] { "incidentID", "outageID" }, new String[] { incidentID, outageID }, new String[] { "String", "String" });
+				new String[] { "HierarchySelected", "StartTime", "EndTime", "Scheduled", "Impact", "AffectedServices",
+						"IncidentStatus", "IncidentID", "Scheduled", "Priority", "Locations" },
+				new String[] { "incidentID", "outageID" }, new String[] { incidentID, outageID },
+				new String[] { "String", "String" });
 
 		String HierarchySelected = "";
-		Date StartTime;
-		Date EndTime;
-		String Scheduled = "";
-		String Impact = "";
+		Date startTime = null;
+		Date endTime = null;
+		String scheduled = "";
+		String impact = "";
 		String outageAffectedService = "";
-
+		String incidentID = "";
+		String priority = "";
+		String locations = "";
 		while (rs.next())
 		{
-			HierarchySelected = rs.getString("HierarchySelected");
-			StartTime = rs.getTimestamp("StartTime");
-			EndTime = rs.getTimestamp("EndTime");
-			Scheduled = rs.getString("Scheduled");
-			Impact = rs.getString("Impact");
+			rs.getString("IncidentStatus");
+			incidentID = rs.getString("IncidentID");
+			scheduled = rs.getString("Scheduled");
+			startTime = rs.getTimestamp("StartTime");
+			endTime = rs.getTimestamp("EndTime");
 			outageAffectedService = rs.getString("AffectedServices");
+			impact = rs.getString("Impact");
+			priority = rs.getString("Priority");
+			locations = rs.getString("Locations");
+			HierarchySelected = rs.getString("HierarchySelected");
 		}
 
+		String pattern = "yyyy-MM-dd HH:mm:ss";
+		DateFormat df = new SimpleDateFormat(pattern);
 
 		// If the closed incident is a "Data" affected one
 		if (outageAffectedService.equals("Data"))
 		{
-			String exportedFileName = "Spectra_CLIs_Affected_OutageID_" + outageID + "_Data_YYYMMDD.csv";
-			
+			String exportedFileName = "/opt/ExportedFiles/AllClosedOutages/Spectra_CLIs_Affected_OutageID_" + outageID
+					+ "_Data_" + currentDate + ".csv";
+
 			HierarchySelected = this.replaceHierarchyColumns(HierarchySelected, "Data");
-			
-			SQLStatementToCSV sCSV = new SQLStatementToCSV(exportedFileName, 
-					"Internet_Resource_Path", 
-					new String[] {"Username"},
-					Help_Func.hierarchyKeys(HierarchySelected),
-					Help_Func.hierarchyValues(HierarchySelected), 
-					Help_Func.hierarchyStringTypes(HierarchySelected)
-					);
+
+			// Null pointer exception investigation
+			System.out.println("outageID = " + outageID);
+			System.out.println("incidentID = " + incidentID);
+			System.out.println("scheduled = " + scheduled);
+
+			System.out.println("df.format(startTime) = " + df.format(startTime));
+			System.out.println("df.format(endTime) = " + df.format(endTime));
+			System.out.println("outageAffectedService = " + outageAffectedService);
+			System.out.println("impact = " + impact);
+			System.out.println("priority = " + priority);
+			System.out.println("HierarchySelected = " + HierarchySelected);
+			System.out.println("locations = " + locations);
+
+			// If no locations are found then set it to empty string
+			if (locations == null)
+			{
+				locations = "";
+			}
+
+			SQLStatementToCSV sCSV = new SQLStatementToCSV(exportedFileName, "Internet_Resource_Path",
+					new String[] { "CliValue", "'" + outageID + "'", "'CLOSED'", "'" + incidentID + "'",
+							"'" + scheduled + "'", "'" + df.format(startTime) + "'", "'" + df.format(endTime) + "'",
+							"'" + outageAffectedService + "'", "'" + impact + "'", "'" + priority + "'",
+							"'" + HierarchySelected + "'", "'" + locations + "'" },
+					Help_Func.hierarchyKeys(HierarchySelected), Help_Func.hierarchyValues(HierarchySelected),
+					Help_Func.hierarchyStringTypes(HierarchySelected));
 			sCSV.start();
 		}
 		// If the closed incident is a "Voice" affected one
 		else if (outageAffectedService.equals("Voice"))
 		{
-			String exportedFileName = "Spectra_CLIs_Affected_OutageID_" + outageID + "_Voice_YYYMMDD.csv";
-			
+			String exportedFileName = "/opt/ExportedFiles/AllClosedOutages/Spectra_CLIs_Affected_OutageID_" + outageID
+					+ "_Voice_" + currentDate + ".csv";
+
 			HierarchySelected = this.replaceHierarchyColumns(HierarchySelected, "Voice");
-			
-			SQLStatementToCSV sCSV = new SQLStatementToCSV(exportedFileName, 
-					"Voice_Resource_Path", 
-					new String[] {"Username"},
-					Help_Func.hierarchyKeys(HierarchySelected),
-					Help_Func.hierarchyValues(HierarchySelected), 
-					Help_Func.hierarchyStringTypes(HierarchySelected)
-					);
+
+			SQLStatementToCSV sCSV = new SQLStatementToCSV(exportedFileName, "Voice_Resource_Path",
+					new String[] { "CliValue", "'" + outageID + "'" + "'CLOSED'" },
+					Help_Func.hierarchyKeys(HierarchySelected), Help_Func.hierarchyValues(HierarchySelected),
+					Help_Func.hierarchyStringTypes(HierarchySelected));
 			sCSV.start();
 		}
 	}

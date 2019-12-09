@@ -40,6 +40,8 @@ public class SQLStatementToCSV extends Thread
 		sqlQuery = "SELECT " + Help_Func.columnsWithCommas(columnsForExport) + " FROM " + table + " WHERE "
 				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
 
+		System.out.println("SQLStatementToCSV Query:" + sqlQuery);
+
 	}
 
 	public void establishDBConnection() throws Exception
@@ -86,7 +88,7 @@ public class SQLStatementToCSV extends Thread
 
 				ResultSet rs = pst.executeQuery();
 				CSVWriter csvWriter = new CSVWriter(new FileWriter(exportedFileName), ',');
-				csvWriter.writeAll(rs, true);
+				csvWriter.writeAll(rs, false);
 				csvWriter.close();
 				System.out.println("Thread execution in ResultSetToCSV Class Finished!");
 			} catch (IOException e)
