@@ -158,7 +158,10 @@ public class IncidentOutageToCSV
 			HierarchySelected = this.replaceHierarchyColumns(HierarchySelected, "Voice");
 
 			SQLStatementToCSV sCSV = new SQLStatementToCSV(exportedFileName, "Voice_Resource_Path",
-					new String[] { "CliValue", "'" + outageID + "'" + "'CLOSED'" },
+					new String[] { "CliValue", "'" + outageID + "'", "'CLOSED'", "'" + incidentID + "'",
+							"'" + scheduled + "'", "'" + df.format(startTime) + "'", "'" + df.format(endTime) + "'",
+							"'" + outageAffectedService + "'", "'" + impact + "'", "'" + priority + "'",
+							"'" + HierarchySelected + "'", "'" + locations + "'" },
 					Help_Func.hierarchyKeys(HierarchySelected), Help_Func.hierarchyValues(HierarchySelected),
 					Help_Func.hierarchyStringTypes(HierarchySelected));
 			sCSV.start();
