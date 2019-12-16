@@ -144,7 +144,7 @@ public class IncidentOutageToCSV
 					new String[] { "CliValue", "'" + outageID + "'", "'CLOSED'", "'" + incidentID + "'",
 							"'" + scheduled + "'", "'" + df.format(startTime) + "'", "'" + df.format(endTime) + "'",
 							"'" + outageAffectedService + "'", "'" + impact + "'", "'" + priority + "'",
-							"'" + HierarchySelected + "'", "'" + locations + "'" },
+							"'" + HierarchySelected + "'", "SiteName" },
 					Help_Func.hierarchyKeys(HierarchySelected), Help_Func.hierarchyValues(HierarchySelected),
 					Help_Func.hierarchyStringTypes(HierarchySelected));
 			sCSV.start();
@@ -161,7 +161,7 @@ public class IncidentOutageToCSV
 					new String[] { "CliValue", "'" + outageID + "'", "'CLOSED'", "'" + incidentID + "'",
 							"'" + scheduled + "'", "'" + df.format(startTime) + "'", "'" + df.format(endTime) + "'",
 							"'" + outageAffectedService + "'", "'" + impact + "'", "'" + priority + "'",
-							"'" + HierarchySelected + "'", "'" + locations + "'" },
+							"'" + HierarchySelected + "'", "SiteName" },
 					Help_Func.hierarchyKeys(HierarchySelected), Help_Func.hierarchyValues(HierarchySelected),
 					Help_Func.hierarchyStringTypes(HierarchySelected));
 			sCSV.start();

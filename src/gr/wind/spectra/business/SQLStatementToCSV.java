@@ -1,7 +1,6 @@
 package gr.wind.spectra.business;
 
 import java.io.FileWriter;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,17 +21,23 @@ public class SQLStatementToCSV extends Thread
 	private DB_Connection conObj;
 	private Connection conn;
 
+	private Connection s_conn;
+	private s_DB_Connection s_conObj;
+	private s_DB_Operations s_dbs;
+
 	private String exportedFileName;
 	private String[] predicateKeys;
 	private String[] predicateValues;
 	private String[] predicateTypes;
 
+	private String[] columnsForExport;
 	String sqlQuery;
 
 	public SQLStatementToCSV(String exportedFileName, String table, String[] columnsForExport, String[] predicateKeys,
 			String[] predicateValues, String[] predicateTypes)
 	{
 		this.exportedFileName = exportedFileName;
+		this.columnsForExport = columnsForExport;
 		this.predicateKeys = predicateKeys;
 		this.predicateValues = predicateValues;
 		this.predicateTypes = predicateTypes;
@@ -40,7 +45,7 @@ public class SQLStatementToCSV extends Thread
 		sqlQuery = "SELECT " + Help_Func.columnsWithCommas(columnsForExport) + " FROM " + table + " WHERE "
 				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
 
-		System.out.println("SQLStatementToCSV Query:" + sqlQuery);
+		logger.info("SQLStatementToCSV Query:" + sqlQuery);
 
 	}
 
@@ -57,46 +62,118 @@ public class SQLStatementToCSV extends Thread
 		}
 	}
 
+	public void establishStaticTablesDBConnection() throws Exception
+	{
+		//System.out.println("Client IP = " + req.getRemoteAddr());
+
+		if (s_conn == null)
+		{
+			try
+			{
+				this.s_conObj = new s_DB_Connection();
+				this.s_conn = this.s_conObj.connect();
+				this.s_dbs = new s_DB_Operations(s_conn);
+			} catch (Exception ex)
+			{
+				logger.fatal("Could not open connection with database!");
+				throw new Exception(ex.getMessage());
+			}
+		}
+	}
+
 	@Override
 	public void run()
 	{
 		try
 		{
-			try
+			this.establishDBConnection();
+		} catch (Exception e1)
+		{
+			e1.printStackTrace();
+		}
+		logger.info("Thread execution in ResultSetToCSV Class Started!");
+		try
+		{
+			System.out.println(sqlQuery);
+
+			// Export Affected CLIs to File
+			PreparedStatement pst = conn.prepareStatement(sqlQuery);
+			for (int i = 0; i < predicateKeys.length; i++)
 			{
-				this.establishDBConnection();
-			} catch (Exception e1)
-			{
-				e1.printStackTrace();
-			}
-			logger.info("Thread execution in ResultSetToCSV Class Started!");
-			System.out.println("Thread execution in ResultSetToCSV Class Started!");
-			try
-			{
-				System.out.println(sqlQuery);
-				PreparedStatement pst = conn.prepareStatement(sqlQuery);
-				for (int i = 0; i < predicateKeys.length; i++)
+				if (predicateTypes[i].equals("String"))
 				{
-					if (predicateTypes[i].equals("String"))
-					{
-						pst.setString(i + 1, predicateValues[i]);
-					} else if (predicateTypes[i].equals("Integer"))
-					{
-						pst.setInt(i + 1, Integer.parseInt(predicateValues[i]));
-					}
+					pst.setString(i + 1, predicateValues[i]);
+				} else if (predicateTypes[i].equals("Integer"))
+				{
+					pst.setInt(i + 1, Integer.parseInt(predicateValues[i]));
 				}
-
-				ResultSet rs = pst.executeQuery();
-				CSVWriter csvWriter = new CSVWriter(new FileWriter(exportedFileName), ',');
-				csvWriter.writeAll(rs, false);
-				csvWriter.close();
-				System.out.println("Thread execution in ResultSetToCSV Class Finished!");
-			} catch (IOException e)
-			{
-				e.printStackTrace();
 			}
 
-		} catch (SQLException e)
+			ResultSet rs = pst.executeQuery();
+			CSVWriter csvWriter = new CSVWriter(new FileWriter(exportedFileName), ',');
+			csvWriter.writeAll(rs, false);
+			csvWriter.close();
+
+			logger.info("Thread execution CLIs to CSV Finished!");
+
+			// Export Affected CLIs to Database table
+			PreparedStatement pst_forDB = conn.prepareStatement(sqlQuery);
+			for (int i = 0; i < predicateKeys.length; i++)
+			{
+				if (predicateTypes[i].equals("String"))
+				{
+					pst_forDB.setString(i + 1, predicateValues[i]);
+				} else if (predicateTypes[i].equals("Integer"))
+				{
+					pst_forDB.setInt(i + 1, Integer.parseInt(predicateValues[i]));
+				}
+			}
+
+			// Establish Db Connection
+			this.establishStaticTablesDBConnection();
+			ResultSet rs_forDB = pst_forDB.executeQuery();
+
+			// Remove Quotes from all columns for DB Export
+			columnsForExport[1] = columnsForExport[1].replace("'", "");
+			columnsForExport[2] = columnsForExport[2].replace("'", "");
+			columnsForExport[3] = columnsForExport[3].replace("'", "");
+			columnsForExport[4] = columnsForExport[4].replace("'", "");
+			columnsForExport[5] = columnsForExport[5].replace("'", "");
+			columnsForExport[6] = columnsForExport[6].replace("'", "");
+			columnsForExport[7] = columnsForExport[7].replace("'", "");
+			columnsForExport[8] = columnsForExport[8].replace("'", "");
+			columnsForExport[9] = columnsForExport[9].replace("'", "");
+			columnsForExport[10] = columnsForExport[10].replace("'", "");
+			columnsForExport[11] = columnsForExport[11].replace("'", "");
+
+			while (rs_forDB.next())
+			{
+				String CliValue = rs_forDB.getString("CliValue");
+				String SiteName = rs_forDB.getString("SiteName");
+
+				// Insert Values in Database
+				s_dbs.insertValuesInTable("ClosedOutages_AffectedCLIs",
+						new String[] { "CliValue", "OutageID", "IncidentStatus", "IncidentID", "Scheduled", "StartTime",
+								"EndTime", "AffectedService", "Impact", "Priority", "HierarchySelected", "Location" },
+						new String[] { CliValue, columnsForExport[1], columnsForExport[2], columnsForExport[3],
+								columnsForExport[4], columnsForExport[5], columnsForExport[6], columnsForExport[7],
+								columnsForExport[8], columnsForExport[9], columnsForExport[10], SiteName },
+						new String[] { "String", "String", "String", "String", "String", "DateTime", "DateTime",
+								"String", "String", "String", "String", "String" });
+			}
+
+			logger.info("Thread execution CLIs to DB Table Finished!");
+
+			if (conObj != null)
+			{
+				conObj.closeDBConnection();
+			}
+			if (s_conObj != null)
+			{
+				s_conObj.closeDBConnection();
+			}
+
+		} catch (Exception e)
 		{
 			e.printStackTrace();
 		}
