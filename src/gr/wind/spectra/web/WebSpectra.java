@@ -158,6 +158,9 @@ public class WebSpectra implements InterfaceWebSpectra
 				Help_Func.validateDateTimeFormat("RequestTimestamp", RequestTimestamp);
 			}
 
+			// Update Statistics
+			wb.s_dbs.updateUsageStatisticsForMethod("GetHierarchy");
+
 			// No Hierarchy is given - returns root elements
 			if (Hierarchy == null || Hierarchy.equals("") || Hierarchy.equals("?"))
 			{
@@ -458,6 +461,9 @@ public class WebSpectra implements InterfaceWebSpectra
 			 *	•	Exception 2 : RootHierarchyNode = FTTC_Location_Element , HierarchyTableNamePath : Site Name
 			 */
 			Help_Func.declineSubmissionOnCertainHierarchyLevels(myHier);
+
+			// Update Statistics
+			wb.s_dbs.updateUsageStatisticsForMethod("SubmitOutage");
 
 			// Calculate Total number per Indicent, of customers affected per incident
 			int incidentDataCustomersAffected = 0;
@@ -796,6 +802,9 @@ public class WebSpectra implements InterfaceWebSpectra
 			Help_Func.validateNotEmpty("IncidentID", IncidentID);
 			Help_Func.validateNotEmpty("IncidentStatus", IncidentStatus);
 
+			// Update Statistics
+			wb.s_dbs.updateUsageStatisticsForMethod("GetOutageStatus");
+
 			// Check if Authentication credentials are correct.
 			if (!wb.s_dbs.authenticateRequest(UserName, Password, "remedyService"))
 			{
@@ -906,6 +915,9 @@ public class WebSpectra implements InterfaceWebSpectra
 
 			//wb.establishDBConnection();
 			wb.establishStaticTablesDBConnection();
+
+			// Update Statistics
+			wb.s_dbs.updateUsageStatisticsForMethod("ModifyOutage");
 
 			logger.trace(
 					req.getRemoteAddr() + " - ReqID: " + RequestID + " - Modify Outage: Establishing DB Connection");
@@ -1111,6 +1123,9 @@ public class WebSpectra implements InterfaceWebSpectra
 			wb.establishDBConnection();
 			wb.establishStaticTablesDBConnection();
 
+			// Update Statistics
+			wb.s_dbs.updateUsageStatisticsForMethod("CloseOutage");
+
 			logger.trace(
 					req.getRemoteAddr() + " - ReqID: " + RequestID + " - Close Outage: Establishing DB Connection");
 			// Check if Authentication credentials are correct.
@@ -1270,6 +1285,9 @@ public class WebSpectra implements InterfaceWebSpectra
 						+ Password);
 				throw new InvalidInputException("User name or Password incorrect!", "Error 100");
 			}
+
+			// Update Statistics
+			wb.s_dbs.updateUsageStatisticsForMethod("NLU_Active");
 
 			// Check if Required fields are empty
 			Help_Func.validateNotEmpty("RequestID", RequestID);
