@@ -74,23 +74,9 @@ public class s_DB_Operations
 					new String[] { dtf.format(now) }, new String[] { "DateTime" });
 		}
 
-		// Get Latest Value
-		String latestValue = getOneValue("Stats_NumOfRequestsPerMethod", methodName, new String[] { "Date" },
+		// Update value using LAST_INSERT_ID method of MySQL e.g. SET ModifyOutage = LAST_INSERT_ID(ModifyOutage+1)
+		updateValuesBasedOnLastInsertID("Stats_NumOfRequestsPerMethod", methodName, new String[] { "Date" },
 				new String[] { dtf.format(now) }, new String[] { "DateTime" });
-
-		if (latestValue == null)
-		{
-			latestValue = "0";
-		}
-
-		// Convert to Integer in order to add + 1
-		int latestValueInteger = Integer.parseInt(latestValue);
-		latestValueInteger = latestValueInteger + 1;
-
-		// Convert back to String
-		String updateDLatestValue = String.valueOf(latestValueInteger);
-		updateValuesForOneColumn("Stats_NumOfRequestsPerMethod", methodName, updateDLatestValue,
-				new String[] { "Date" }, new String[] { dtf.format(now) }, new String[] { "DateTime" });
 
 	}
 
@@ -284,6 +270,39 @@ public class s_DB_Operations
 		java.util.Collections.sort(myList);
 
 		return myList;
+	}
+
+	public int updateValuesBasedOnLastInsertID(String table, String setColumnName, String[] predicateKeys,
+			String[] predicateValues, String[] predicateTypes) throws SQLException
+	{
+
+		// Update value using LAST_INSERT_ID method of MySQL e.g. SET ModifyOutage = LAST_INSERT_ID(ModifyOutage+1)
+
+		String sqlString = "update `" + table + "` set `" + setColumnName + "` = LAST_INSERT_ID(`" + setColumnName
+				+ "` + 1) WHERE " + Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+		logger.trace(sqlString);
+		PreparedStatement pst = conn.prepareStatement(sqlString);
+
+		for (int i = 0; i < predicateKeys.length; i++)
+		{
+			if (predicateTypes[i].equals("String"))
+			{
+				pst.setString(i + 1, predicateValues[i]);
+			} else if (predicateTypes[i].equals("Integer"))
+			{
+				pst.setInt(i + 1, Integer.parseInt(predicateValues[i]));
+			} else if (predicateTypes[i].equals("DateTime"))
+			{
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+				LocalDateTime dateTime = LocalDateTime.parse(predicateValues[i], formatter);
+				pst.setObject(i + 1, dateTime);
+			}
+		}
+
+		int rowsAffected = pst.executeUpdate();
+
+		return rowsAffected;
+
 	}
 
 	public int updateValuesForOneColumn(String table, String setColumnName, String newValue, String[] predicateKeys,

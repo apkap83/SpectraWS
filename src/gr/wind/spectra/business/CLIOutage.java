@@ -294,6 +294,9 @@ public class CLIOutage
 			// CLI is not affected from outage
 			if (!foundAtLeastOneCLIAffected)
 			{
+				// Update Statistics
+				s_dbs.updateUsageStatisticsForMethod("NLU_Active_Neg");
+
 				logger.info("ReqID: " + RequestID + " - No Service affection for CLI: " + CLIProvided + " | "
 						+ ServiceType);
 				ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "No", "none", "none", "none", "none",
@@ -305,12 +308,24 @@ public class CLIOutage
 				// Indicate Voice, Data or Voice|Data service affection
 				if (voiceAffected && dataAffected)
 				{
+					// Update Statistics
+					s_dbs.updateUsageStatisticsForMethod("NLU_Active_Pos_Voice");
+
+					// Update Statistics
+					s_dbs.updateUsageStatisticsForMethod("NLU_Active_Pos_Data");
+
 					allAffectedServices = "Voice|Data";
 				} else if (voiceAffected)
 				{
+					// Update Statistics
+					s_dbs.updateUsageStatisticsForMethod("NLU_Active_Pos_Voice");
+
 					allAffectedServices = "Voice";
 				} else if (dataAffected)
 				{
+					// Update Statistics
+					s_dbs.updateUsageStatisticsForMethod("NLU_Active_Pos_Data");
+
 					allAffectedServices = "Data";
 				}
 

@@ -1286,9 +1286,6 @@ public class WebSpectra implements InterfaceWebSpectra
 				throw new InvalidInputException("User name or Password incorrect!", "Error 100");
 			}
 
-			// Update Statistics
-			wb.s_dbs.updateUsageStatisticsForMethod("NLU_Active");
-
 			// Check if Required fields are empty
 			Help_Func.validateNotEmpty("RequestID", RequestID);
 			Help_Func.validateNotEmpty("SystemID", SystemID);
