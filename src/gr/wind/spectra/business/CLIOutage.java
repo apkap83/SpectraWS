@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Calendar;
 import java.util.Date;
 
 //Import log4j classes.
@@ -88,7 +89,7 @@ public class CLIOutage
 		boolean foundAtLeastOneCLIAffected = false;
 		boolean voiceAffected = false;
 		boolean dataAffected = false;
-		String IncidentID = "";
+
 		String allAffectedServices = "";
 
 		// Check if we have at least one OPEN incident
@@ -118,14 +119,17 @@ public class CLIOutage
 			logger.debug(
 					"ReqID: " + RequestID + " - Number of incidents currently OPEN: " + numOfOpenIncidentsCurrently);
 
-			String HierarchySelected = "";
-			String Priority = "";
-			String outageAffectedService = "";
-			String Scheduled = "";
-			String Duration = "";
-			Date StartTime = null;
-			Date EndTime = null;
-			String Impact = "";
+			// String foundHierarchySelected = "";
+			String foundPriority = "";
+
+			// String foundOutageAffectedService = "";
+			String foundIncidentID = "";
+
+			String foundScheduled = "";
+			String foundDuration = "";
+			Date foundStartTime = null;
+			Date foundEndTime = null;
+			String foundImpact = "";
 			String EndTimeString = null;
 
 			for (String service : ServiceTypeSplitted)
@@ -142,16 +146,16 @@ public class CLIOutage
 					boolean isOutageWithinScheduledRange = false;
 
 					String WillBePublished = rs.getString("WillBePublished");
-					IncidentID = rs.getString("IncidentID");
+					String IncidentID = rs.getString("IncidentID");
 					int OutageID = rs.getInt("OutageID");
-					HierarchySelected = rs.getString("HierarchySelected");
-					Priority = rs.getString("Priority");
-					outageAffectedService = rs.getString("AffectedServices");
-					Scheduled = rs.getString("Scheduled");
-					Duration = rs.getString("Duration");
-					StartTime = rs.getTimestamp("StartTime");
-					EndTime = rs.getTimestamp("EndTime");
-					Impact = rs.getString("Impact");
+					String HierarchySelected = rs.getString("HierarchySelected");
+					String Priority = rs.getString("Priority");
+					String outageAffectedService = rs.getString("AffectedServices");
+					String Scheduled = rs.getString("Scheduled");
+					String Duration = rs.getString("Duration");
+					Date StartTime = rs.getTimestamp("StartTime");
+					Date EndTime = rs.getTimestamp("EndTime");
+					String Impact = rs.getString("Impact");
 
 					// If it is OPEN & Scheduled & Date(Now) > StartTime then set
 					// isOutageWithinScheduledRange to TRUE
@@ -191,7 +195,7 @@ public class CLIOutage
 									new String[] { "String" }, new String[] { "IncidentID", "OutageID" },
 									new String[] { IncidentID, String.valueOf(OutageID) },
 									new String[] { "String", "Integer" });
-
+						
 							if (numOfRowsUpdated > 0)
 							{
 								logger.debug("ReqID: " + RequestID + " - Scheduled Incident: " + IncidentID
@@ -225,27 +229,47 @@ public class CLIOutage
 
 						// If matched Hierarchy + CLI matches lines (then those CLIs have actually
 						// Outage)
-						if (WillBePublished.equals("Yes") && Integer.parseInt(numOfRowsFound) > 0
-								&& Scheduled.equals("No"))
-						{
-							foundAtLeastOneCLIAffected = true;
-							voiceAffected = true;
-							logger.info("ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided + " | "
-									+ ServiceType + " from Non-scheduled INC: " + IncidentID + " | OutageID: "
-									+ OutageID + " | " + outageAffectedService);
-							break;
+						if (WillBePublished.equals("Yes"))
 
-						} else if (WillBePublished.equals("Yes") && Integer.parseInt(numOfRowsFound) > 0
-								&& Scheduled.equals("Yes") && isOutageWithinScheduledRange)
 						{
-							foundAtLeastOneCLIAffected = true;
-							voiceAffected = true;
-							logger.info("ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided + " | "
-									+ ServiceType + " from Scheduled INC: " + IncidentID + " | OutageID: " + OutageID
-									+ " | " + outageAffectedService);
-							break;
+
+							if (Integer.parseInt(numOfRowsFound) > 0 && Scheduled.equals("No"))
+							{
+
+								foundIncidentID = IncidentID;
+								foundPriority = Priority;
+								foundScheduled = Scheduled;
+								foundDuration = Duration;
+								foundStartTime = StartTime;
+								foundEndTime = EndTime;
+								foundImpact = Impact;
+
+								foundAtLeastOneCLIAffected = true;
+								voiceAffected = true;
+								logger.info("ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided + " | "
+										+ ServiceType + " from Non-scheduled INC: " + IncidentID + " | OutageID: "
+										+ OutageID + " | " + outageAffectedService);
+								break;
+
+							} else if (Integer.parseInt(numOfRowsFound) > 0 && Scheduled.equals("Yes")
+									&& isOutageWithinScheduledRange)
+							{
+								foundIncidentID = IncidentID;
+								foundPriority = Priority;
+								foundScheduled = Scheduled;
+								foundDuration = Duration;
+								foundStartTime = StartTime;
+								foundEndTime = EndTime;
+								foundImpact = Impact;
+
+								foundAtLeastOneCLIAffected = true;
+								voiceAffected = true;
+								logger.info("ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided + " | "
+										+ ServiceType + " from Scheduled INC: " + IncidentID + " | OutageID: "
+										+ OutageID + " | " + outageAffectedService);
+								break;
+							}
 						}
-
 					} else if (outageAffectedService.equals("Data") && service.equals("Data"))
 					{
 						// Replace Hierarchy keys from the correct column names of Hierarchy Subscribers
@@ -268,29 +292,49 @@ public class CLIOutage
 								Help_Func.hierarchyStringTypes(HierarchySelected));
 
 						// Scheduled No & Rows Found
-						if (WillBePublished.equals("Yes") && Integer.parseInt(numOfRowsFound) > 0
-								&& Scheduled.equals("No"))
+						if (WillBePublished.equals("Yes"))
+
 						{
-							foundAtLeastOneCLIAffected = true;
-							dataAffected = true;
-							logger.info("ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided + " | "
-									+ ServiceType + " from Non-scheduled INC: " + IncidentID + " | OutageID: "
-									+ OutageID + " | " + outageAffectedService);
-							break;
-							// Scheduled Yes & Rows Found & Outage Within Scheduled Range
-						} else if (WillBePublished.equals("Yes") && Integer.parseInt(numOfRowsFound) > 0
-								&& Scheduled.equals("Yes") && isOutageWithinScheduledRange)
-						{
-							foundAtLeastOneCLIAffected = true;
-							dataAffected = true;
-							logger.info("ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided + " | "
-									+ ServiceType + " from Scheduled INC: " + IncidentID + " | OutageID: " + OutageID
-									+ " | " + outageAffectedService);
-							break;
+							if (Integer.parseInt(numOfRowsFound) > 0 && Scheduled.equals("No"))
+							{
+								foundIncidentID = IncidentID;
+								foundPriority = Priority;
+								foundScheduled = Scheduled;
+								foundDuration = Duration;
+								foundStartTime = StartTime;
+								foundEndTime = EndTime;
+								foundImpact = Impact;
+
+								foundAtLeastOneCLIAffected = true;
+								dataAffected = true;
+								logger.info("ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided + " | "
+										+ ServiceType + " from Non-scheduled INC: " + IncidentID + " | OutageID: "
+										+ OutageID + " | " + outageAffectedService);
+								break;
+								// Scheduled Yes & Rows Found & Outage Within Scheduled Range
+							} else if (WillBePublished.equals("Yes") && Integer.parseInt(numOfRowsFound) > 0
+									&& Scheduled.equals("Yes") && isOutageWithinScheduledRange)
+							{
+								foundIncidentID = IncidentID;
+								foundPriority = Priority;
+								foundScheduled = Scheduled;
+								foundDuration = Duration;
+								foundStartTime = StartTime;
+								foundEndTime = EndTime;
+								foundImpact = Impact;
+
+								foundAtLeastOneCLIAffected = true;
+								dataAffected = true;
+								logger.info("ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided + " | "
+										+ ServiceType + " from Scheduled INC: " + IncidentID + " | OutageID: "
+										+ OutageID + " | " + outageAffectedService);
+								break;
+							}
 						}
 					}
 				}
 			}
+
 			// CLI is not affected from outage
 			if (!foundAtLeastOneCLIAffected)
 			{
@@ -302,7 +346,6 @@ public class CLIOutage
 				ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "No", "none", "none", "none", "none",
 						"none", "none", "none", "NULL", "NULL", "NULL");
 
-				//throw new InvalidInputException("No service affection", "Info 425");
 			} else
 			{
 				// Indicate Voice, Data or Voice|Data service affection
@@ -329,8 +372,29 @@ public class CLIOutage
 					allAffectedServices = "Data";
 				}
 
-				ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "Yes", IncidentID, Priority,
-						allAffectedServices, Scheduled, Duration, EndTimeString, Impact, "NULL", "NULL", "NULL");
+				// Get String representation of EndTime Date object
+				// If Duration is set then calculate based in its value the end time that is published in NLU
+				// Else use the EndTime defined from the Sumbission of the ticket
+				if (foundDuration != null)
+				{
+					DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+					Calendar cal = Calendar.getInstance(); // creates calendar
+					cal.setTime(foundStartTime); // sets calendar time/date
+					cal.add(Calendar.HOUR_OF_DAY, Integer.parseInt(foundDuration));
+					Date myActualEndTime = cal.getTime(); // returns new date object, one hour in the future
+
+					EndTimeString = dateFormat.format(myActualEndTime);
+				} else if (foundEndTime != null)
+				{
+					DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					EndTimeString = dateFormat.format(foundEndTime);
+
+				}
+
+				ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "Yes", foundIncidentID, foundPriority,
+						allAffectedServices, foundScheduled, foundDuration, EndTimeString, foundImpact, "NULL", "NULL",
+						"NULL");
 			}
 
 		} else
