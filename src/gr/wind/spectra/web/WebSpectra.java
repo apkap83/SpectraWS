@@ -2,6 +2,7 @@ package gr.wind.spectra.web;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -717,25 +718,30 @@ public class WebSpectra implements InterfaceWebSpectra
 					locationsAffected = String.join("|", uniqueLocationsSet);
 
 					// Insert Values in Database
-					//System.out.println("25 SEP 2019 Start Time = " + StartTime);
-					//System.out.println("25 SEP 2019 Start Time = " + EndTime);
-					wb.s_dbs.insertValuesInTable("SubmittedIncidents",
-							new String[] { "OpenReqID", "DateTime", "WillBePublished", "OutageID", "IncidentStatus",
-									"RequestTimestamp", "SystemID", "UserID", "IncidentID", "Scheduled", "StartTime",
-									"EndTime", "Duration", "AffectedServices", "Impact", "Priority",
-									"HierarchySelected", "Locations", "AffectedVoiceCustomers", "AffectedDataCustomers",
-									"AffectedCLICustomers", "ActiveDataCustomersAffected", "TVCustomersAffected",
-									"IncidentAffectedVoiceCustomers", "IncidentAffectedDataCustomers" },
-							new String[] { RequestID, Help_Func.now(), "Yes", OutageID_String, "OPEN", RequestTimestamp,
-									SystemID, UserID, IncidentID, Scheduled, StartTime, EndTime, Duration, service,
-									Impact, Priority, myHier.get(i).toString(), locationsAffected,
-									voiceCustomersAffected, dataCustomersAffected, CLIsAffected, "0", "0",
-									Integer.toString(totalVoiceIncidentAffected),
-									Integer.toString(totalDataIncidentAffected) },
-							new String[] { "String", "DateTime", "String", "Integer", "String", "DateTime", "String",
-									"String", "String", "String", "DateTime", "DateTime", "String", "String", "String",
-									"String", "String", "String", "Integer", "Integer", "Integer", "Integer", "Integer",
-									"Integer", "Integer" });
+					try
+					{
+						wb.s_dbs.insertValuesInTable("Test_SubmittedIncidents",
+								new String[] { "OpenReqID", "DateTime", "WillBePublished", "OutageID", "IncidentStatus",
+										"RequestTimestamp", "SystemID", "UserID", "IncidentID", "Scheduled",
+										"StartTime", "EndTime", "Duration", "AffectedServices", "Impact", "Priority",
+										"HierarchySelected", "Locations", "AffectedVoiceCustomers",
+										"AffectedDataCustomers", "AffectedCLICustomers", "ActiveDataCustomersAffected",
+										"TVCustomersAffected", "IncidentAffectedVoiceCustomers",
+										"IncidentAffectedDataCustomers" },
+								new String[] { RequestID, Help_Func.now(), "Yes", OutageID_String, "OPEN",
+										RequestTimestamp, SystemID, UserID, IncidentID, Scheduled, StartTime, EndTime,
+										Duration, service, Impact, Priority, myHier.get(i).toString(),
+										locationsAffected, voiceCustomersAffected, dataCustomersAffected, CLIsAffected,
+										"0", "0", Integer.toString(totalVoiceIncidentAffected),
+										Integer.toString(totalDataIncidentAffected) },
+								new String[] { "String", "DateTime", "String", "Integer", "String", "DateTime",
+										"String", "String", "String", "String", "DateTime", "DateTime", "String",
+										"String", "String", "String", "String", "String", "Integer", "Integer",
+										"Integer", "Integer", "Integer", "Integer", "Integer" });
+					} catch (SQLException e)
+					{
+						throw new InvalidInputException("An Error occured during submission of data!", "Error 1500");
+					}
 
 					if (Integer.parseInt(OutageID_String) > 0)
 					{

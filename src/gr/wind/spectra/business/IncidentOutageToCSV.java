@@ -188,8 +188,8 @@ public class IncidentOutageToCSV
 		// If the closed incident is a "IPTV" affected one
 		else if (outageAffectedService.equals("IPTV"))
 		{
-			String exportedFileName = "/opt/ExportedFiles/AllClosedOutages/Test_Env/Spectra_CLIs_Affected_OutageID_"
-					+ outageID + "_IPTV_" + currentDate + ".csv";
+			String exportedFileName = "/opt/ExportedFiles/AllClosedOutages/Spectra_CLIs_Affected_OutageID_" + outageID
+					+ "_IPTV_" + currentDate + ".csv";
 
 			HierarchySelected = this.replaceHierarchyColumns(HierarchySelected, "IPTV");
 

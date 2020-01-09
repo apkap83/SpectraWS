@@ -215,7 +215,7 @@ public class CLIOutage
 									new String[] { "String" }, new String[] { "IncidentID", "OutageID" },
 									new String[] { IncidentID, String.valueOf(OutageID) },
 									new String[] { "String", "Integer" });
-						
+
 							if (numOfRowsUpdated > 0)
 							{
 								logger.debug("ReqID: " + RequestID + " - Scheduled Incident: " + IncidentID
@@ -247,8 +247,7 @@ public class CLIOutage
 								Help_Func.hierarchyValues(HierarchySelected),
 								Help_Func.hierarchyStringTypes(HierarchySelected));
 
-						// If matched Hierarchy + CLI matches lines (then those CLIs have actually
-						// Outage)
+						// If matched Hierarchy + CLI matches lines (then those CLIs have actually Outage)
 						if (WillBePublished.equals("Yes"))
 
 						{

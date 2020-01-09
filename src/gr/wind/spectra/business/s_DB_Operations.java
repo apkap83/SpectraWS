@@ -81,7 +81,7 @@ public class s_DB_Operations
 	}
 
 	public boolean insertValuesInTable(String table, String[] columnNames, String[] columnValues, String[] types)
-			throws SQLException, ParseException
+			throws SQLException
 	{
 		boolean statusOfOperation = false;
 		String sqlString = "INSERT INTO " + table + Help_Func.columnsToInsertStatement(columnNames)
@@ -124,6 +124,7 @@ public class s_DB_Operations
 		{
 			statusOfOperation = false;
 			e.printStackTrace();
+			throw new SQLException();
 
 		}
 
