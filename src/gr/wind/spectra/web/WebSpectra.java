@@ -1066,10 +1066,17 @@ public class WebSpectra implements InterfaceWebSpectra
 				}
 
 				// Update Operation
-				int numOfRowsUpdated = wb.s_dbs.updateColumnOnSpecificCriteria("SubmittedIncidents",
-						arrayOfColumnsForUpdate, arrayOfValuesForUpdate, arrayOfDataTypesForUpdate,
-						new String[] { "IncidentID", "OutageID" }, new String[] { IncidentID, OutageID },
-						new String[] { "String", "Integer" });
+				int numOfRowsUpdated = 0;
+				try
+				{
+					numOfRowsUpdated = wb.s_dbs.updateColumnOnSpecificCriteria("SubmittedIncidents",
+							arrayOfColumnsForUpdate, arrayOfValuesForUpdate, arrayOfDataTypesForUpdate,
+							new String[] { "IncidentID", "OutageID" }, new String[] { IncidentID, OutageID },
+							new String[] { "String", "Integer" });
+				} catch (Exception e)
+				{
+					throw new InvalidInputException("An Error occured during modification of data!", "Error 1500");
+				}
 
 				if (numOfRowsUpdated == 1)
 				{
@@ -1184,10 +1191,17 @@ public class WebSpectra implements InterfaceWebSpectra
 						logger.info(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Close Outage: INCID: "
 								+ IncidentID + " | OutageID: " + OutageID + " is OPEN & Scheduled");
 						// Update Operation
-						numOfRowsUpdated = wb.s_dbs.updateColumnOnSpecificCriteria("SubmittedIncidents",
-								new String[] { "IncidentStatus" }, new String[] { "CLOSED" }, new String[] { "String" },
-								new String[] { "IncidentID", "OutageID" }, new String[] { IncidentID, OutageID },
-								new String[] { "String", "Integer" });
+						try
+						{
+							numOfRowsUpdated = wb.s_dbs.updateColumnOnSpecificCriteria("SubmittedIncidents",
+									new String[] { "IncidentStatus" }, new String[] { "CLOSED" },
+									new String[] { "String" }, new String[] { "IncidentID", "OutageID" },
+									new String[] { IncidentID, OutageID }, new String[] { "String", "Integer" });
+						} catch (Exception e)
+						{
+							throw new InvalidInputException("An Error occured during closure/submission of data!",
+									"Error 1500");
+						}
 
 					} else
 					{
