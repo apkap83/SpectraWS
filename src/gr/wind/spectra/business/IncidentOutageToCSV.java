@@ -68,6 +68,25 @@ public class IncidentOutageToCSV
 			// Replace Hierarchy Columns from the relevant subscribers table
 			newHierarchyValue = Help_Func.replaceHierarchyForSubscribersAffected(hierarchyProvided,
 					fullVoiceSubsHierarchyFromDBSplit);
+		} else if (technology.equals("IPTV"))
+		{
+			// Get root hierarchy String
+			String rootElementInHierarchy = Help_Func.getRootHierarchyNode(hierarchyProvided);
+
+			String fullVoiceSubsHierarchyFromDB;
+			String[] fullVoiceSubsHierarchyFromDBSplit;
+			// Get Full Voice hierarchy in style :
+			// OltElementName->OltSlot->OltPort->Onu->ActiveElement->Slot
+			fullVoiceSubsHierarchyFromDB = dbs.getOneValue("HierarchyTablePerTechnology2",
+					"IPTVSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
+					new String[] { rootElementInHierarchy }, new String[] { "String" });
+
+			// Split the Data hierarchy retrieved from DB into fields
+			fullVoiceSubsHierarchyFromDBSplit = fullVoiceSubsHierarchyFromDB.split("->");
+
+			// Replace Hierarchy Columns from the relevant subscribers table
+			newHierarchyValue = Help_Func.replaceHierarchyForSubscribersAffected(hierarchyProvided,
+					fullVoiceSubsHierarchyFromDBSplit);
 		}
 		return newHierarchyValue;
 	}
@@ -166,5 +185,23 @@ public class IncidentOutageToCSV
 					Help_Func.hierarchyStringTypes(HierarchySelected));
 			sCSV.start();
 		}
+		// If the closed incident is a "IPTV" affected one
+		else if (outageAffectedService.equals("IPTV"))
+		{
+			String exportedFileName = "/opt/ExportedFiles/AllClosedOutages/Test_Env/Spectra_CLIs_Affected_OutageID_"
+					+ outageID + "_IPTV_" + currentDate + ".csv";
+
+			HierarchySelected = this.replaceHierarchyColumns(HierarchySelected, "IPTV");
+
+			SQLStatementToCSV sCSV = new SQLStatementToCSV(exportedFileName, "IPTV_Resource_Path",
+					new String[] { "CliValue", "'" + outageID + "'", "'CLOSED'", "'" + incidentID + "'",
+							"'" + scheduled + "'", "'" + df.format(startTime) + "'", "'" + df.format(endTime) + "'",
+							"'" + outageAffectedService + "'", "'" + impact + "'", "'" + priority + "'",
+							"'" + HierarchySelected + "'", "SiteName" },
+					Help_Func.hierarchyKeys(HierarchySelected), Help_Func.hierarchyValues(HierarchySelected),
+					Help_Func.hierarchyStringTypes(HierarchySelected));
+			sCSV.start();
+		}
+
 	}
 }

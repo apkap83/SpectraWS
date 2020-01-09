@@ -78,6 +78,25 @@ public class CLIOutage
 			// Replace Hierarchy Columns from the relevant subscribers table
 			newHierarchyValue = Help_Func.replaceHierarchyForSubscribersAffected(hierarchyProvided,
 					fullVoiceSubsHierarchyFromDBSplit);
+		} else if (technology.equals("IPTV"))
+		{
+			// Get root hierarchy String
+			String rootElementInHierarchy = Help_Func.getRootHierarchyNode(hierarchyProvided);
+
+			String fullVoiceSubsHierarchyFromDB;
+			String[] fullVoiceSubsHierarchyFromDBSplit;
+			// Get Full Voice hierarchy in style :
+			// OltElementName->OltSlot->OltPort->Onu->ActiveElement->Slot
+			fullVoiceSubsHierarchyFromDB = dbs.getOneValue("HierarchyTablePerTechnology2",
+					"IPTVSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
+					new String[] { rootElementInHierarchy }, new String[] { "String" });
+
+			// Split the Data hierarchy retrieved from DB into fields
+			fullVoiceSubsHierarchyFromDBSplit = fullVoiceSubsHierarchyFromDB.split("->");
+
+			// Replace Hierarchy Columns from the relevant subscribers table
+			newHierarchyValue = Help_Func.replaceHierarchyForSubscribersAffected(hierarchyProvided,
+					fullVoiceSubsHierarchyFromDBSplit);
 		}
 		return newHierarchyValue;
 	}
@@ -89,6 +108,7 @@ public class CLIOutage
 		boolean foundAtLeastOneCLIAffected = false;
 		boolean voiceAffected = false;
 		boolean dataAffected = false;
+		boolean iptvAffected = false;
 
 		String allAffectedServices = "";
 
@@ -103,7 +123,7 @@ public class CLIOutage
 		// If the submitted service type is empty then fill it with "Voice|Data"
 		if (Help_Func.checkIfEmpty("ServiceType", ServiceType))
 		{
-			ServiceType = "Voice|Data";
+			ServiceType = "Voice|Data|IPTV";
 		}
 
 		logger.info("ReqID: " + RequestID + " - Checking CLI Outage CLI: " + CLIProvided + " | " + ServiceType);
@@ -195,7 +215,7 @@ public class CLIOutage
 									new String[] { "String" }, new String[] { "IncidentID", "OutageID" },
 									new String[] { IncidentID, String.valueOf(OutageID) },
 									new String[] { "String", "Integer" });
-
+						
 							if (numOfRowsUpdated > 0)
 							{
 								logger.debug("ReqID: " + RequestID + " - Scheduled Incident: " + IncidentID
@@ -331,7 +351,68 @@ public class CLIOutage
 								break;
 							}
 						}
+					} else if (outageAffectedService.equals("IPTV") && service.equals("IPTV"))
+					{
+						// Replace Hierarchy keys from the correct column names of Hierarchy Subscribers
+						// table
+						HierarchySelected = this.replaceHierarchyColumns(HierarchySelected, "IPTV");
+
+						// Add CLI Value in Hierarcy
+						HierarchySelected += "->CliValue=" + CLIProvided;
+
+						// Get root hierarchy String
+						String rootElementInHierarchy = Help_Func.getRootHierarchyNode(HierarchySelected);
+
+						// Get Hierarchy Table for that root hierarchy
+						String table = dbs.getOneValue("HierarchyTablePerTechnology2", "IPTVSubscribersTableName",
+								new String[] { "RootHierarchyNode" }, new String[] { rootElementInHierarchy },
+								new String[] { "String" });
+
+						String numOfRowsFound = dbs.numberOfRowsFound(table, Help_Func.hierarchyKeys(HierarchySelected),
+								Help_Func.hierarchyValues(HierarchySelected),
+								Help_Func.hierarchyStringTypes(HierarchySelected));
+
+						// Scheduled No & Rows Found
+						if (WillBePublished.equals("Yes"))
+						{
+							if (Integer.parseInt(numOfRowsFound) > 0 && Scheduled.equals("No"))
+							{
+								foundIncidentID = IncidentID;
+								foundPriority = Priority;
+								foundScheduled = Scheduled;
+								foundDuration = Duration;
+								foundStartTime = StartTime;
+								foundEndTime = EndTime;
+								foundImpact = Impact;
+
+								foundAtLeastOneCLIAffected = true;
+								iptvAffected = true;
+								logger.info("ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided + " | "
+										+ ServiceType + " from Non-scheduled INC: " + IncidentID + " | OutageID: "
+										+ OutageID + " | " + outageAffectedService);
+								break;
+								// Scheduled Yes & Rows Found & Outage Within Scheduled Range
+							} else if (WillBePublished.equals("Yes") && Integer.parseInt(numOfRowsFound) > 0
+									&& Scheduled.equals("Yes") && isOutageWithinScheduledRange)
+							{
+								foundIncidentID = IncidentID;
+								foundPriority = Priority;
+								foundScheduled = Scheduled;
+								foundDuration = Duration;
+								foundStartTime = StartTime;
+								foundEndTime = EndTime;
+								foundImpact = Impact;
+
+								foundAtLeastOneCLIAffected = true;
+								iptvAffected = true;
+								logger.info("ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided + " | "
+										+ ServiceType + " from Scheduled INC: " + IncidentID + " | OutageID: "
+										+ OutageID + " | " + outageAffectedService);
+								break;
+							}
+						}
 					}
+
 				}
 			}
 
@@ -349,7 +430,16 @@ public class CLIOutage
 			} else
 			{
 				// Indicate Voice, Data or Voice|Data service affection
-				if (voiceAffected && dataAffected)
+				if (voiceAffected && dataAffected && iptvAffected)
+				{
+					// Update Statistics
+					s_dbs.updateUsageStatisticsForMethod("NLU_Active_Pos_Voice");
+
+					// Update Statistics
+					s_dbs.updateUsageStatisticsForMethod("NLU_Active_Pos_Data");
+
+					allAffectedServices = "Voice|Data|IPTV";
+				} else if (voiceAffected && dataAffected)
 				{
 					// Update Statistics
 					s_dbs.updateUsageStatisticsForMethod("NLU_Active_Pos_Voice");
@@ -358,6 +448,18 @@ public class CLIOutage
 					s_dbs.updateUsageStatisticsForMethod("NLU_Active_Pos_Data");
 
 					allAffectedServices = "Voice|Data";
+				} else if (voiceAffected && iptvAffected)
+				{
+					// Update Statistics
+					s_dbs.updateUsageStatisticsForMethod("NLU_Active_Pos_Voice");
+
+					allAffectedServices = "Voice|IPTV";
+				} else if (dataAffected && iptvAffected)
+				{
+					// Update Statistics
+					s_dbs.updateUsageStatisticsForMethod("NLU_Active_Pos_Data");
+
+					allAffectedServices = "Data|IPTV";
 				} else if (voiceAffected)
 				{
 					// Update Statistics
@@ -370,6 +472,9 @@ public class CLIOutage
 					s_dbs.updateUsageStatisticsForMethod("NLU_Active_Pos_Data");
 
 					allAffectedServices = "Data";
+				} else if (iptvAffected)
+				{
+					allAffectedServices = "IPTV";
 				}
 
 				// Get String representation of EndTime Date object
