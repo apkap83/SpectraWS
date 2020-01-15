@@ -720,7 +720,7 @@ public class WebSpectra implements InterfaceWebSpectra
 					// Insert Values in Database
 					try
 					{
-						wb.s_dbs.insertValuesInTable("Test_SubmittedIncidents",
+						wb.s_dbs.insertValuesInTable("SubmittedIncidents",
 								new String[] { "OpenReqID", "DateTime", "WillBePublished", "OutageID", "IncidentStatus",
 										"RequestTimestamp", "SystemID", "UserID", "IncidentID", "Scheduled",
 										"StartTime", "EndTime", "Duration", "AffectedServices", "Impact", "Priority",
