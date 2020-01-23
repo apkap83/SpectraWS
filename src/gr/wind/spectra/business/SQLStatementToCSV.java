@@ -29,21 +29,35 @@ public class SQLStatementToCSV extends Thread
 	private String[] predicateKeys;
 	private String[] predicateValues;
 	private String[] predicateTypes;
+	private String ngaTypes;
 
 	private String[] columnsForExport;
 	String sqlQuery;
 
 	public SQLStatementToCSV(String exportedFileName, String table, String[] columnsForExport, String[] predicateKeys,
-			String[] predicateValues, String[] predicateTypes)
+			String[] predicateValues, String[] predicateTypes, String ngaTypes)
 	{
 		this.exportedFileName = exportedFileName;
 		this.columnsForExport = columnsForExport;
 		this.predicateKeys = predicateKeys;
 		this.predicateValues = predicateValues;
 		this.predicateTypes = predicateTypes;
+		this.ngaTypes = ngaTypes;
 
-		sqlQuery = "SELECT " + Help_Func.columnsWithCommas(columnsForExport) + " FROM " + table + " WHERE "
-				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+		// Convert NGA_TYPES to --> AND NGA_TYPE IN ('1', '2', '3')
+		String ngaTypesToSQLPredicate = Help_Func.ngaTypesToSqlInFormat(this.ngaTypes);
+
+		// If NgaPredicate is ALL then dont's set [ ngapredicate IN ('value1', 'value2', 'value3',) ]
+		if (ngaTypes.equals("ALL"))
+		{
+			sqlQuery = "SELECT " + Help_Func.columnsWithCommas(columnsForExport) + " FROM " + table + " WHERE "
+					+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+
+		} else
+		{
+			sqlQuery = "SELECT " + Help_Func.columnsWithCommas(columnsForExport) + " FROM " + table + " WHERE "
+					+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys) + " " + ngaTypesToSQLPredicate;
+		}
 
 		logger.info("SQLStatementToCSV Query:" + sqlQuery);
 
