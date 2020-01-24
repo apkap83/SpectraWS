@@ -677,8 +677,6 @@ public class WebSpectra implements InterfaceWebSpectra
 			// Calculate Per Incident CLIsAffected
 			int CLIsAffectedPerIncident = 0;
 
-			for (String service : servicesAffected)
-			{
 				for (int i = 0; i < myHier.size(); i++)
 				{
 
@@ -706,11 +704,11 @@ public class WebSpectra implements InterfaceWebSpectra
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
 							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
-							ngaTypes, service);
+							ngaTypes, AffectedServices);
 					CLIsAffectedPerIncident += Integer.parseInt(CLIsAffected_String);
 				}
-			}
-			String CLIsAffected = String.valueOf(CLIsAffectedPerIncident);
+
+				String CLIsAffected = String.valueOf(CLIsAffectedPerIncident);
 
 			for (String service : servicesAffected)
 			{
