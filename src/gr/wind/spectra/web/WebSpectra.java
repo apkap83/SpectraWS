@@ -320,7 +320,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			return prodElementsList;
 		} catch (Exception e)
 		{
-			throw new InvalidInputException("Get Hierarchy General Exception: ", "Error 10000");
+			throw e;
 		} finally
 		{
 			try
@@ -893,7 +893,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			return prodElementsList;
 		} catch (Exception e)
 		{
-			throw new InvalidInputException("Submit Outage General Exception: ", "Error 10001");
+			throw e;
 		} finally
 		{
 			try
@@ -1019,7 +1019,7 @@ public class WebSpectra implements InterfaceWebSpectra
 
 		} catch (Exception e)
 		{
-			throw new InvalidInputException("Get Outage Status General Exception: ", "Error 10002");
+			throw e;
 		} finally
 		{
 			try
@@ -1247,7 +1247,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			return pom;
 		} catch (Exception e)
 		{
-			throw new InvalidInputException("Modify Outage General Exception: ", "Error 10003");
+			throw e;
 		} finally
 		{
 			try
@@ -1425,7 +1425,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			return poca;
 		} catch (Exception e)
 		{
-			throw new InvalidInputException("Close Outage General Exception: ", "Error 10005");
+			throw e;
 		} finally
 		{
 			try
@@ -1503,7 +1503,7 @@ public class WebSpectra implements InterfaceWebSpectra
 
 		} catch (Exception e)
 		{
-			throw new InvalidInputException("NLU ActiveGeneral Exception: ", "Error 10006");
+			throw e;
 		} finally
 		{
 			try
