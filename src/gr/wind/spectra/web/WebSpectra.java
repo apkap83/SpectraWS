@@ -165,10 +165,6 @@ public class WebSpectra implements InterfaceWebSpectra
 			// No Hierarchy is given - returns root elements
 			if (Hierarchy == null || Hierarchy.equals("") || Hierarchy.equals("?"))
 			{
-				// ElementsList =
-				// wb.dbs.GetOneColumnUniqueResultSet("HierarchyTablePerTechnology2",
-				// "RootHierarchyNode",
-				// "1 = 1");
 				logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID
 						+ " - Get Hierarchy: Hierarchy Requested: <empty>");
 
@@ -322,16 +318,26 @@ public class WebSpectra implements InterfaceWebSpectra
 			}
 
 			return prodElementsList;
+		} catch (Exception e)
+		{
+			throw new InvalidInputException("Get Hierarchy General Exception: ", "Error 10000");
 		} finally
 		{
-			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Get Hierarchy: Closing DB Connection");
-			if (wb.conObj != null)
+			try
 			{
-				wb.conObj.closeDBConnection();
-			}
-			if (wb.s_conObj != null)
+				logger.trace(
+						req.getRemoteAddr() + " - ReqID: " + RequestID + " - Submit Outage: Closing DB Connection");
+				if (wb.conObj != null)
+				{
+					wb.conObj.closeDBConnection();
+				}
+				if (wb.s_conObj != null)
+				{
+					wb.s_conObj.closeDBConnection();
+				}
+			} catch (Exception e)
 			{
-				wb.s_conObj.closeDBConnection();
+				logger.info("Get hierarchy Finally block");
 			}
 		}
 
@@ -696,6 +702,19 @@ public class WebSpectra implements InterfaceWebSpectra
 						new String[] { "RootHierarchyNode" }, new String[] { rootHierarchySelected },
 						new String[] { "String" });
 
+				// Determine Tables for Data/Voice subscribers
+				String dataSubsTable = wb.dbs.getOneValue("HierarchyTablePerTechnology2", "DataSubscribersTableName",
+						new String[] { "RootHierarchyNode" }, new String[] { rootHierarchySelected },
+						new String[] { "String" });
+
+				String IPTVSubsTable = wb.dbs.getOneValue("HierarchyTablePerTechnology2", "IPTVSubscribersTableName",
+						new String[] { "RootHierarchyNode" }, new String[] { rootHierarchySelected },
+						new String[] { "String" });
+
+				String voiceSubsTable = wb.dbs.getOneValue("HierarchyTablePerTechnology2", "VoiceSubscribersTableName",
+						new String[] { "RootHierarchyNode" }, new String[] { rootHierarchySelected },
+						new String[] { "String" });
+
 				// Calculate CLIs Affected but replace column names in order to search table for
 				// customers affected
 				String CLIsAffected_String = wb.dbs.countDistinctCLIsAffected(new String[] { "PASPORT_COID" },
@@ -705,7 +724,7 @@ public class WebSpectra implements InterfaceWebSpectra
 								myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
 						Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
 								myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
-						ngaTypes, AffectedServices);
+						ngaTypes, AffectedServices, voiceSubsTable, dataSubsTable, IPTVSubsTable);
 				CLIsAffectedPerIncident += Integer.parseInt(CLIsAffected_String);
 			}
 
@@ -872,17 +891,26 @@ public class WebSpectra implements InterfaceWebSpectra
 			}
 
 			return prodElementsList;
-
+		} catch (Exception e)
+		{
+			throw new InvalidInputException("Submit Outage General Exception: ", "Error 10001");
 		} finally
 		{
-			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Submit Outage: Closing DB Connection");
-			if (wb.conObj != null)
+			try
 			{
-				wb.conObj.closeDBConnection();
-			}
-			if (wb.s_conObj != null)
+				logger.trace(
+						req.getRemoteAddr() + " - ReqID: " + RequestID + " - Submit Outage: Closing DB Connection");
+				if (wb.conObj != null)
+				{
+					wb.conObj.closeDBConnection();
+				}
+				if (wb.s_conObj != null)
+				{
+					wb.s_conObj.closeDBConnection();
+				}
+			} catch (Exception e)
 			{
-				wb.s_conObj.closeDBConnection();
+				logger.info("Submit Outage Finally block");
 			}
 		}
 	}
@@ -988,17 +1016,27 @@ public class WebSpectra implements InterfaceWebSpectra
 				}
 			}
 			return prodElementsList;
+
+		} catch (Exception e)
+		{
+			throw new InvalidInputException("Get Outage Status General Exception: ", "Error 10002");
 		} finally
 		{
-			logger.trace(
-					req.getRemoteAddr() + " - ReqID: " + RequestID + " - Get Outage Status: Closing DB Connection");
-			if (wb.conObj != null)
+			try
 			{
-				wb.conObj.closeDBConnection();
-			}
-			if (wb.s_conObj != null)
+				logger.trace(
+						req.getRemoteAddr() + " - ReqID: " + RequestID + " - Get Outage Status: Closing DB Connection");
+				if (wb.conObj != null)
+				{
+					wb.conObj.closeDBConnection();
+				}
+				if (wb.s_conObj != null)
+				{
+					wb.s_conObj.closeDBConnection();
+				}
+			} catch (Exception e)
 			{
-				wb.s_conObj.closeDBConnection();
+				logger.info("Get Outage Status Finally block");
 			}
 		}
 	}
@@ -1207,17 +1245,27 @@ public class WebSpectra implements InterfaceWebSpectra
 
 			// Return instance of class ProductOfModify
 			return pom;
+		} catch (Exception e)
+		{
+			throw new InvalidInputException("Modify Outage General Exception: ", "Error 10003");
 		} finally
 		{
-			// Close DB Connection
-			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Modify Outage: Closing DB Connection");
-			if (wb.conObj != null)
+			try
 			{
-				wb.conObj.closeDBConnection();
-			}
-			if (wb.s_conObj != null)
+				// Close DB Connection
+				logger.trace(
+						req.getRemoteAddr() + " - ReqID: " + RequestID + " - Modify Outage: Closing DB Connection");
+				if (wb.conObj != null)
+				{
+					wb.conObj.closeDBConnection();
+				}
+				if (wb.s_conObj != null)
+				{
+					wb.s_conObj.closeDBConnection();
+				}
+			} catch (Exception e)
 			{
-				wb.s_conObj.closeDBConnection();
+				logger.info("Modify Outage Finally block");
 			}
 		}
 	}
@@ -1375,16 +1423,25 @@ public class WebSpectra implements InterfaceWebSpectra
 			}
 
 			return poca;
+		} catch (Exception e)
+		{
+			throw new InvalidInputException("Close Outage General Exception: ", "Error 10005");
 		} finally
 		{
-			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Close Outage: Closing DB Connection");
-			if (wb.conObj != null)
+			try
 			{
-				wb.conObj.closeDBConnection();
-			}
-			if (wb.s_conObj != null)
+				logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Close Outage: Closing DB Connection");
+				if (wb.conObj != null)
+				{
+					wb.conObj.closeDBConnection();
+				}
+				if (wb.s_conObj != null)
+				{
+					wb.s_conObj.closeDBConnection();
+				}
+			} catch (Exception e)
 			{
-				wb.s_conObj.closeDBConnection();
+				logger.info("Close Outage Finally block");
 			}
 		}
 	}
@@ -1444,19 +1501,27 @@ public class WebSpectra implements InterfaceWebSpectra
 			CLIOutage co = new CLIOutage(wb.dbs, wb.s_dbs, RequestID);
 			ponla = co.checkCLIOutage(RequestID, CLI, Service);
 
+		} catch (Exception e)
+		{
+			throw new InvalidInputException("NLU ActiveGeneral Exception: ", "Error 10006");
 		} finally
 		{
-			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - NLU Active: Closing DB Connection");
-			if (wb.conObj != null)
+			try
 			{
-				wb.conObj.closeDBConnection();
-			}
-			if (wb.s_conObj != null)
+				logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - NLU Active: Closing DB Connection");
+				if (wb.conObj != null)
+				{
+					wb.conObj.closeDBConnection();
+				}
+				if (wb.s_conObj != null)
+				{
+					wb.s_conObj.closeDBConnection();
+				}
+			} catch (Exception e)
 			{
-				wb.s_conObj.closeDBConnection();
+				logger.info("NLU Active Finally block");
 			}
 		}
 		return ponla;
 	}
-
 }

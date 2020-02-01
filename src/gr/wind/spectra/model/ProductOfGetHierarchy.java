@@ -129,7 +129,7 @@ public class ProductOfGetHierarchy
 								this.hierarchyProvided, fullVoiceHierarchyPath)),
 						Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
 								this.hierarchyProvided, fullVoiceHierarchyPath)),
-						ngaTypes, "NotSpecificService");
+						ngaTypes, "NotSpecificService", voiceSubsTable, dataSubsTable, IPTVSubsTable);
 
 				this.CLIsAffected = String.valueOf(CLIsAffected);
 
