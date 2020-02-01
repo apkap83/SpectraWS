@@ -215,7 +215,7 @@ public class CLIOutage
 									new String[] { "String" }, new String[] { "IncidentID", "OutageID" },
 									new String[] { IncidentID, String.valueOf(OutageID) },
 									new String[] { "String", "Integer" });
-
+						
 							if (numOfRowsUpdated > 0)
 							{
 								logger.debug("ReqID: " + RequestID + " - Scheduled Incident: " + IncidentID
@@ -442,6 +442,9 @@ public class CLIOutage
 					// Update Statistics
 					s_dbs.updateUsageStatisticsForMethod("NLU_Active_Pos_Data");
 
+					// Update Statistics
+					s_dbs.updateUsageStatisticsForMethod("NLU_Active_Pos_IPTV");
+
 					allAffectedServices = "Voice|Data|IPTV";
 				} else if (voiceAffected && dataAffected)
 				{
@@ -457,11 +460,17 @@ public class CLIOutage
 					// Update Statistics
 					s_dbs.updateUsageStatisticsForMethod("NLU_Active_Pos_Voice");
 
+					// Update Statistics
+					s_dbs.updateUsageStatisticsForMethod("NLU_Active_Pos_IPTV");
+
 					allAffectedServices = "Voice|IPTV";
 				} else if (dataAffected && iptvAffected)
 				{
 					// Update Statistics
 					s_dbs.updateUsageStatisticsForMethod("NLU_Active_Pos_Data");
+
+					// Update Statistics
+					s_dbs.updateUsageStatisticsForMethod("NLU_Active_Pos_IPTV");
 
 					allAffectedServices = "Data|IPTV";
 				} else if (voiceAffected)
@@ -479,6 +488,9 @@ public class CLIOutage
 				} else if (iptvAffected)
 				{
 					allAffectedServices = "IPTV";
+
+					// Update Statistics
+					s_dbs.updateUsageStatisticsForMethod("NLU_Active_Pos_IPTV");
 				}
 
 				// Get String representation of EndTime Date object
@@ -504,6 +516,11 @@ public class CLIOutage
 				ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "Yes", foundIncidentID, foundPriority,
 						allAffectedServices, foundScheduled, foundDuration, EndTimeString, foundImpact, "NULL", "NULL",
 						"NULL");
+
+				// Update asynchronously Stats_Pos_NLU_Requests to count number of successful NLU requests per CLI
+				Update_ReallyAffectedTable uRat = new Update_ReallyAffectedTable(s_dbs, foundIncidentID,
+						allAffectedServices, foundScheduled, CLIProvided);
+				uRat.run();
 			}
 
 		} else
