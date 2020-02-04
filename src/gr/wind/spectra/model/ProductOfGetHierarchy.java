@@ -120,8 +120,10 @@ public class ProductOfGetHierarchy
 
 				this.voiceCustomersAffected = voiceCustomersAffected;
 
+				// Commented Temporarily to reduce burden of Get Hierarchy Queries
 				// Calculate CLIs Affected but replace column names in order to search table for
 				// customers affected
+				/*
 				String CLIsAffected = dbs.countDistinctCLIsAffected(new String[] { "PASPORT_COID" },
 						Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
 								fullVoiceHierarchyPath)),
@@ -132,6 +134,9 @@ public class ProductOfGetHierarchy
 						ngaTypes, "NotSpecificService", voiceSubsTable, dataSubsTable, IPTVSubsTable);
 
 				this.CLIsAffected = String.valueOf(CLIsAffected);
+				*/
+
+				this.CLIsAffected = "0";
 
 				// Calculate IPTV Customers Affected but replace column names in order to search table for
 				// customers affected
