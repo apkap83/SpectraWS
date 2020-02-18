@@ -22,7 +22,7 @@ import gr.wind.spectra.web.InvalidInputException;
 public class DB_Operations
 {
 	// Logger instance
-	private static final Logger logger = LogManager.getLogger(gr.wind.spectra.business.DB_Operations.class.getName());
+	Logger logger = LogManager.getLogger(gr.wind.spectra.business.DB_Operations.class.getName());
 
 	Connection conn;
 	Statement stmt = null;

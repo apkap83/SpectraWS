@@ -26,7 +26,7 @@ public class CLIOutage
 	DateFormat dateFormat = new SimpleDateFormat(Help_Func.DATE_FORMAT);
 
 	// Logger instance
-	private static final Logger logger = LogManager.getLogger(gr.wind.spectra.business.CLIOutage.class.getName());
+	Logger logger = LogManager.getLogger(gr.wind.spectra.business.CLIOutage.class.getName());
 
 	public CLIOutage(DB_Operations dbs, s_DB_Operations s_dbs, String requestID) throws Exception
 	{
@@ -215,7 +215,7 @@ public class CLIOutage
 									new String[] { "String" }, new String[] { "IncidentID", "OutageID" },
 									new String[] { IncidentID, String.valueOf(OutageID) },
 									new String[] { "String", "Integer" });
-
+						
 							if (numOfRowsUpdated > 0)
 							{
 								logger.debug("ReqID: " + RequestID + " - Scheduled Incident: " + IncidentID

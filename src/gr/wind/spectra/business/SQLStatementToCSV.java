@@ -16,7 +16,7 @@ public class SQLStatementToCSV extends Thread
 {
 	// Define a static logger variable so that it references the
 	// Logger instance named "DB_Connection".
-	private static final Logger logger = LogManager.getLogger(gr.wind.spectra.business.SQLStatementToCSV.class);
+	Logger logger = LogManager.getLogger(gr.wind.spectra.business.SQLStatementToCSV.class);
 
 	private DB_Connection conObj;
 	private Connection conn;

@@ -17,7 +17,7 @@ public class DB_Connection
 
 	// Define a static logger variable so that it references the
 	// Logger instance named "DB_Connection".
-	private static final Logger logger = LogManager.getLogger(gr.wind.spectra.business.DB_Connection.class);
+	Logger logger = LogManager.getLogger(gr.wind.spectra.business.DB_Connection.class);
 
 	public Connection connect()
 			throws InvalidInputException, InstantiationException, IllegalAccessException, ClassNotFoundException

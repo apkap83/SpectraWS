@@ -44,17 +44,17 @@ public class WebSpectra implements InterfaceWebSpectra
 	/*
 	private static final Logger logger = LogManager.getLogger(gr.wind.spectra.web.WebSpectra.class.getName());
 	private static final String hierSep = "->";
-	
+
 	private Connection conn;
 	private DB_Connection conObj;
 	private DB_Operations dbs;
-	
+
 	private Connection s_conn;
 	private s_DB_Connection s_conObj;
 	private s_DB_Operations s_dbs;
-	
-	private HttpServletRequest req;
 
+	private HttpServletRequest req;
+	
 	Logger logger = LogManager.getLogger(gr.wind.spectra.web.WebSpectra.class.getName());
 	String hierSep = "->";
 	Connection conn;
@@ -64,7 +64,7 @@ public class WebSpectra implements InterfaceWebSpectra
 	s_DB_Connection s_conObj;
 	s_DB_Operations s_dbs;
 	HttpServletRequest req;
-
+	
 	*/
 
 	// Those directive is for IP retrieval of web request
