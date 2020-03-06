@@ -21,18 +21,18 @@ import gr.wind.spectra.web.InvalidInputException;
 
 public class Help_Func
 {
-	public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+	public final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 	// Logger instance
-	private static final Logger logger = LogManager.getLogger(gr.wind.spectra.business.Help_Func.class.getName());
+	private final Logger logger = LogManager.getLogger(gr.wind.spectra.business.Help_Func.class.getName());
 
-	public static String now()
+	public String now()
 	{
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
 		return sdf.format(cal.getTime());
 	}
 
-	public static boolean PropertiesDBFileModified() throws IOException
+	public boolean PropertiesDBFileModified() throws IOException
 	{
 		// Properties file
 		File databasePropertiesFile = new File(
@@ -91,7 +91,7 @@ public class Help_Func
 
 	}
 
-	public static String columnsToInsertStatement(String[] columns)
+	public String columnsToInsertStatement(String[] columns)
 	{
 		int numOfFields = columns.length;
 
@@ -113,7 +113,7 @@ public class Help_Func
 		return mystring;
 	}
 
-	public static String valuesToInsertStatement(String[] values)
+	public String valuesToInsertStatement(String[] values)
 
 	{
 		int numOfFields = values.length;
@@ -136,7 +136,7 @@ public class Help_Func
 		return mystring;
 	}
 
-	public static String getTimeStamp()
+	public String getTimeStamp()
 	{
 		Date date = new Date();
 		long time = date.getTime();
@@ -146,7 +146,7 @@ public class Help_Func
 		return Output;
 	}
 
-	public static String assignSimilarANDPredicates(String[] predicates, String[] values)
+	public String assignSimilarANDPredicates(String[] predicates, String[] values)
 	{
 
 		int numOfFields = predicates.length;
@@ -166,8 +166,7 @@ public class Help_Func
 		return mystring;
 	}
 
-	public static void validateDateTimeFormat(String fieldName, String dateInput)
-			throws ParseException, InvalidInputException
+	public void validateDateTimeFormat(String fieldName, String dateInput) throws ParseException, InvalidInputException
 	{
 		try
 		{
@@ -180,7 +179,7 @@ public class Help_Func
 
 	}
 
-	public static void validateAgainstPredefinedValues(String fieldName, String fieldValue, String[] values)
+	public void validateAgainstPredefinedValues(String fieldName, String fieldValue, String[] values)
 			throws InvalidInputException
 	{
 		boolean found = false;
@@ -200,8 +199,8 @@ public class Help_Func
 
 	}
 
-	public static void validateDelimitedValues(String fieldName, String fieldValue, String delimiter,
-			String[] acceptedValues) throws InvalidInputException
+	public void validateDelimitedValues(String fieldName, String fieldValue, String delimiter, String[] acceptedValues)
+			throws InvalidInputException
 	{
 		// Split with pipe (|) delimiter
 		delimiter = "\\|";
@@ -229,7 +228,7 @@ public class Help_Func
 		}
 	}
 
-	public static void validateIntegerOrEmptyValue(String fieldName, String valueOfField) throws InvalidInputException
+	public void validateIntegerOrEmptyValue(String fieldName, String valueOfField) throws InvalidInputException
 	{
 		if (valueOfField.equals(""))
 		{
@@ -248,7 +247,7 @@ public class Help_Func
 
 	}
 
-	public static ArrayList<String> hierarchyStringToANDPredicates(String hierarchySelected)
+	public ArrayList<String> hierarchyStringToANDPredicates(String hierarchySelected)
 	{
 		// hierarchySelected = FTTX=1|OLTElementName=Tolis
 
@@ -287,7 +286,7 @@ public class Help_Func
 		return elementHierarchy;
 	}
 
-	public static String columnsWithCommas(String[] columns)
+	public String columnsWithCommas(String[] columns)
 	{
 		int numOfColumns = columns.length;
 		String myString = "";
@@ -304,7 +303,7 @@ public class Help_Func
 		return myString;
 	}
 
-	public static boolean hierarchyHasMultipleSelections(String Hierarchy)
+	public boolean hierarchyHasMultipleSelections(String Hierarchy)
 	{
 		String[] initialParts = Hierarchy.split("\\|");
 		if (initialParts.length > 1)
@@ -317,7 +316,7 @@ public class Help_Func
 	}
 
 	// FTTX=1->OLTElementName=ATHOKRDLOLT01->OltSlot=1|OltSlot=2&&OLT=1->OLTElementName=ATHOKRDLOLT01->OltSlot=3|OltSlot=4
-	public static java.util.List<String> getHierarchySelections(String Hierarchy)
+	public java.util.List<String> getHierarchySelections(String Hierarchy)
 	{
 
 		java.util.List<String> myList = new ArrayList<String>();
@@ -391,7 +390,7 @@ public class Help_Func
 		return myList;
 	}
 
-	public static String hierarchyToPredicate(String input)
+	public String hierarchyToPredicate(String input)
 	{
 		String myPredicate = "";
 		String[] initialParts = input.split("->");
@@ -416,7 +415,7 @@ public class Help_Func
 		return myPredicate;
 	}
 
-	public static String[] hierarchyKeys(String input)
+	public String[] hierarchyKeys(String input)
 	{
 		String[] initialParts = input.split("->");
 
@@ -437,7 +436,7 @@ public class Help_Func
 		return myArrayList.toArray(new String[0]);
 	}
 
-	public static String[] hierarchyValues(String input)
+	public String[] hierarchyValues(String input)
 	{
 		String[] initialParts = input.split("->");
 
@@ -458,7 +457,7 @@ public class Help_Func
 		return myArrayList.toArray(new String[0]);
 	}
 
-	public static String[] hierarchyStringTypes(String input)
+	public String[] hierarchyStringTypes(String input)
 	{
 		String[] initialParts = input.split("->");
 
@@ -479,7 +478,7 @@ public class Help_Func
 		return myArrayList.toArray(new String[0]);
 	}
 
-	public static String getRootHierarchyNode(String input)
+	public String getRootHierarchyNode(String input)
 	{
 		String[] initialParts = input.split("->");
 
@@ -494,13 +493,13 @@ public class Help_Func
 		}
 	}
 
-	public static ArrayList<String> splitHierarchy(String Hierarchy)
+	public ArrayList<String> splitHierarchy(String Hierarchy)
 	{
 
 		return null;
 	}
 
-	public static String conCatHierarchy(String[] nodeNames, String[] nodeValues, String[] hierarchyFullPathList)
+	public String conCatHierarchy(String[] nodeNames, String[] nodeValues, String[] hierarchyFullPathList)
 	{
 		String UniqueCharSequence = "->";
 		int numOfFields = nodeNames.length;
@@ -542,7 +541,7 @@ public class Help_Func
 	/*
 	 * Checks format of hierarchy that has key=value pairs (after root element)
 	 */
-	public static void checkHierarchyFormatKeyValuePairs(String hierarchy) throws InvalidInputException
+	public void checkHierarchyFormatKeyValuePairs(String hierarchy) throws InvalidInputException
 	{
 		String[] hierarchyItems = hierarchy.split("->");
 
@@ -564,7 +563,7 @@ public class Help_Func
 		}
 	}
 
-	public static String replaceHierarchyForSubscribersAffected(String hierarchy, String[] subsHierarchy)
+	public String replaceHierarchyForSubscribersAffected(String hierarchy, String[] subsHierarchy)
 			throws InvalidInputException
 	{
 		String[] hierarchyItems = hierarchy.split("->");
@@ -615,7 +614,7 @@ public class Help_Func
 		return outputHierarchy;
 	}
 
-	public static void validateNotEmpty(String fieldName, String value) throws InvalidInputException
+	public void validateNotEmpty(String fieldName, String value) throws InvalidInputException
 	{
 		if (value.isEmpty() || value.equals("?"))
 		{
@@ -623,7 +622,7 @@ public class Help_Func
 		}
 	}
 
-	public static boolean checkIfEmpty(String fieldName, String value) throws InvalidInputException
+	public boolean checkIfEmpty(String fieldName, String value) throws InvalidInputException
 	{
 		boolean emptiness = false;
 
@@ -637,7 +636,7 @@ public class Help_Func
 		return emptiness;
 	}
 
-	public static void checkColumnsOfHierarchyVSFullHierarchy(String hierarchy, String fullHierarchyFromDB)
+	public void checkColumnsOfHierarchyVSFullHierarchy(String hierarchy, String fullHierarchyFromDB)
 			throws InvalidInputException
 	{
 		String[] hierarchyItems = hierarchy.split("->");
@@ -668,7 +667,7 @@ public class Help_Func
 	}
 
 	// "LLU,VDSL_LLU,VPU" --> "->NGA_TYPE=LLU->NGA_TYPE=VDSL_LLU->NGA_TYPE=VPU
-	public static String ngaTypesToSqlInFormat(String ngaTypes)
+	public String ngaTypesToSqlInFormat(String ngaTypes)
 	{
 		String output = "AND `NGA_TYPE` IN (";
 		String[] allNgaTypes = ngaTypes.split(",");
@@ -686,7 +685,7 @@ public class Help_Func
 		return output;
 	}
 
-	public static String generateANDPredicateQuestionMarks(String predicateColumns[])
+	public String generateANDPredicateQuestionMarks(String predicateColumns[])
 	{
 		String output = "";
 
@@ -709,7 +708,7 @@ public class Help_Func
 		return output;
 	}
 
-	public static String generateCommaPredicateQuestionMarks(String predicateColumns[])
+	public String generateCommaPredicateQuestionMarks(String predicateColumns[])
 	{
 		String output = "";
 		for (int i = 0; i < predicateColumns.length; i++)
@@ -734,9 +733,10 @@ public class Help_Func
 	 * @return
 	 */
 
-	public static String declineSubmissionOnCertainHierarchyLevels(List<String> hierarchiesSubmitted)
+	public String declineSubmissionOnCertainHierarchyLevels(List<String> hierarchiesSubmitted)
 			throws InvalidInputException
 	{
+		Help_Func hf = new Help_Func();
 		/**
 		 * Blacklisted for Submission Hierarchies 1.
 		 * 1. Wind_FTTX->OltElementName=×××××->OltRackNo=×××××->OltSubRackNo=×××××->OltSlot=×××××->OltPort=×××××->Onu=×××××
@@ -761,7 +761,7 @@ public class Help_Func
 			ArrayList<String> hierarchyLevelSubmitted = new ArrayList<String>();
 
 			// Check Hierarchy Format Key_Value Pairs
-			Help_Func.checkHierarchyFormatKeyValuePairs(hierarchiesSubmitted.get(i).toString());
+			hf.checkHierarchyFormatKeyValuePairs(hierarchiesSubmitted.get(i).toString());
 
 			// FTTX=1->OLTElementName=ATHOKRDLOLT01->OltSlot=1
 			// Split it on '->'
@@ -791,7 +791,7 @@ public class Help_Func
 		return null;
 	}
 
-	public static void main(String[] args) throws InvalidInputException
+	public void main(String[] args) throws InvalidInputException
 	{
 		// "LLU,VDSL_LLU,VPU" --> "->NGA_TYPE=LLU->NGA_TYPE=VDSL_LLU->NGA_TYPE=VPU
 	}

@@ -34,6 +34,8 @@ public class DB_Connection
 
 		try
 		{
+			Help_Func hf = new Help_Func();
+
 			/**
 			 * Direct Connection to MySQL
 			 */
@@ -47,7 +49,7 @@ public class DB_Connection
 
 			// Using HikariCP - MyDataSource Class (fastest Java JDBC datasource!)
 
-			if (Help_Func.PropertiesDBFileModified())
+			if (hf.PropertiesDBFileModified())
 			{
 				MyDataSource.getUpdatedResourceData();
 			}

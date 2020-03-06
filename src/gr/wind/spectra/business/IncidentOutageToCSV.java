@@ -28,12 +28,14 @@ public class IncidentOutageToCSV
 	public String replaceHierarchyColumns(String hierarchyProvided, String technology)
 			throws SQLException, InvalidInputException
 	{
+		Help_Func hf = new Help_Func();
+
 		String newHierarchyValue = "";
 
 		if (technology.equals("Voice"))
 		{
 			// Get root hierarchy String
-			String rootElementInHierarchy = Help_Func.getRootHierarchyNode(hierarchyProvided);
+			String rootElementInHierarchy = hf.getRootHierarchyNode(hierarchyProvided);
 
 			String fullVoiceSubsHierarchyFromDB;
 			String[] fullVoiceSubsHierarchyFromDBSplit;
@@ -47,12 +49,12 @@ public class IncidentOutageToCSV
 			fullVoiceSubsHierarchyFromDBSplit = fullVoiceSubsHierarchyFromDB.split("->");
 
 			// Replace Hierarchy Columns from the relevant subscribers table
-			newHierarchyValue = Help_Func.replaceHierarchyForSubscribersAffected(hierarchyProvided,
+			newHierarchyValue = hf.replaceHierarchyForSubscribersAffected(hierarchyProvided,
 					fullVoiceSubsHierarchyFromDBSplit);
 		} else if (technology.equals("Data"))
 		{
 			// Get root hierarchy String
-			String rootElementInHierarchy = Help_Func.getRootHierarchyNode(hierarchyProvided);
+			String rootElementInHierarchy = hf.getRootHierarchyNode(hierarchyProvided);
 
 			String fullVoiceSubsHierarchyFromDB;
 			String[] fullVoiceSubsHierarchyFromDBSplit;
@@ -66,12 +68,12 @@ public class IncidentOutageToCSV
 			fullVoiceSubsHierarchyFromDBSplit = fullVoiceSubsHierarchyFromDB.split("->");
 
 			// Replace Hierarchy Columns from the relevant subscribers table
-			newHierarchyValue = Help_Func.replaceHierarchyForSubscribersAffected(hierarchyProvided,
+			newHierarchyValue = hf.replaceHierarchyForSubscribersAffected(hierarchyProvided,
 					fullVoiceSubsHierarchyFromDBSplit);
 		} else if (technology.equals("IPTV"))
 		{
 			// Get root hierarchy String
-			String rootElementInHierarchy = Help_Func.getRootHierarchyNode(hierarchyProvided);
+			String rootElementInHierarchy = hf.getRootHierarchyNode(hierarchyProvided);
 
 			String fullVoiceSubsHierarchyFromDB;
 			String[] fullVoiceSubsHierarchyFromDBSplit;
@@ -85,7 +87,7 @@ public class IncidentOutageToCSV
 			fullVoiceSubsHierarchyFromDBSplit = fullVoiceSubsHierarchyFromDB.split("->");
 
 			// Replace Hierarchy Columns from the relevant subscribers table
-			newHierarchyValue = Help_Func.replaceHierarchyForSubscribersAffected(hierarchyProvided,
+			newHierarchyValue = hf.replaceHierarchyForSubscribersAffected(hierarchyProvided,
 					fullVoiceSubsHierarchyFromDBSplit);
 		}
 		return newHierarchyValue;
@@ -97,6 +99,8 @@ public class IncidentOutageToCSV
 		LocalDateTime now = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		String currentDate = now.format(formatter);
+
+		Help_Func hf = new Help_Func();
 
 		ResultSet rs = null;
 		// Get Lines with IncidentStatus = "OPEN"
@@ -134,7 +138,7 @@ public class IncidentOutageToCSV
 
 		// Firstly determine the hierarchy table that will be used based on the root
 		// hierarchy provided
-		String rootHierarchySelected = Help_Func.getRootHierarchyNode(HierarchySelected);
+		String rootHierarchySelected = hf.getRootHierarchyNode(HierarchySelected);
 
 		// Secondly determine NGA_TYPE based on rootElement
 		String ngaTypes = dbs.getOneValue("HierarchyTablePerTechnology2", "NGA_TYPE",
@@ -173,8 +177,8 @@ public class IncidentOutageToCSV
 							"'" + scheduled + "'", "'" + df.format(startTime) + "'", "'" + df.format(endTime) + "'",
 							"'" + outageAffectedService + "'", "'" + impact + "'", "'" + priority + "'",
 							"'" + HierarchySelected + "'", "SiteName" },
-					Help_Func.hierarchyKeys(HierarchySelected), Help_Func.hierarchyValues(HierarchySelected),
-					Help_Func.hierarchyStringTypes(HierarchySelected), ngaTypes);
+					hf.hierarchyKeys(HierarchySelected), hf.hierarchyValues(HierarchySelected),
+					hf.hierarchyStringTypes(HierarchySelected), ngaTypes);
 			sCSV.start();
 		}
 		// If the closed incident is a "Voice" affected one
@@ -190,8 +194,8 @@ public class IncidentOutageToCSV
 							"'" + scheduled + "'", "'" + df.format(startTime) + "'", "'" + df.format(endTime) + "'",
 							"'" + outageAffectedService + "'", "'" + impact + "'", "'" + priority + "'",
 							"'" + HierarchySelected + "'", "SiteName" },
-					Help_Func.hierarchyKeys(HierarchySelected), Help_Func.hierarchyValues(HierarchySelected),
-					Help_Func.hierarchyStringTypes(HierarchySelected), ngaTypes);
+					hf.hierarchyKeys(HierarchySelected), hf.hierarchyValues(HierarchySelected),
+					hf.hierarchyStringTypes(HierarchySelected), ngaTypes);
 			sCSV.start();
 		}
 		// If the closed incident is a "IPTV" affected one
@@ -207,8 +211,8 @@ public class IncidentOutageToCSV
 							"'" + scheduled + "'", "'" + df.format(startTime) + "'", "'" + df.format(endTime) + "'",
 							"'" + outageAffectedService + "'", "'" + impact + "'", "'" + priority + "'",
 							"'" + HierarchySelected + "'", "SiteName" },
-					Help_Func.hierarchyKeys(HierarchySelected), Help_Func.hierarchyValues(HierarchySelected),
-					Help_Func.hierarchyStringTypes(HierarchySelected), ngaTypes);
+					hf.hierarchyKeys(HierarchySelected), hf.hierarchyValues(HierarchySelected),
+					hf.hierarchyStringTypes(HierarchySelected), ngaTypes);
 			sCSV.start();
 		}
 	}

@@ -61,10 +61,10 @@ public class DB_Operations
 	public boolean insertValuesInTable(String table, String[] columnNames, String[] columnValues, String[] types)
 			throws SQLException, ParseException
 	{
-
+		Help_Func hf = new Help_Func();
 		boolean statusOfOperation = false;
-		String sqlString = "INSERT INTO " + table + Help_Func.columnsToInsertStatement(columnNames)
-				+ Help_Func.valuesToInsertStatement(columnValues);
+		String sqlString = "INSERT INTO " + table + hf.columnsToInsertStatement(columnNames)
+				+ hf.valuesToInsertStatement(columnValues);
 		logger.trace(sqlString);
 		PreparedStatement pst = conn.prepareStatement(sqlString, Statement.RETURN_GENERATED_KEYS);
 
@@ -129,10 +129,11 @@ public class DB_Operations
 	public boolean checkIfCriteriaExists(String table, String[] predicateKeys, String[] predicateValues,
 			String[] predicateTypes) throws SQLException
 	{
+		Help_Func hf = new Help_Func();
 		boolean criteriaIfExists = false;
 
 		String sqlQuery = "SELECT COUNT(*) as Result FROM " + table + " WHERE "
-				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+				+ hf.generateANDPredicateQuestionMarks(predicateKeys);
 		logger.trace(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 		ResultSet rs = null;
@@ -162,9 +163,10 @@ public class DB_Operations
 	public String getOneValue(String table, String columnName, String[] predicateKeys, String[] predicateValues,
 			String[] predicateTypes) throws SQLException
 	{
+		Help_Func hf = new Help_Func();
 		String output;
 		String sqlQuery = "SELECT " + columnName + " FROM " + table + " WHERE "
-				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+				+ hf.generateANDPredicateQuestionMarks(predicateKeys);
 		logger.trace(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 
@@ -190,11 +192,12 @@ public class DB_Operations
 	public List<String> getOneColumnUniqueResultSet(String table, String columnName, String[] predicateKeys,
 			String[] predicateValues, String[] predicateTypes) throws SQLException
 	{
+		Help_Func hf = new Help_Func();
 		// Example: select DISTINCT ID from table where a = 2 and b = 3
 		List<String> myList = new ArrayList<String>();
 
 		String sqlString = "SELECT DISTINCT `" + columnName + "` FROM `" + table + "` WHERE "
-				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+				+ hf.generateANDPredicateQuestionMarks(predicateKeys);
 		logger.trace(sqlString);
 
 		PreparedStatement pst = conn.prepareStatement(sqlString);
@@ -238,10 +241,11 @@ public class DB_Operations
 	public int updateValuesForOneColumn(String table, String setColumnName, String newValue, String[] predicateKeys,
 			String[] predicateValues, String[] predicateTypes) throws SQLException
 	{
+		Help_Func hf = new Help_Func();
 		// Example: update TestTable set `Name` = 100 where Surname = "Kapetanios";
 
 		String sqlString = "update `" + table + "` set `" + setColumnName + "` = '" + newValue + "' WHERE "
-				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+				+ hf.generateANDPredicateQuestionMarks(predicateKeys);
 		logger.trace(sqlString);
 		PreparedStatement pst = conn.prepareStatement(sqlString);
 
@@ -265,9 +269,10 @@ public class DB_Operations
 	public String numberOfRowsFound(String table, String[] predicateKeys, String[] predicateValues,
 			String[] predicateTypes) throws SQLException
 	{
+		Help_Func hf = new Help_Func();
 		int numOfRows = 0;
 		String sqlQuery = "SELECT *" + " FROM " + table + " WHERE "
-				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+				+ hf.generateANDPredicateQuestionMarks(predicateKeys);
 		logger.trace(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 
@@ -296,9 +301,10 @@ public class DB_Operations
 	public String countDistinctRowsForSpecificColumn(String table, String column, String[] predicateKeys,
 			String[] predicateValues, String[] predicateTypes) throws SQLException
 	{
+		Help_Func hf = new Help_Func();
 		String numOfRows = "";
 		String sqlQuery = "SELECT COUNT(DISTINCT(" + column + ")) as " + column + " FROM " + table + " WHERE "
-				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+				+ hf.generateANDPredicateQuestionMarks(predicateKeys);
 
 		logger.trace(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
@@ -329,11 +335,12 @@ public class DB_Operations
 	public String countDistinctRowsForSpecificColumnsNGAIncluded(String table, String[] columns, String[] predicateKeys,
 			String[] predicateValues, String[] predicateTypes, String ngaTypes) throws SQLException
 	{
+		Help_Func hf = new Help_Func();
 		String numOfRows = "";
 		String sqlQuery = "SELECT COUNT(*) AS Result FROM (SELECT DISTINCT ";
 
 		// Convert NGA_TYPES to --> AND NGA_TYPE IN ('1', '2', '3')
-		String ngaTypesToSQLPredicate = Help_Func.ngaTypesToSqlInFormat(ngaTypes);
+		String ngaTypesToSQLPredicate = hf.ngaTypesToSqlInFormat(ngaTypes);
 
 		for (int i = 0; i < columns.length; i++)
 		{
@@ -349,11 +356,10 @@ public class DB_Operations
 		// If NgaPredicate is ALL then dont's set [ ngapredicate IN ('value1', 'value2', 'value3',) ]
 		if (ngaTypes.equals("ALL"))
 		{
-			sqlQuery += " FROM " + table + " WHERE " + Help_Func.generateANDPredicateQuestionMarks(predicateKeys)
-					+ ") as AK ";
+			sqlQuery += " FROM " + table + " WHERE " + hf.generateANDPredicateQuestionMarks(predicateKeys) + ") as AK ";
 		} else
 		{
-			sqlQuery += " FROM " + table + " WHERE " + Help_Func.generateANDPredicateQuestionMarks(predicateKeys) + " "
+			sqlQuery += " FROM " + table + " WHERE " + hf.generateANDPredicateQuestionMarks(predicateKeys) + " "
 					+ ngaTypesToSQLPredicate + ") as AK ";
 		}
 
@@ -390,10 +396,10 @@ public class DB_Operations
 		Pattern.compile("^Cabinet_Code");
 		Pattern.compile("Wind_FTTX");
 		Pattern.compile("^FTTC_Location_Element");
-		
+
 		boolean b1, b2, b3;
 		b1 = b2 = b3 = false;
-		
+
 		if (hierarchyGiven.startsWith("Cabinet_Code"))
 		{
 		    b1 = true;
@@ -406,7 +412,7 @@ public class DB_Operations
 		{
 		    b3 = true;
 		}
-		
+
 		if (b1 || b2 || b3)
 		{
 		    output = "Yes";
@@ -414,12 +420,14 @@ public class DB_Operations
 		{
 		    output = "No";
 		}
-		
+
 		return output;
 		*/
 
+		Help_Func hf = new Help_Func();
+
 		// Get root hierarchy String
-		String rootElementInHierarchy = Help_Func.getRootHierarchyNode(hierarchyGiven);
+		String rootElementInHierarchy = hf.getRootHierarchyNode(hierarchyGiven);
 
 		// Based on root hierarchy get value of WsAffected column
 		String wsAffectedValue = getOneValue("HierarchyTablePerTechnology2", "WsAffected",
@@ -438,18 +446,19 @@ public class DB_Operations
 		    SELECT COUNT(DISTINCT PASPORT_COID) AS Result FROM
 		    (
 		            SELECT DISTINCT (PASPORT_COID) from Prov_Voice_Resource_Path WHERE `OltElementName` = ? AND `OltRackNo` = ? AND `NGA_TYPE` IN ('WIND_FTTH','WIND_FTTC')
-
+		
 		        UNION ALL
-
+		
 		        SELECT DISTINCT (PASPORT_COID) from Prov_Internet_Resource_Path WHERE `OltElementName` = ? AND `OltRackNo` = ? AND `NGA_TYPE` IN ('WIND_FTTH','WIND_FTTC')
-
+		
 		        UNION ALL
-
+		
 		        SELECT DISTINCT (PASPORT_COID) from Prov_IPTV_Resource_Path WHERE `OltElementName` = ? AND `OltRackNo` = ? AND `NGA_TYPE` IN ('WIND_FTTH','WIND_FTTC')
-
+		
 		    ) as AK;
-
+		
 		 */
+		Help_Func hf = new Help_Func();
 
 		if (serviceType.equals("NotSpecificService"))
 		{
@@ -458,31 +467,31 @@ public class DB_Operations
 			String sqlQueryForIPTV = "";
 
 			// Convert NGA_TYPES to --> AND NGA_TYPE IN ('1', '2', '3')
-			String ngaTypesToSQLPredicate = Help_Func.ngaTypesToSqlInFormat(ngaTypes);
+			String ngaTypesToSQLPredicate = hf.ngaTypesToSqlInFormat(ngaTypes);
 			String totalQuery = "SELECT COUNT(DISTINCT " + String.join(", ", distinctColumns) + ") AS Result FROM (";
 			// If NgaPredicate is ALL then dont's set [ ngapredicate IN ('value1', 'value2', 'value3',) ]
 			if (ngaTypes.equals("ALL"))
 			{
 				sqlQueryForVoice = "SELECT DISTINCT (" + String.join(", ", distinctColumns) + ") from " + voiceSubsTable
-						+ " WHERE " + Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+						+ " WHERE " + hf.generateANDPredicateQuestionMarks(predicateKeys);
 
 				sqlQueryForData = "SELECT DISTINCT (" + String.join(", ", distinctColumns) + ") from " + dataSubsTable
-						+ " WHERE " + Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+						+ " WHERE " + hf.generateANDPredicateQuestionMarks(predicateKeys);
 
 				sqlQueryForIPTV = "SELECT DISTINCT (" + String.join(", ", distinctColumns) + ") from " + IPTVSubsTable
-						+ " WHERE " + Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+						+ " WHERE " + hf.generateANDPredicateQuestionMarks(predicateKeys);
 			} else
 			{
 				sqlQueryForVoice = "SELECT DISTINCT (" + String.join(", ", distinctColumns) + ") from " + voiceSubsTable
-						+ " WHERE " + Help_Func.generateANDPredicateQuestionMarks(predicateKeys) + " "
+						+ " WHERE " + hf.generateANDPredicateQuestionMarks(predicateKeys) + " "
 						+ ngaTypesToSQLPredicate;
 
 				sqlQueryForData = "SELECT DISTINCT (" + String.join(", ", distinctColumns) + ") from " + dataSubsTable
-						+ " WHERE " + Help_Func.generateANDPredicateQuestionMarks(predicateKeys) + " "
+						+ " WHERE " + hf.generateANDPredicateQuestionMarks(predicateKeys) + " "
 						+ ngaTypesToSQLPredicate;
 
 				sqlQueryForIPTV = "SELECT DISTINCT (" + String.join(", ", distinctColumns) + ") from " + IPTVSubsTable
-						+ " WHERE " + Help_Func.generateANDPredicateQuestionMarks(predicateKeys) + " "
+						+ " WHERE " + hf.generateANDPredicateQuestionMarks(predicateKeys) + " "
 						+ ngaTypesToSQLPredicate;
 			}
 
@@ -554,31 +563,31 @@ public class DB_Operations
 			String sqlQueryForIPTV = "";
 
 			// Convert NGA_TYPES to --> AND NGA_TYPE IN ('1', '2', '3')
-			String ngaTypesToSQLPredicate = Help_Func.ngaTypesToSqlInFormat(ngaTypes);
+			String ngaTypesToSQLPredicate = hf.ngaTypesToSqlInFormat(ngaTypes);
 			String totalQuery = "SELECT COUNT(DISTINCT " + String.join(", ", distinctColumns) + ") AS Result FROM (";
 			// If NgaPredicate is ALL then dont's set [ ngapredicate IN ('value1', 'value2', 'value3',) ]
 			if (ngaTypes.equals("ALL"))
 			{
 				sqlQueryForVoice = "SELECT DISTINCT (" + String.join(", ", distinctColumns) + ") from " + voiceSubsTable
-						+ " WHERE " + Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+						+ " WHERE " + hf.generateANDPredicateQuestionMarks(predicateKeys);
 
 				sqlQueryForData = "SELECT DISTINCT (" + String.join(", ", distinctColumns) + ") from " + dataSubsTable
-						+ " WHERE " + Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+						+ " WHERE " + hf.generateANDPredicateQuestionMarks(predicateKeys);
 
 				sqlQueryForIPTV = "SELECT DISTINCT (" + String.join(", ", distinctColumns) + ") from " + IPTVSubsTable
-						+ " WHERE " + Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+						+ " WHERE " + hf.generateANDPredicateQuestionMarks(predicateKeys);
 			} else
 			{
 				sqlQueryForVoice = "SELECT DISTINCT (" + String.join(", ", distinctColumns) + ") from " + voiceSubsTable
-						+ " WHERE " + Help_Func.generateANDPredicateQuestionMarks(predicateKeys) + " "
+						+ " WHERE " + hf.generateANDPredicateQuestionMarks(predicateKeys) + " "
 						+ ngaTypesToSQLPredicate;
 
 				sqlQueryForData = "SELECT DISTINCT (" + String.join(", ", distinctColumns) + ") from " + dataSubsTable
-						+ " WHERE " + Help_Func.generateANDPredicateQuestionMarks(predicateKeys) + " "
+						+ " WHERE " + hf.generateANDPredicateQuestionMarks(predicateKeys) + " "
 						+ ngaTypesToSQLPredicate;
 
 				sqlQueryForIPTV = "SELECT DISTINCT (" + String.join(", ", distinctColumns) + ") from " + IPTVSubsTable
-						+ " WHERE " + Help_Func.generateANDPredicateQuestionMarks(predicateKeys) + " "
+						+ " WHERE " + hf.generateANDPredicateQuestionMarks(predicateKeys) + " "
 						+ ngaTypesToSQLPredicate;
 			}
 
@@ -649,6 +658,8 @@ public class DB_Operations
 	public String countDistinctRowsForSpecificColumns(String table, String[] columns, String[] predicateKeys,
 			String[] predicateValues, String[] predicateTypes) throws SQLException
 	{
+		Help_Func hf = new Help_Func();
+
 		String numOfRows = "";
 		String sqlQuery = "SELECT COUNT(*) AS Result FROM(SELECT DISTINCT ";
 
@@ -663,8 +674,7 @@ public class DB_Operations
 			}
 		}
 
-		sqlQuery += " FROM " + table + " WHERE " + Help_Func.generateANDPredicateQuestionMarks(predicateKeys)
-				+ ") as AK ";
+		sqlQuery += " FROM " + table + " WHERE " + hf.generateANDPredicateQuestionMarks(predicateKeys) + ") as AK ";
 
 		logger.trace(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
@@ -693,8 +703,10 @@ public class DB_Operations
 	public ResultSet getRows(String table, String[] columnNames, String[] predicateKeys, String[] predicateValues,
 			String[] predicateTypes) throws SQLException
 	{
-		String sqlQuery = "SELECT " + Help_Func.columnsWithCommas(columnNames) + " FROM " + table + " WHERE "
-				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+		Help_Func hf = new Help_Func();
+
+		String sqlQuery = "SELECT " + hf.columnsWithCommas(columnNames) + " FROM " + table + " WHERE "
+				+ hf.generateANDPredicateQuestionMarks(predicateKeys);
 
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 		for (int i = 0; i < predicateKeys.length; i++)
@@ -764,9 +776,11 @@ public class DB_Operations
 	public String maxNumberOfCustomersAffected(String table, String SumOfColumn, String[] predicateColumns,
 			String[] predicateValues) throws SQLException
 	{
+		Help_Func hf = new Help_Func();
+
 		String numOfRows = "";
 		String sqlQuery = "SELECT MAX(" + SumOfColumn + ") as Result FROM " + table + " WHERE "
-				+ Help_Func.generateANDPredicateQuestionMarks(predicateColumns);
+				+ hf.generateANDPredicateQuestionMarks(predicateColumns);
 		logger.trace(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 
@@ -789,12 +803,13 @@ public class DB_Operations
 			String[] columnValuesForUpdate, String[] setColumnDataTypes, String[] predicateColumns,
 			String[] predicateValues, String[] predicateColumnsDataTypes) throws SQLException, InvalidInputException
 	{
+		Help_Func hf = new Help_Func();
+
 		int numOfRowsUpdated = 0;
 		// update SmartOutageDB.SubmittedIncidents set Duration = '2' where OutageID =
 		// '5' and IncidentID = 'INC1';
-		String sqlQuery = "UPDATE " + tableName + " SET "
-				+ Help_Func.generateCommaPredicateQuestionMarks(columnNamesForUpdate) + " WHERE "
-				+ Help_Func.generateANDPredicateQuestionMarks(predicateColumns);
+		String sqlQuery = "UPDATE " + tableName + " SET " + hf.generateCommaPredicateQuestionMarks(columnNamesForUpdate)
+				+ " WHERE " + hf.generateANDPredicateQuestionMarks(predicateColumns);
 		logger.trace(sqlQuery);
 
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);

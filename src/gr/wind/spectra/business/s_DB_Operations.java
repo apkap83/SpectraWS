@@ -83,9 +83,11 @@ public class s_DB_Operations
 	public boolean insertValuesInTable(String table, String[] columnNames, String[] columnValues, String[] types)
 			throws SQLException
 	{
+		Help_Func hf = new Help_Func();
+
 		boolean statusOfOperation = false;
-		String sqlString = "INSERT INTO " + table + Help_Func.columnsToInsertStatement(columnNames)
-				+ Help_Func.valuesToInsertStatement(columnValues);
+		String sqlString = "INSERT INTO " + table + hf.columnsToInsertStatement(columnNames)
+				+ hf.valuesToInsertStatement(columnValues);
 		logger.trace(sqlString);
 		PreparedStatement pst = conn.prepareStatement(sqlString, Statement.RETURN_GENERATED_KEYS);
 
@@ -151,10 +153,11 @@ public class s_DB_Operations
 	public boolean checkIfCriteriaExists(String table, String[] predicateKeys, String[] predicateValues,
 			String[] predicateTypes) throws SQLException
 	{
+		Help_Func hf = new Help_Func();
 		boolean criteriaIfExists = false;
 
 		String sqlQuery = "SELECT COUNT(*) as Result FROM " + table + " WHERE "
-				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+				+ hf.generateANDPredicateQuestionMarks(predicateKeys);
 		logger.trace(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 		ResultSet rs = null;
@@ -189,9 +192,11 @@ public class s_DB_Operations
 	public String getOneValue(String table, String columnName, String[] predicateKeys, String[] predicateValues,
 			String[] predicateTypes) throws SQLException
 	{
+		Help_Func hf = new Help_Func();
+
 		String output;
 		String sqlQuery = "SELECT " + columnName + " FROM " + table + " WHERE "
-				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+				+ hf.generateANDPredicateQuestionMarks(predicateKeys);
 		logger.trace(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 
@@ -223,11 +228,12 @@ public class s_DB_Operations
 			String[] predicateValues, String[] predicateTypes) throws SQLException
 	{
 		// Example: select DISTINCT ID from table where a = 2 and b = 3
+		Help_Func hf = new Help_Func();
 
 		List<String> myList = new ArrayList<String>();
 
 		String sqlString = "SELECT DISTINCT `" + columnName + "` FROM `" + table + "` WHERE "
-				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+				+ hf.generateANDPredicateQuestionMarks(predicateKeys);
 		logger.trace(sqlString);
 		//		System.out.println("We are HERE");
 		//		System.out.println("columnName " + columnName);
@@ -278,9 +284,10 @@ public class s_DB_Operations
 	{
 
 		// Update value using LAST_INSERT_ID method of MySQL e.g. SET ModifyOutage = LAST_INSERT_ID(ModifyOutage+1)
+		Help_Func hf = new Help_Func();
 
 		String sqlString = "update `" + table + "` set `" + setColumnName + "` = LAST_INSERT_ID(`" + setColumnName
-				+ "` + 1) WHERE " + Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+				+ "` + 1) WHERE " + hf.generateANDPredicateQuestionMarks(predicateKeys);
 		logger.trace(sqlString);
 		PreparedStatement pst = conn.prepareStatement(sqlString);
 
@@ -309,10 +316,11 @@ public class s_DB_Operations
 	public int updateValuesForOneColumn(String table, String setColumnName, String newValue, String[] predicateKeys,
 			String[] predicateValues, String[] predicateTypes) throws SQLException
 	{
+		Help_Func hf = new Help_Func();
 		// Example: update TestTable set `Name` = 100 where Surname = "Kapetanios";
 
 		String sqlString = "update `" + table + "` set `" + setColumnName + "` = '" + newValue + "' WHERE "
-				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+				+ hf.generateANDPredicateQuestionMarks(predicateKeys);
 		logger.trace(sqlString);
 		PreparedStatement pst = conn.prepareStatement(sqlString);
 
@@ -341,9 +349,11 @@ public class s_DB_Operations
 	public String numberOfRowsFound(String table, String[] predicateKeys, String[] predicateValues,
 			String[] predicateTypes) throws SQLException
 	{
+		Help_Func hf = new Help_Func();
+
 		int numOfRows = 0;
 		String sqlQuery = "SELECT *" + " FROM " + table + " WHERE "
-				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+				+ hf.generateANDPredicateQuestionMarks(predicateKeys);
 		logger.trace(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 
@@ -372,9 +382,10 @@ public class s_DB_Operations
 	public String countDistinctRowsForSpecificColumn(String table, String column, String[] predicateKeys,
 			String[] predicateValues, String[] predicateTypes) throws SQLException
 	{
+		Help_Func hf = new Help_Func();
 		String numOfRows = "";
 		String sqlQuery = "SELECT COUNT(DISTINCT(" + column + ")) as " + column + " FROM " + table + " WHERE "
-				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+				+ hf.generateANDPredicateQuestionMarks(predicateKeys);
 		logger.trace(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 
@@ -411,6 +422,7 @@ public class s_DB_Operations
 	public String countDistinctRowsForSpecificColumns(String table, String[] columns, String[] predicateKeys,
 			String[] predicateValues, String[] predicateTypes) throws SQLException
 	{
+		Help_Func hf = new Help_Func();
 		String numOfRows = "";
 		String sqlQuery = "SELECT COUNT(*) AS Result FROM(SELECT DISTINCT ";
 
@@ -425,8 +437,7 @@ public class s_DB_Operations
 			}
 		}
 
-		sqlQuery += " FROM " + table + " WHERE " + Help_Func.generateANDPredicateQuestionMarks(predicateKeys)
-				+ ") as AK ";
+		sqlQuery += " FROM " + table + " WHERE " + hf.generateANDPredicateQuestionMarks(predicateKeys) + ") as AK ";
 
 		logger.trace(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
@@ -455,8 +466,10 @@ public class s_DB_Operations
 	public ResultSet getRows(String table, String[] columnNames, String[] predicateKeys, String[] predicateValues,
 			String[] predicateTypes) throws SQLException
 	{
-		String sqlQuery = "SELECT " + Help_Func.columnsWithCommas(columnNames) + " FROM " + table + " WHERE "
-				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+		Help_Func hf = new Help_Func();
+
+		String sqlQuery = "SELECT " + hf.columnsWithCommas(columnNames) + " FROM " + table + " WHERE "
+				+ hf.generateANDPredicateQuestionMarks(predicateKeys);
 
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 		for (int i = 0; i < predicateKeys.length; i++)
@@ -530,9 +543,11 @@ public class s_DB_Operations
 	public String maxNumberOfCustomersAffected(String table, String SumOfColumn, String[] predicateColumns,
 			String[] predicateValues) throws SQLException
 	{
+		Help_Func hf = new Help_Func();
+
 		String numOfRows = "";
 		String sqlQuery = "SELECT MAX(" + SumOfColumn + ") as Result FROM " + table + " WHERE "
-				+ Help_Func.generateANDPredicateQuestionMarks(predicateColumns);
+				+ hf.generateANDPredicateQuestionMarks(predicateColumns);
 		logger.trace(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 
@@ -555,12 +570,13 @@ public class s_DB_Operations
 			String[] columnValuesForUpdate, String[] setColumnDataTypes, String[] predicateColumns,
 			String[] predicateValues, String[] predicateColumnsDataTypes) throws SQLException, InvalidInputException
 	{
+		Help_Func hf = new Help_Func();
+
 		int numOfRowsUpdated = 0;
 		// update SmartOutageDB.Test_SubmittedIncidents set Duration = '2' where OutageID =
 		// '5' and IncidentID = 'INC1';
-		String sqlQuery = "UPDATE " + tableName + " SET "
-				+ Help_Func.generateCommaPredicateQuestionMarks(columnNamesForUpdate) + " WHERE "
-				+ Help_Func.generateANDPredicateQuestionMarks(predicateColumns);
+		String sqlQuery = "UPDATE " + tableName + " SET " + hf.generateCommaPredicateQuestionMarks(columnNamesForUpdate)
+				+ " WHERE " + hf.generateANDPredicateQuestionMarks(predicateColumns);
 		logger.trace(sqlQuery);
 
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);

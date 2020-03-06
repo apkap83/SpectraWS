@@ -57,6 +57,8 @@ public class ProductOfGetHierarchy
 		this.hierarchyFullPathList = hierarchyFullPathList;
 		this.hierElements = hierarchyProvided.split("->");
 
+		Help_Func hf = new Help_Func();
+
 		// If there are no items to be returned, then we assume that you are at MaxLevel
 		if (items.size() == 0)
 		{
@@ -74,7 +76,7 @@ public class ProductOfGetHierarchy
 			if (this.hierElements.length > 1)
 			{
 				// Get Root element from hierarchy
-				String rootElement = Help_Func.getRootHierarchyNode(this.hierarchyProvided);
+				String rootElement = hf.getRootHierarchyNode(this.hierarchyProvided);
 
 				// Firstly determine the hierarchy table that will be used based on the root
 				// hierarchy provided
@@ -96,12 +98,12 @@ public class ProductOfGetHierarchy
 
 				String dataCustomersAffected = dbs.countDistinctRowsForSpecificColumnsNGAIncluded(dataSubsTable,
 						new String[] { "PASPORT_COID" },
-						Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
+						hf.hierarchyKeys(hf.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
 								fullDataHierarchyPath)),
-						Help_Func.hierarchyValues(Help_Func
-								.replaceHierarchyForSubscribersAffected(this.hierarchyProvided, fullDataHierarchyPath)),
-						Help_Func.hierarchyStringTypes(Help_Func
-								.replaceHierarchyForSubscribersAffected(this.hierarchyProvided, fullDataHierarchyPath)),
+						hf.hierarchyValues(hf.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
+								fullDataHierarchyPath)),
+						hf.hierarchyStringTypes(hf.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
+								fullDataHierarchyPath)),
 						ngaTypes);
 
 				this.dataCustomersAffected = dataCustomersAffected;
@@ -110,12 +112,12 @@ public class ProductOfGetHierarchy
 				// search table for customers affected
 				String voiceCustomersAffected = dbs.countDistinctRowsForSpecificColumnsNGAIncluded(voiceSubsTable,
 						new String[] { "PASPORT_COID" },
-						Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
+						hf.hierarchyKeys(hf.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
 								fullVoiceHierarchyPath)),
-						Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
-								this.hierarchyProvided, fullVoiceHierarchyPath)),
-						Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
-								this.hierarchyProvided, fullVoiceHierarchyPath)),
+						hf.hierarchyValues(hf.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
+								fullVoiceHierarchyPath)),
+						hf.hierarchyStringTypes(hf.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
+								fullVoiceHierarchyPath)),
 						ngaTypes);
 
 				this.voiceCustomersAffected = voiceCustomersAffected;
@@ -132,7 +134,7 @@ public class ProductOfGetHierarchy
 						Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
 								this.hierarchyProvided, fullVoiceHierarchyPath)),
 						ngaTypes, "NotSpecificService", voiceSubsTable, dataSubsTable, IPTVSubsTable);
-
+				
 				this.CLIsAffected = String.valueOf(CLIsAffected);
 				*/
 
@@ -142,12 +144,12 @@ public class ProductOfGetHierarchy
 				// customers affected
 				String tvCustomersAffected = dbs.countDistinctRowsForSpecificColumnsNGAIncluded(IPTVSubsTable,
 						new String[] { "PASPORT_COID" },
-						Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
+						hf.hierarchyKeys(hf.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
 								fullDataHierarchyPath)),
-						Help_Func.hierarchyValues(Help_Func
-								.replaceHierarchyForSubscribersAffected(this.hierarchyProvided, fullDataHierarchyPath)),
-						Help_Func.hierarchyStringTypes(Help_Func
-								.replaceHierarchyForSubscribersAffected(this.hierarchyProvided, fullDataHierarchyPath)),
+						hf.hierarchyValues(hf.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
+								fullDataHierarchyPath)),
+						hf.hierarchyStringTypes(hf.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
+								fullDataHierarchyPath)),
 						ngaTypes);
 
 				this.tvCustomersAffected = tvCustomersAffected;
@@ -266,6 +268,8 @@ public class ProductOfGetHierarchy
 	@XmlElement(name = "hierarchySelected")
 	public String gethierarchySelected()
 	{
+		Help_Func hf = new Help_Func();
+
 		String output = "";
 		if (this.hierarchyProvided == null || this.hierarchyProvided.equals("") || this.hierarchyProvided.equals("?"))
 		{
@@ -279,7 +283,7 @@ public class ProductOfGetHierarchy
 			} else if (this.hierElements.length >= 1)
 			{
 				// return this.hierarchyProvided + "->" + this.hierarchyFullPathList[0] + "=";
-				output = Help_Func.conCatHierarchy(nodeNames, nodeValues, this.hierarchyFullPathList);
+				output = hf.conCatHierarchy(nodeNames, nodeValues, this.hierarchyFullPathList);
 			}
 		}
 

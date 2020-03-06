@@ -23,7 +23,10 @@ public class CLIOutage
 	private DB_Operations dbs;
 	private s_DB_Operations s_dbs;
 	private String requestID;
-	DateFormat dateFormat = new SimpleDateFormat(Help_Func.DATE_FORMAT);
+
+	Help_Func hf = new Help_Func();
+
+	DateFormat dateFormat = new SimpleDateFormat(hf.DATE_FORMAT);
 
 	// Logger instance
 	Logger logger = LogManager.getLogger(gr.wind.spectra.business.CLIOutage.class.getName());
@@ -38,12 +41,13 @@ public class CLIOutage
 	public String replaceHierarchyColumns(String hierarchyProvided, String technology)
 			throws SQLException, InvalidInputException
 	{
+		Help_Func hf = new Help_Func();
 		String newHierarchyValue = "";
 
 		if (technology.equals("Voice"))
 		{
 			// Get root hierarchy String
-			String rootElementInHierarchy = Help_Func.getRootHierarchyNode(hierarchyProvided);
+			String rootElementInHierarchy = hf.getRootHierarchyNode(hierarchyProvided);
 
 			String fullVoiceSubsHierarchyFromDB;
 			String[] fullVoiceSubsHierarchyFromDBSplit;
@@ -57,12 +61,12 @@ public class CLIOutage
 			fullVoiceSubsHierarchyFromDBSplit = fullVoiceSubsHierarchyFromDB.split("->");
 
 			// Replace Hierarchy Columns from the relevant subscribers table
-			newHierarchyValue = Help_Func.replaceHierarchyForSubscribersAffected(hierarchyProvided,
+			newHierarchyValue = hf.replaceHierarchyForSubscribersAffected(hierarchyProvided,
 					fullVoiceSubsHierarchyFromDBSplit);
 		} else if (technology.equals("Data"))
 		{
 			// Get root hierarchy String
-			String rootElementInHierarchy = Help_Func.getRootHierarchyNode(hierarchyProvided);
+			String rootElementInHierarchy = hf.getRootHierarchyNode(hierarchyProvided);
 
 			String fullVoiceSubsHierarchyFromDB;
 			String[] fullVoiceSubsHierarchyFromDBSplit;
@@ -76,12 +80,12 @@ public class CLIOutage
 			fullVoiceSubsHierarchyFromDBSplit = fullVoiceSubsHierarchyFromDB.split("->");
 
 			// Replace Hierarchy Columns from the relevant subscribers table
-			newHierarchyValue = Help_Func.replaceHierarchyForSubscribersAffected(hierarchyProvided,
+			newHierarchyValue = hf.replaceHierarchyForSubscribersAffected(hierarchyProvided,
 					fullVoiceSubsHierarchyFromDBSplit);
 		} else if (technology.equals("IPTV"))
 		{
 			// Get root hierarchy String
-			String rootElementInHierarchy = Help_Func.getRootHierarchyNode(hierarchyProvided);
+			String rootElementInHierarchy = hf.getRootHierarchyNode(hierarchyProvided);
 
 			String fullVoiceSubsHierarchyFromDB;
 			String[] fullVoiceSubsHierarchyFromDBSplit;
@@ -95,7 +99,7 @@ public class CLIOutage
 			fullVoiceSubsHierarchyFromDBSplit = fullVoiceSubsHierarchyFromDB.split("->");
 
 			// Replace Hierarchy Columns from the relevant subscribers table
-			newHierarchyValue = Help_Func.replaceHierarchyForSubscribersAffected(hierarchyProvided,
+			newHierarchyValue = hf.replaceHierarchyForSubscribersAffected(hierarchyProvided,
 					fullVoiceSubsHierarchyFromDBSplit);
 		}
 		return newHierarchyValue;
@@ -112,6 +116,8 @@ public class CLIOutage
 
 		String allAffectedServices = "";
 
+		Help_Func hf = new Help_Func();
+
 		// Check if we have at least one OPEN incident
 		boolean weHaveOpenIncident = s_dbs.checkIfStringExistsInSpecificColumn("SubmittedIncidents", "IncidentStatus",
 				"OPEN");
@@ -121,7 +127,7 @@ public class CLIOutage
 				new String[] { "IncidentStatus" }, new String[] { "OPEN" }, new String[] { "String" });
 
 		// If the submitted service type is empty then fill it with "Voice|Data"
-		if (Help_Func.checkIfEmpty("ServiceType", ServiceType))
+		if (hf.checkIfEmpty("ServiceType", ServiceType))
 		{
 			ServiceType = "Voice|Data|IPTV";
 		}
@@ -215,7 +221,7 @@ public class CLIOutage
 									new String[] { "String" }, new String[] { "IncidentID", "OutageID" },
 									new String[] { IncidentID, String.valueOf(OutageID) },
 									new String[] { "String", "Integer" });
-						
+
 							if (numOfRowsUpdated > 0)
 							{
 								logger.debug("ReqID: " + RequestID + " - Scheduled Incident: " + IncidentID
@@ -236,16 +242,15 @@ public class CLIOutage
 						HierarchySelected += "->CliValue=" + CLIProvided;
 
 						// Get root hierarchy String
-						String rootElementInHierarchy = Help_Func.getRootHierarchyNode(HierarchySelected);
+						String rootElementInHierarchy = hf.getRootHierarchyNode(HierarchySelected);
 
 						// Get Hierarchy Table for that root hierarchy
 						String table = dbs.getOneValue("HierarchyTablePerTechnology2", "VoiceSubscribersTableName",
 								new String[] { "RootHierarchyNode" }, new String[] { rootElementInHierarchy },
 								new String[] { "String" });
 
-						String numOfRowsFound = dbs.numberOfRowsFound(table, Help_Func.hierarchyKeys(HierarchySelected),
-								Help_Func.hierarchyValues(HierarchySelected),
-								Help_Func.hierarchyStringTypes(HierarchySelected));
+						String numOfRowsFound = dbs.numberOfRowsFound(table, hf.hierarchyKeys(HierarchySelected),
+								hf.hierarchyValues(HierarchySelected), hf.hierarchyStringTypes(HierarchySelected));
 
 						// If matched Hierarchy + CLI matches lines (then those CLIs have actually Outage)
 						if (WillBePublished.equals("Yes"))
@@ -299,16 +304,15 @@ public class CLIOutage
 						HierarchySelected += "->CliValue=" + CLIProvided;
 
 						// Get root hierarchy String
-						String rootElementInHierarchy = Help_Func.getRootHierarchyNode(HierarchySelected);
+						String rootElementInHierarchy = hf.getRootHierarchyNode(HierarchySelected);
 
 						// Get Hierarchy Table for that root hierarchy
 						String table = dbs.getOneValue("HierarchyTablePerTechnology2", "DataSubscribersTableName",
 								new String[] { "RootHierarchyNode" }, new String[] { rootElementInHierarchy },
 								new String[] { "String" });
 
-						String numOfRowsFound = dbs.numberOfRowsFound(table, Help_Func.hierarchyKeys(HierarchySelected),
-								Help_Func.hierarchyValues(HierarchySelected),
-								Help_Func.hierarchyStringTypes(HierarchySelected));
+						String numOfRowsFound = dbs.numberOfRowsFound(table, hf.hierarchyKeys(HierarchySelected),
+								hf.hierarchyValues(HierarchySelected), hf.hierarchyStringTypes(HierarchySelected));
 
 						// Scheduled No & Rows Found
 						if (WillBePublished.equals("Yes"))
@@ -360,16 +364,15 @@ public class CLIOutage
 						HierarchySelected += "->CliValue=" + CLIProvided;
 
 						// Get root hierarchy String
-						String rootElementInHierarchy = Help_Func.getRootHierarchyNode(HierarchySelected);
+						String rootElementInHierarchy = hf.getRootHierarchyNode(HierarchySelected);
 
 						// Get Hierarchy Table for that root hierarchy
 						String table = dbs.getOneValue("HierarchyTablePerTechnology2", "IPTVSubscribersTableName",
 								new String[] { "RootHierarchyNode" }, new String[] { rootElementInHierarchy },
 								new String[] { "String" });
 
-						String numOfRowsFound = dbs.numberOfRowsFound(table, Help_Func.hierarchyKeys(HierarchySelected),
-								Help_Func.hierarchyValues(HierarchySelected),
-								Help_Func.hierarchyStringTypes(HierarchySelected));
+						String numOfRowsFound = dbs.numberOfRowsFound(table, hf.hierarchyKeys(HierarchySelected),
+								hf.hierarchyValues(HierarchySelected), hf.hierarchyStringTypes(HierarchySelected));
 
 						// Scheduled No & Rows Found
 						if (WillBePublished.equals("Yes"))
