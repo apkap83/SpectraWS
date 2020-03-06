@@ -20,7 +20,7 @@ public class s_MyDataSource
 
 	// Define a static logger variable so that it references the
 	// Logger instance named "MyDataSource".
-	private static final Logger logger = LogManager.getLogger(gr.wind.spectra.business.s_MyDataSource.class);
+	private final Logger logger = LogManager.getLogger(gr.wind.spectra.business.s_MyDataSource.class);
 
 	static
 	{
@@ -51,7 +51,7 @@ public class s_MyDataSource
 	{
 	}
 
-	public static Connection getConnection() throws Exception
+	public Connection getConnection() throws Exception
 	{
 		Connection con = null;
 		try

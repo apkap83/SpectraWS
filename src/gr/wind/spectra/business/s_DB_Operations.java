@@ -519,7 +519,9 @@ public class s_DB_Operations
 				 * bytes and it's purpose is that if two different people choose the same
 				 * password, the stored passwords will still look different.
 				 */
-				passwordIsCorrect = Password.check(password, r_password);
+				Password psw = new Password();
+
+				passwordIsCorrect = psw.check(password, r_password);
 
 				//					System.out.println("password " + password);
 				//					System.out.println("r_password " + r_password);

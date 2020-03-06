@@ -24,7 +24,7 @@ public class MyDataSource
 
 	// Define a static logger variable so that it references the
 	// Logger instance named "MyDataSource".
-	private static final Logger logger = LogManager.getLogger(gr.wind.spectra.business.MyDataSource.class);
+	private final Logger logger = LogManager.getLogger(gr.wind.spectra.business.MyDataSource.class);
 
 	static
 	{
@@ -51,7 +51,7 @@ public class MyDataSource
 		ds = new HikariDataSource(config);
 	}
 
-	public static void getUpdatedResourceData()
+	public void getUpdatedResourceData()
 	{
 		// Resource is obtained from file:
 		// /opt/glassfish5/glassfish/domains/domain1/lib/classes/database.properties
@@ -84,7 +84,7 @@ public class MyDataSource
 	{
 	}
 
-	public static Connection getConnection() throws Exception
+	public Connection getConnection() throws Exception
 	{
 		Connection con = null;
 		try
