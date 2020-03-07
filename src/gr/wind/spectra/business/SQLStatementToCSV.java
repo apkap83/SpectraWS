@@ -205,6 +205,13 @@ public class SQLStatementToCSV extends Thread
 		} catch (Exception e)
 		{
 			e.printStackTrace();
+		} finally
+		{
+			conObj = null;
+			conn = null;
+			s_conn = null;
+			s_conObj = null;
+			s_dbs = null;
 		}
 	}
 
