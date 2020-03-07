@@ -42,7 +42,7 @@ public class WebSpectra implements InterfaceWebSpectra
 {
 	// Those directive is for IP retrieval of web request
 	@Resource
-	WebServiceContext wsContext;
+	private WebServiceContext wsContext;
 
 	public WebSpectra()
 	{
