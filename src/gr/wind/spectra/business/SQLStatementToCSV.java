@@ -52,12 +52,12 @@ public class SQLStatementToCSV extends Thread
 		// If NgaPredicate is ALL then dont's set [ ngapredicate IN ('value1', 'value2', 'value3',) ]
 		if (ngaTypes.equals("ALL"))
 		{
-			sqlQuery = "SELECT " + hf.columnsWithCommas(columnsForExport) + " FROM " + table + " WHERE "
+			sqlQuery = "SELECT DISTINCT " + hf.columnsWithCommas(columnsForExport) + " FROM " + table + " WHERE "
 					+ hf.generateANDPredicateQuestionMarks(predicateKeys);
 
 		} else
 		{
-			sqlQuery = "SELECT " + hf.columnsWithCommas(columnsForExport) + " FROM " + table + " WHERE "
+			sqlQuery = "SELECT DISTINCT " + hf.columnsWithCommas(columnsForExport) + " FROM " + table + " WHERE "
 					+ hf.generateANDPredicateQuestionMarks(predicateKeys) + " " + ngaTypesToSQLPredicate;
 		}
 
