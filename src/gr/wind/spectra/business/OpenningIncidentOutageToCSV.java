@@ -147,22 +147,22 @@ public class OpenningIncidentOutageToCSV
 		// If the closed incident is a "Data" affected one
 		if (outageAffectedService.equals("Data"))
 		{
-			String exportedFileName = "/opt/ExportedFiles/AllOpenedOutages/Spectra_CLIs_Affected_OutageID_" + outageID
-					+ "_Data_" + currentDate + ".csv";
+			String exportedFileName = "/opt/ExportedFiles/AllOpenedOutages/Spectra_CLIs_Affected_INC_" + incidentID
+					+ "_OutageID_" + outageID + "_Data_" + currentDate + ".csv";
 
 			HierarchySelected = this.replaceHierarchyColumns(HierarchySelected, "Data");
 
 			// Null pointer exception investigation
-			System.out.println("outageID = " + outageID);
-			System.out.println("incidentID = " + incidentID);
-			System.out.println("scheduled = " + scheduled);
-
-			System.out.println("df.format(startTime) = " + df.format(startTime));
-			System.out.println("outageAffectedService = " + outageAffectedService);
-			System.out.println("impact = " + impact);
-			System.out.println("priority = " + priority);
-			System.out.println("HierarchySelected = " + HierarchySelected);
-			System.out.println("locations = " + locations);
+			//			System.out.println("outageID = " + outageID);
+			//			System.out.println("incidentID = " + incidentID);
+			//			System.out.println("scheduled = " + scheduled);
+			//
+			//			System.out.println("df.format(startTime) = " + df.format(startTime));
+			//			System.out.println("outageAffectedService = " + outageAffectedService);
+			//			System.out.println("impact = " + impact);
+			//			System.out.println("priority = " + priority);
+			//			System.out.println("HierarchySelected = " + HierarchySelected);
+			//			System.out.println("locations = " + locations);
 
 			// If no locations are found then set it to empty string
 			if (locations == null)
@@ -182,8 +182,8 @@ public class OpenningIncidentOutageToCSV
 		// If the closed incident is a "Voice" affected one
 		else if (outageAffectedService.equals("Voice"))
 		{
-			String exportedFileName = "/opt/ExportedFiles/AllOpenedOutages/Spectra_CLIs_Affected_OutageID_" + outageID
-					+ "_Voice_" + currentDate + ".csv";
+			String exportedFileName = "/opt/ExportedFiles/AllOpenedOutages/Spectra_CLIs_Affected_INC_" + incidentID
+					+ "_OutageID_" + outageID + "_Voice_" + currentDate + ".csv";
 
 			HierarchySelected = this.replaceHierarchyColumns(HierarchySelected, "Voice");
 
@@ -199,8 +199,8 @@ public class OpenningIncidentOutageToCSV
 		// If the closed incident is a "IPTV" affected one
 		else if (outageAffectedService.equals("IPTV"))
 		{
-			String exportedFileName = "/opt/ExportedFiles/AllOpenedOutages/Spectra_CLIs_Affected_OutageID_" + outageID
-					+ "_IPTV_" + currentDate + ".csv";
+			String exportedFileName = "/opt/ExportedFiles/AllOpenedOutages/Spectra_CLIs_Affected_INC_" + incidentID
+					+ "_OutageID_" + outageID + "_IPTV_" + currentDate + ".csv";
 
 			HierarchySelected = this.replaceHierarchyColumns(HierarchySelected, "IPTV");
 
