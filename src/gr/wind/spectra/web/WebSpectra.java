@@ -28,6 +28,7 @@ import gr.wind.spectra.business.DB_Connection;
 import gr.wind.spectra.business.DB_Operations;
 import gr.wind.spectra.business.Help_Func;
 import gr.wind.spectra.business.IncidentOutageToCSV;
+import gr.wind.spectra.business.OpenningIncidentOutageToCSV;
 import gr.wind.spectra.business.s_DB_Connection;
 import gr.wind.spectra.business.s_DB_Operations;
 import gr.wind.spectra.model.ProductOfCloseOutage;
@@ -932,6 +933,11 @@ public class WebSpectra implements InterfaceWebSpectra
 								Integer.toString(totalIPTVIncidentAffected), "1", service, myHier.get(i).toString(),
 								"Submitted Successfully");
 						prodElementsList.add(ps);
+
+						// Production of the CSV Exported File for the Closed Incident.
+						OpenningIncidentOutageToCSV OIATCSV = new OpenningIncidentOutageToCSV(dbs, s_dbs, IncidentID,
+								OutageID_String);
+						OIATCSV.produceReport();
 
 						logger.info(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Submitted Outage: INCID: "
 								+ IncidentID + " | OutageID: " + OutageID_String);

@@ -180,15 +180,20 @@ public class SQLStatementToCSV extends Thread
 					SiteName = ""; // set it to empty string
 				}
 
-				// Insert Values in Database
-				s_dbs.insertValuesInTable("ClosedOutages_AffectedCLIs",
-						new String[] { "CliValue", "OutageID", "IncidentStatus", "IncidentID", "Scheduled", "StartTime",
-								"EndTime", "AffectedService", "Impact", "Priority", "HierarchySelected", "Location" },
-						new String[] { CliValue, columnsForExport[1], columnsForExport[2], columnsForExport[3],
-								columnsForExport[4], columnsForExport[5], columnsForExport[6], columnsForExport[7],
-								columnsForExport[8], columnsForExport[9], columnsForExport[10], SiteName },
-						new String[] { "String", "String", "String", "String", "String", "DateTime", "DateTime",
-								"String", "String", "String", "String", "String" });
+				// Write to ClosedOutages_AffectedCLIs table only for CLOSED incident, (not for OPEN)
+				if (!"null".equals(columnsForExport[6]))
+				{
+					// Insert Values in Database
+					s_dbs.insertValuesInTable("ClosedOutages_AffectedCLIs",
+							new String[] { "CliValue", "OutageID", "IncidentStatus", "IncidentID", "Scheduled",
+									"StartTime", "EndTime", "AffectedService", "Impact", "Priority",
+									"HierarchySelected", "Location" },
+							new String[] { CliValue, columnsForExport[1], columnsForExport[2], columnsForExport[3],
+									columnsForExport[4], columnsForExport[5], columnsForExport[6], columnsForExport[7],
+									columnsForExport[8], columnsForExport[9], columnsForExport[10], SiteName },
+							new String[] { "String", "String", "String", "String", "String", "DateTime", "DateTime",
+									"String", "String", "String", "String", "String" });
+				}
 			}
 
 			logger.info("Thread execution CLIs to DB Table Finished!");
