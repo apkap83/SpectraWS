@@ -110,7 +110,7 @@ public class SQLStatementToCSV extends Thread
 		logger.info("Thread execution in ResultSetToCSV Class Started!");
 		try
 		{
-			System.out.println(sqlQuery);
+			// System.out.println(sqlQuery);
 
 			// Export Affected CLIs to File
 			PreparedStatement pst = conn.prepareStatement(sqlQuery);

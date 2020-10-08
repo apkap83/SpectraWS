@@ -154,17 +154,17 @@ public class IncidentOutageToCSV
 			HierarchySelected = this.replaceHierarchyColumns(HierarchySelected, "Data");
 
 			// Null pointer exception investigation
-			System.out.println("outageID = " + outageID);
-			System.out.println("incidentID = " + incidentID);
-			System.out.println("scheduled = " + scheduled);
+			// System.out.println("outageID = " + outageID);
+			// System.out.println("incidentID = " + incidentID);
+			// System.out.println("scheduled = " + scheduled);
 
-			System.out.println("df.format(startTime) = " + df.format(startTime));
-			System.out.println("df.format(endTime) = " + df.format(endTime));
-			System.out.println("outageAffectedService = " + outageAffectedService);
-			System.out.println("impact = " + impact);
-			System.out.println("priority = " + priority);
-			System.out.println("HierarchySelected = " + HierarchySelected);
-			System.out.println("locations = " + locations);
+			// System.out.println("df.format(startTime) = " + df.format(startTime));
+			// System.out.println("df.format(endTime) = " + df.format(endTime));
+			// System.out.println("outageAffectedService = " + outageAffectedService);
+			// System.out.println("impact = " + impact);
+			// System.out.println("priority = " + priority);
+			// System.out.println("HierarchySelected = " + HierarchySelected);
+			// System.out.println("locations = " + locations);
 
 			// If no locations are found then set it to empty string
 			if (locations == null)

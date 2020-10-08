@@ -19,7 +19,7 @@ public class FileLogger
 		FileOutputStream fileOutputStream = null;
 		String data = lineOfText + "\n";
 
-		System.out.print(data);
+		// System.out.print(data);
 
 		try
 		{
