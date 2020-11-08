@@ -61,7 +61,7 @@ public class SQLStatementToCSV extends Thread
 					+ hf.generateANDPredicateQuestionMarks(predicateKeys) + " " + ngaTypesToSQLPredicate;
 		}
 
-		logger.info("SQLStatementToCSV Query:" + sqlQuery);
+		// logger.info("SQLStatementToCSV Query:" + sqlQuery);
 
 	}
 

@@ -432,6 +432,11 @@ public class CLIOutage
 
 				logger.info("ReqID: " + RequestID + " - No Service affection for CLI: " + CLIProvided + " | "
 						+ ServiceType);
+
+				// Update asynchronously - Add Caller to Caller data table (Caller_Data) with empty values for IncidentID, Affected Services & Scheduling
+				Update_CallerDataTable ucdt = new Update_CallerDataTable(dbs, s_dbs, CLIProvided, "", "", "");
+				ucdt.run();
+
 				ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "No", "none", "none", "none", "none",
 						"none", "none", "none", "NULL", "NULL", "NULL");
 
@@ -517,20 +522,29 @@ public class CLIOutage
 					EndTimeString = dateFormat.format(myActualEndTime);
 				}
 
-				ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "Yes", foundIncidentID, foundPriority,
-						allAffectedServices, foundScheduled, foundDuration, EndTimeString, foundImpact, "NULL", "NULL",
-						"NULL");
-
 				// Update asynchronously Stats_Pos_NLU_Requests to count number of successful NLU requests per CLI
 				Update_ReallyAffectedTable uRat = new Update_ReallyAffectedTable(s_dbs, foundIncidentID,
 						allAffectedServices, foundScheduled, CLIProvided);
 				uRat.run();
+
+				// Update asynchronously - Add Caller to Caller data table (Caller_Data) with empty values for IncidentID, Affected Services & Scheduling
+				Update_CallerDataTable ucdt = new Update_CallerDataTable(dbs, s_dbs, CLIProvided, foundIncidentID,
+						allAffectedServices, foundScheduled);
+				ucdt.run();
+
+				ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "Yes", foundIncidentID, foundPriority,
+						allAffectedServices, foundScheduled, foundDuration, EndTimeString, foundImpact, "NULL", "NULL",
+						"NULL");
 			}
 
 		} else
 		{
 			// Update Statistics
 			s_dbs.updateUsageStatisticsForMethod("NLU_Active_Neg");
+
+			// Update asynchronously - Add Caller to Caller data table (Caller_Data) with empty values for IncidentID, Affected Services & Scheduling
+			Update_CallerDataTable ucdt = new Update_CallerDataTable(dbs, s_dbs, CLIProvided, "", "", "");
+			ucdt.run();
 
 			logger.info(
 					"ReqID: " + RequestID + " - No Service affection for CLI: " + CLIProvided + " | " + ServiceType);
