@@ -86,6 +86,8 @@ public class Update_CallerDataTable extends Thread
 					String Domain = rs.getString("Domain");
 					String ServiceType = rs.getString("ServiceType");
 					String BRASNAME = rs.getString("BRASNAME");
+					String CSSCOLLECTIONNAME = "";
+					String PAYTVSERVICES = "";
 
 					if (NGA_TYPE == null)
 					{
@@ -212,61 +214,49 @@ public class Update_CallerDataTable extends Thread
 						BRASNAME = "";
 					}
 
-					//					System.out.println("CLIProvided          " + CLIProvided);
-					//					System.out.println("hf.now()             " + hf.now());
-					//					System.out.println("IncidentID           " + IncidentID);
-					//					System.out.println("allAffectedServices  " + allAffectedServices);
-					//					System.out.println("foundScheduled       " + foundScheduled);
-					//					System.out.println("NGA_TYPE             " + NGA_TYPE);
-					//					System.out.println("GeneralArea          " + GeneralArea);
-					//					System.out.println("SiteName             " + SiteName);
-					//					System.out.println("Concentrator         " + Concentrator);
-					//					System.out.println("AccessService        " + AccessService);
-					//					System.out.println("PoP_Name             " + PoP_Name);
-					//					System.out.println("PoP_Code             " + PoP_Code);
-					//					System.out.println("OltElementName       " + OltElementName);
-					//					System.out.println("OltRackNo            " + OltRackNo);
-					//					System.out.println("OltSubRackNo         " + OltSubRackNo);
-					//					System.out.println("OltSlot              " + OltSlot);
-					//					System.out.println("OltPort              " + OltPort);
-					//					System.out.println("Onu                  " + Onu);
-					//					System.out.println("KvCode               " + KvCode);
-					//					System.out.println("CabinetCode          " + CabinetCode);
-					//					System.out.println("ActiveElement        " + ActiveElement);
-					//					System.out.println("Rack                 " + Rack);
-					//					System.out.println("Subrack              " + Subrack);
-					//					System.out.println("Slot                 " + Slot);
-					//					System.out.println("Port                 " + Port);
-					//					System.out.println("PORT_LOCATION        " + PORT_LOCATION);
-					//					System.out.println("PORT_CABLE_CODE      " + PORT_CABLE_CODE);
-					//					System.out.println("PORT_ID              " + PORT_ID);
-					//					System.out.println("CLID                 " + CLID);
-					//					System.out.println("Username             " + Username);
-					//					System.out.println("PASPORT_COID         " + PASPORT_COID);
-					//					System.out.println("LOOP_NUMBER          " + LOOP_NUMBER);
-					//					System.out.println("CLI_TYPE             " + CLI_TYPE);
-					//					System.out.println("Domain               " + Domain);
-					//					System.out.println("ServiceType          " + ServiceType);
-					//					System.out.println("BRASNAME             " + BRASNAME);
+					// Get CSSCOLLECTIONNAME from AAA21_NMAP based on the Username from Prov_Internet_Resource_Path
+
+					if (!Username.equals("")) // Only if user name is not empty
+					{
+						CSSCOLLECTIONNAME = dbs.getOneValue("AAA21_NMAP", "CSSCOLLECTIONNAME",
+								new String[] { "USERNAME" }, new String[] { Username }, new String[] { "String" });
+
+						PAYTVSERVICES = dbs.getOneValue("Prov_IPTV_Resource_Path", "PAYTVSERVICES",
+								new String[] { "Username" }, new String[] { Username }, new String[] { "String" });
+					} else
+					{
+						CSSCOLLECTIONNAME = "";
+						PAYTVSERVICES = "";
+					}
+
+					if (CSSCOLLECTIONNAME == null)
+					{
+						CSSCOLLECTIONNAME = "";
+					}
+					if (PAYTVSERVICES == null)
+					{
+						PAYTVSERVICES = "";
+					}
 
 					s_dbs.insertValuesInTable("Caller_Data",
 							new String[] { "CliValue", "DateTimeCalled", "Affected_by_IncidentID", "AffectedServices",
-									"Scheduled", "NGA_TYPE", "GeneralArea", "SiteName", "Concentrator", "AccessService",
-									"PoP_Name", "PoP_Code", "OltElementName", "OltRackNo", "OltSubRackNo", "OltSlot",
-									"OltPort", "Onu", "KvCode", "CabinetCode", "ActiveElement", "Rack", "Subrack",
-									"Slot", "Port", "PORT_LOCATION", "PORT_CABLE_CODE", "PORT_ID", "CLID", "Username",
-									"PASPORT_COID", "LOOP_NUMBER", "CLI_TYPE", "Domain", "ServiceType", "BRASNAME" },
+									"Scheduled", "CSSCOLLECTIONNAME", "PAYTVSERVICES", "NGA_TYPE", "GeneralArea",
+									"SiteName", "Concentrator", "AccessService", "PoP_Name", "PoP_Code",
+									"OltElementName", "OltRackNo", "OltSubRackNo", "OltSlot", "OltPort", "Onu",
+									"KvCode", "CabinetCode", "ActiveElement", "Rack", "Subrack", "Slot", "Port",
+									"PORT_LOCATION", "PORT_CABLE_CODE", "PORT_ID", "CLID", "Username", "PASPORT_COID",
+									"LOOP_NUMBER", "CLI_TYPE", "Domain", "ServiceType", "BRASNAME" },
 							new String[] { CLIProvided, hf.now(), IncidentID, allAffectedServices, foundScheduled,
-									NGA_TYPE, GeneralArea, SiteName, Concentrator, AccessService, PoP_Name, PoP_Code,
-									OltElementName, OltRackNo, OltSubRackNo, OltSlot, OltPort, Onu, KvCode, CabinetCode,
-									ActiveElement, Rack, Subrack, Slot, Port, PORT_LOCATION, PORT_CABLE_CODE, PORT_ID,
-									CLID, Username, PASPORT_COID, LOOP_NUMBER, CLI_TYPE, Domain, ServiceType,
-									BRASNAME },
+									CSSCOLLECTIONNAME, PAYTVSERVICES, NGA_TYPE, GeneralArea, SiteName, Concentrator,
+									AccessService, PoP_Name, PoP_Code, OltElementName, OltRackNo, OltSubRackNo, OltSlot,
+									OltPort, Onu, KvCode, CabinetCode, ActiveElement, Rack, Subrack, Slot, Port,
+									PORT_LOCATION, PORT_CABLE_CODE, PORT_ID, CLID, Username, PASPORT_COID, LOOP_NUMBER,
+									CLI_TYPE, Domain, ServiceType, BRASNAME },
 							new String[] { "String", "DateTime", "String", "String", "String", "String", "String",
 									"String", "String", "String", "String", "String", "String", "String", "String",
 									"String", "String", "String", "String", "String", "String", "String", "String",
 									"String", "String", "String", "String", "String", "String", "String", "String",
-									"String", "String", "String", "String", "String" });
+									"String", "String", "String", "String", "String", "String", "String" });
 
 				}
 
@@ -274,18 +264,20 @@ public class Update_CallerDataTable extends Thread
 			{
 				s_dbs.insertValuesInTable("Caller_Data",
 						new String[] { "CliValue", "DateTimeCalled", "Affected_by_IncidentID", "AffectedServices",
-								"Scheduled", "NGA_TYPE", "GeneralArea", "SiteName", "Concentrator", "AccessService",
-								"PoP_Name", "PoP_Code", "OltElementName", "OltRackNo", "OltSubRackNo", "OltSlot",
-								"OltPort", "Onu", "KvCode", "CabinetCode", "ActiveElement", "Rack", "Subrack", "Slot",
-								"Port", "PORT_LOCATION", "PORT_CABLE_CODE", "PORT_ID", "CLID", "Username",
-								"PASPORT_COID", "LOOP_NUMBER", "CLI_TYPE", "Domain", "ServiceType", "BRASNAME" },
+								"Scheduled", "CSSCOLLECTIONNAME", "PAYTVSERVICES", "NGA_TYPE", "GeneralArea",
+								"SiteName", "Concentrator", "AccessService", "PoP_Name", "PoP_Code", "OltElementName",
+								"OltRackNo", "OltSubRackNo", "OltSlot", "OltPort", "Onu", "KvCode", "CabinetCode",
+								"ActiveElement", "Rack", "Subrack", "Slot", "Port", "PORT_LOCATION", "PORT_CABLE_CODE",
+								"PORT_ID", "CLID", "Username", "PASPORT_COID", "LOOP_NUMBER", "CLI_TYPE", "Domain",
+								"ServiceType", "BRASNAME" },
 						new String[] { CLIProvided, hf.now(), "", "", "", "", "", "", "", "", "", "", "", "", "", "",
-								"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" },
+								"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+								"" },
 						new String[] { "String", "DateTime", "String", "String", "String", "String", "String", "String",
 								"String", "String", "String", "String", "String", "String", "String", "String",
 								"String", "String", "String", "String", "String", "String", "String", "String",
 								"String", "String", "String", "String", "String", "String", "String", "String",
-								"String", "String", "String", "String" });
+								"String", "String", "String", "String", "String", "String" });
 			}
 
 		} catch (SQLException e)
