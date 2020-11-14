@@ -260,7 +260,7 @@ public class Update_CallerDataTable extends Thread
 
 				}
 
-			} else // CLI was not found in Internet_Resource_Path
+			} else /// CLI was not found in Internet_Resource_Path
 			{
 				s_dbs.insertValuesInTable("Caller_Data",
 						new String[] { "CliValue", "DateTimeCalled", "Affected_by_IncidentID", "AffectedServices",
