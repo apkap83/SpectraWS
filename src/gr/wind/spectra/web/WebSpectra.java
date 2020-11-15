@@ -31,6 +31,11 @@ import gr.wind.spectra.business.IncidentOutageToCSV;
 import gr.wind.spectra.business.OpenningIncidentOutageToCSV;
 import gr.wind.spectra.business.s_DB_Connection;
 import gr.wind.spectra.business.s_DB_Operations;
+import gr.wind.spectra.consumerRequests.Async_CloseOutage;
+import gr.wind.spectra.consumerRequests.Async_GetHierarchy;
+import gr.wind.spectra.consumerRequests.Async_ModifyOutage;
+import gr.wind.spectra.consumerRequests.Async_NLUActive;
+import gr.wind.spectra.consumerRequests.Async_SubmitOutage;
 import gr.wind.spectra.model.ProductOfCloseOutage;
 import gr.wind.spectra.model.ProductOfGetHierarchy;
 import gr.wind.spectra.model.ProductOfGetOutage;
@@ -306,6 +311,11 @@ public class WebSpectra implements InterfaceWebSpectra
 					}
 				}
 			}
+
+			// Send Similar request to Spectra_Reporting server
+			Async_GetHierarchy aGH = new Async_GetHierarchy(UserName, Password, RequestID, RequestTimestamp, SystemID,
+					UserID, Hierarchy);
+			aGH.run();
 
 			return prodElementsList;
 		} catch (Exception e)
@@ -945,6 +955,12 @@ public class WebSpectra implements InterfaceWebSpectra
 				}
 			}
 
+			// Send Similar request to Spectra_Reporting server
+			Async_SubmitOutage sOut = new Async_SubmitOutage(UserName, Password, RequestID, RequestTimestamp, SystemID,
+					UserID, IncidentID, Scheduled, StartTime, EndTime, Duration, AffectedServices, Impact, Priority,
+					HierarchySelected);
+			sOut.run();
+
 			return prodElementsList;
 		} catch (Exception e)
 		{
@@ -1396,6 +1412,11 @@ public class WebSpectra implements InterfaceWebSpectra
 						+ OutageID + " does not exist!", "Error 550");
 			}
 
+			// Send Similar request to Spectra_Reporting server
+			Async_ModifyOutage mOut = new Async_ModifyOutage(UserName, Password, RequestID, RequestTimestamp, SystemID,
+					UserID, IncidentID, OutageID, StartTime, EndTime, Duration, Impact);
+			mOut.run();
+
 			// Return instance of class ProductOfModify
 			return pom;
 		} catch (Exception e)
@@ -1625,6 +1646,11 @@ public class WebSpectra implements InterfaceWebSpectra
 						+ OutageID + " does not exist!", "Error 950");
 			}
 
+			// Send Similar request to Spectra_Reporting server
+			Async_CloseOutage cOut = new Async_CloseOutage(UserName, Password, RequestID, RequestTimestamp, SystemID,
+					UserID, IncidentID, OutageID);
+			cOut.run();
+
 			return poca;
 		} catch (Exception e)
 		{
@@ -1751,6 +1777,11 @@ public class WebSpectra implements InterfaceWebSpectra
 				// Check if it has the appropriate format
 				hf.validateDelimitedValues("Service", Service, "\\|", new String[] { "Voice", "Data", "IPTV" });
 			}
+
+			// Send Similar request to Spectra_Reporting server
+			Async_NLUActive nluA = new Async_NLUActive(UserName, Password, RequestID, RequestTimestamp, SystemID, CLI,
+					Service, ServiceL2, ServiceL3);
+			nluA.run();
 
 			CLIOutage co = new CLIOutage(dbs, s_dbs, RequestID);
 			ponla = co.checkCLIOutage(RequestID, CLI, Service);
