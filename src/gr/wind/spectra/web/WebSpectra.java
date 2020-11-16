@@ -313,9 +313,16 @@ public class WebSpectra implements InterfaceWebSpectra
 			}
 
 			// Send Similar request to Spectra_Reporting server
-			Async_GetHierarchy aGH = new Async_GetHierarchy(UserName, Password, RequestID, RequestTimestamp, SystemID,
-					UserID, Hierarchy);
-			aGH.run();
+			try
+			{
+				Async_GetHierarchy aGH = new Async_GetHierarchy(UserName, Password, RequestID, RequestTimestamp, SystemID,
+						UserID, Hierarchy);
+				aGH.run();
+			} catch (Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 			return prodElementsList;
 		} catch (Exception e)
@@ -956,10 +963,17 @@ public class WebSpectra implements InterfaceWebSpectra
 			}
 
 			// Send Similar request to Spectra_Reporting server
-			Async_SubmitOutage sOut = new Async_SubmitOutage(UserName, Password, RequestID, RequestTimestamp, SystemID,
-					UserID, IncidentID, Scheduled, StartTime, EndTime, Duration, AffectedServices, Impact, Priority,
-					HierarchySelected);
-			sOut.run();
+			try
+			{
+				Async_SubmitOutage sOut = new Async_SubmitOutage(UserName, Password, RequestID, RequestTimestamp, SystemID,
+						UserID, IncidentID, Scheduled, StartTime, EndTime, Duration, AffectedServices, Impact, Priority,
+						HierarchySelected);
+				sOut.run();
+			} catch (Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 			return prodElementsList;
 		} catch (Exception e)
@@ -1413,9 +1427,16 @@ public class WebSpectra implements InterfaceWebSpectra
 			}
 
 			// Send Similar request to Spectra_Reporting server
-			Async_ModifyOutage mOut = new Async_ModifyOutage(UserName, Password, RequestID, RequestTimestamp, SystemID,
-					UserID, IncidentID, OutageID, StartTime, EndTime, Duration, Impact);
-			mOut.run();
+			try
+			{
+				Async_ModifyOutage mOut = new Async_ModifyOutage(UserName, Password, RequestID, RequestTimestamp, SystemID,
+						UserID, IncidentID, OutageID, StartTime, EndTime, Duration, Impact);
+				mOut.run();
+			} catch (Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 			// Return instance of class ProductOfModify
 			return pom;
@@ -1647,9 +1668,16 @@ public class WebSpectra implements InterfaceWebSpectra
 			}
 
 			// Send Similar request to Spectra_Reporting server
-			Async_CloseOutage cOut = new Async_CloseOutage(UserName, Password, RequestID, RequestTimestamp, SystemID,
-					UserID, IncidentID, OutageID);
-			cOut.run();
+			try
+			{
+				Async_CloseOutage cOut = new Async_CloseOutage(UserName, Password, RequestID, RequestTimestamp, SystemID,
+						UserID, IncidentID, OutageID);
+				cOut.run();
+			} catch (Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 			return poca;
 		} catch (Exception e)
@@ -1779,9 +1807,16 @@ public class WebSpectra implements InterfaceWebSpectra
 			}
 
 			// Send Similar request to Spectra_Reporting server
-			Async_NLUActive nluA = new Async_NLUActive(UserName, Password, RequestID, RequestTimestamp, SystemID, CLI,
-					Service, ServiceL2, ServiceL3);
-			nluA.run();
+			try
+			{
+				Async_NLUActive nluA = new Async_NLUActive(UserName, Password, RequestID, RequestTimestamp, SystemID, CLI,
+						Service, ServiceL2, ServiceL3);
+				nluA.run();
+			} catch (Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 			CLIOutage co = new CLIOutage(dbs, s_dbs, RequestID);
 			ponla = co.checkCLIOutage(RequestID, CLI, Service);
