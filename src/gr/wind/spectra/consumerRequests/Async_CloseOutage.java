@@ -110,8 +110,7 @@ public class Async_CloseOutage extends Thread
 			iws.closeOutage(ca, UserName, Password);
 		} catch (Exception e)
 		{
-			// Do nothing for this exception
-			// Spectra Reporting server does not return anything but the methods expects return data
+			e.printStackTrace();
 		}
 
 		//System.out.println(ghR.toString());

@@ -107,7 +107,7 @@ public class SQLStatementToCSV extends Thread
 		{
 			e1.printStackTrace();
 		}
-		logger.info("Thread execution in ResultSetToCSV Class Started!");
+		//logger.trace("Thread execution in ResultSetToCSV Class Started!");
 		try
 		{
 			// System.out.println(sqlQuery);
@@ -130,7 +130,7 @@ public class SQLStatementToCSV extends Thread
 			csvWriter.writeAll(rs, false);
 			csvWriter.close();
 
-			logger.info("Thread execution CLIs to CSV Finished!");
+			//logger.trace("Thread execution CLIs to CSV Finished!");
 
 			// Export Affected CLIs to Database table
 			PreparedStatement pst_forDB = conn.prepareStatement(sqlQuery);
@@ -196,7 +196,7 @@ public class SQLStatementToCSV extends Thread
 				}
 			}
 
-			logger.info("Thread execution CLIs to DB Table Finished!");
+			//logger.trace("Thread execution CLIs to DB Table Finished!");
 
 			if (conObj != null)
 			{

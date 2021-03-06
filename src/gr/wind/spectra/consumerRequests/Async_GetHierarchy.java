@@ -108,8 +108,7 @@ public class Async_GetHierarchy extends Thread
 			iws.getHierarchy(gh, UserName, Password);
 		} catch (Exception e)
 		{
-			// Do nothing for this exception
-			// Spectra Reporting server does not return anything but the methods expects return data
+			e.printStackTrace();
 		}
 
 		//System.out.println(ghR.toString());
