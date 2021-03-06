@@ -11,8 +11,8 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import gr.wind.spectra.consumer.CloseOutage;
-import gr.wind.spectra.consumer.WebSpectraService;
+import gr.wind.spectra.consumer.oneway.CloseOutage;
+import gr.wind.spectra.consumer.oneway.WebSpectraService;
 
 public class Async_CloseOutage extends Thread
 {
@@ -95,7 +95,7 @@ public class Async_CloseOutage extends Thread
 
 		// Send request to Spectra_Reporting
 		WebSpectraService myWebService = new WebSpectraService();
-		gr.wind.spectra.consumer.InterfaceWebSpectra iws = myWebService.getWebSpectraPort();
+		gr.wind.spectra.consumer.oneway.InterfaceWebSpectra iws = myWebService.getWebSpectraPort();
 
 		CloseOutage ca = new CloseOutage();
 		ca.setRequestID(this.RequestID);
