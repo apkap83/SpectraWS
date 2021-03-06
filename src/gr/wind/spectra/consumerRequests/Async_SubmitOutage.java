@@ -11,8 +11,6 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import gr.wind.spectra.consumer.Exception_Exception;
-import gr.wind.spectra.consumer.InvalidInputException_Exception;
 import gr.wind.spectra.consumer.SubmitOutage;
 import gr.wind.spectra.consumer.WebSpectraService;
 
@@ -132,14 +130,10 @@ public class Async_SubmitOutage extends Thread
 		try
 		{
 			iws.submitOutage(sa, UserName, Password);
-		} catch (Exception_Exception e)
+		} catch (Exception e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidInputException_Exception e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// Do nothing for this exception
+			// Spectra Reporting server does not return anything but the methods expects return data
 		}
 
 		//System.out.println(saR.toString());

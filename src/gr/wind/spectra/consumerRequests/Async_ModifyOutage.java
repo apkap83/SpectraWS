@@ -11,8 +11,6 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import gr.wind.spectra.consumer.Exception_Exception;
-import gr.wind.spectra.consumer.InvalidInputException_Exception;
 import gr.wind.spectra.consumer.ModifyOutage;
 import gr.wind.spectra.consumer.WebSpectraService;
 
@@ -123,14 +121,10 @@ public class Async_ModifyOutage extends Thread
 		try
 		{
 			iws.modifyOutage(ma, UserName, Password);
-		} catch (Exception_Exception e)
+		} catch (Exception e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidInputException_Exception e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// Do nothing for this exception
+			// Spectra Reporting server does not return anything but the methods expects return data
 		}
 
 		//System.out.println(maR.toString());
