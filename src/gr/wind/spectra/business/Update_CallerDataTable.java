@@ -11,9 +11,11 @@ public class Update_CallerDataTable extends Thread
 	String IncidentID;
 	String allAffectedServices;
 	String foundScheduled;
+	String message;
+	String backupEligible;
 
 	public Update_CallerDataTable(DB_Operations dbs, s_DB_Operations s_dbs, String CLIProvided, String IncidentID,
-			String allAffectedServices, String foundScheduled)
+			String allAffectedServices, String foundScheduled, String message, String backupEligible)
 	{
 		this.dbs = dbs;
 		this.s_dbs = s_dbs;
@@ -21,6 +23,8 @@ public class Update_CallerDataTable extends Thread
 		this.IncidentID = IncidentID;
 		this.allAffectedServices = allAffectedServices;
 		this.foundScheduled = foundScheduled;
+		this.message = message;
+		this.backupEligible = backupEligible;
 	}
 
 	@Override
@@ -213,6 +217,14 @@ public class Update_CallerDataTable extends Thread
 					{
 						BRASNAME = "";
 					}
+					if (message == null)
+					{
+						message = "";
+					}
+					if (backupEligible == null)
+					{
+						backupEligible = "";
+					}
 
 					// Get CSSCOLLECTIONNAME from AAA21_NMAP based on the Username from Prov_Internet_Resource_Path
 
@@ -240,23 +252,24 @@ public class Update_CallerDataTable extends Thread
 
 					s_dbs.insertValuesInTable("Caller_Data",
 							new String[] { "CliValue", "DateTimeCalled", "Affected_by_IncidentID", "AffectedServices",
-									"Scheduled", "CSSCOLLECTIONNAME", "PAYTVSERVICES", "NGA_TYPE", "GeneralArea",
-									"SiteName", "Concentrator", "AccessService", "PoP_Name", "PoP_Code",
-									"OltElementName", "OltRackNo", "OltSubRackNo", "OltSlot", "OltPort", "Onu",
-									"KvCode", "CabinetCode", "ActiveElement", "Rack", "Subrack", "Slot", "Port",
+									"Scheduled", "Message", "BackupEligible", "CSSCOLLECTIONNAME", "PAYTVSERVICES",
+									"NGA_TYPE", "GeneralArea", "SiteName", "Concentrator", "AccessService", "PoP_Name",
+									"PoP_Code", "OltElementName", "OltRackNo", "OltSubRackNo", "OltSlot", "OltPort",
+									"Onu", "KvCode", "CabinetCode", "ActiveElement", "Rack", "Subrack", "Slot", "Port",
 									"PORT_LOCATION", "PORT_CABLE_CODE", "PORT_ID", "CLID", "Username", "PASPORT_COID",
 									"LOOP_NUMBER", "CLI_TYPE", "Domain", "ServiceType", "BRASNAME" },
 							new String[] { CLIProvided, hf.now(), IncidentID, allAffectedServices, foundScheduled,
-									CSSCOLLECTIONNAME, PAYTVSERVICES, NGA_TYPE, GeneralArea, SiteName, Concentrator,
-									AccessService, PoP_Name, PoP_Code, OltElementName, OltRackNo, OltSubRackNo, OltSlot,
-									OltPort, Onu, KvCode, CabinetCode, ActiveElement, Rack, Subrack, Slot, Port,
-									PORT_LOCATION, PORT_CABLE_CODE, PORT_ID, CLID, Username, PASPORT_COID, LOOP_NUMBER,
-									CLI_TYPE, Domain, ServiceType, BRASNAME },
+									message, backupEligible, CSSCOLLECTIONNAME, PAYTVSERVICES, NGA_TYPE, GeneralArea,
+									SiteName, Concentrator, AccessService, PoP_Name, PoP_Code, OltElementName,
+									OltRackNo, OltSubRackNo, OltSlot, OltPort, Onu, KvCode, CabinetCode, ActiveElement,
+									Rack, Subrack, Slot, Port, PORT_LOCATION, PORT_CABLE_CODE, PORT_ID, CLID, Username,
+									PASPORT_COID, LOOP_NUMBER, CLI_TYPE, Domain, ServiceType, BRASNAME },
 							new String[] { "String", "DateTime", "String", "String", "String", "String", "String",
 									"String", "String", "String", "String", "String", "String", "String", "String",
 									"String", "String", "String", "String", "String", "String", "String", "String",
 									"String", "String", "String", "String", "String", "String", "String", "String",
-									"String", "String", "String", "String", "String", "String", "String" });
+									"String", "String", "String", "String", "String", "String", "String", "String",
+									"String" });
 
 				}
 
@@ -264,20 +277,20 @@ public class Update_CallerDataTable extends Thread
 			{
 				s_dbs.insertValuesInTable("Caller_Data",
 						new String[] { "CliValue", "DateTimeCalled", "Affected_by_IncidentID", "AffectedServices",
-								"Scheduled", "CSSCOLLECTIONNAME", "PAYTVSERVICES", "NGA_TYPE", "GeneralArea",
-								"SiteName", "Concentrator", "AccessService", "PoP_Name", "PoP_Code", "OltElementName",
-								"OltRackNo", "OltSubRackNo", "OltSlot", "OltPort", "Onu", "KvCode", "CabinetCode",
-								"ActiveElement", "Rack", "Subrack", "Slot", "Port", "PORT_LOCATION", "PORT_CABLE_CODE",
-								"PORT_ID", "CLID", "Username", "PASPORT_COID", "LOOP_NUMBER", "CLI_TYPE", "Domain",
-								"ServiceType", "BRASNAME" },
+								"Scheduled", "Message", "BackupEligible", "CSSCOLLECTIONNAME", "PAYTVSERVICES",
+								"NGA_TYPE", "GeneralArea", "SiteName", "Concentrator", "AccessService", "PoP_Name",
+								"PoP_Code", "OltElementName", "OltRackNo", "OltSubRackNo", "OltSlot", "OltPort", "Onu",
+								"KvCode", "CabinetCode", "ActiveElement", "Rack", "Subrack", "Slot", "Port",
+								"PORT_LOCATION", "PORT_CABLE_CODE", "PORT_ID", "CLID", "Username", "PASPORT_COID",
+								"LOOP_NUMBER", "CLI_TYPE", "Domain", "ServiceType", "BRASNAME" },
 						new String[] { CLIProvided, hf.now(), "", "", "", "", "", "", "", "", "", "", "", "", "", "",
-								"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
-								"" },
+								"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+								"", "" },
 						new String[] { "String", "DateTime", "String", "String", "String", "String", "String", "String",
 								"String", "String", "String", "String", "String", "String", "String", "String",
 								"String", "String", "String", "String", "String", "String", "String", "String",
 								"String", "String", "String", "String", "String", "String", "String", "String",
-								"String", "String", "String", "String", "String", "String" });
+								"String", "String", "String", "String", "String", "String", "String", "String" });
 			}
 
 		} catch (SQLException e)

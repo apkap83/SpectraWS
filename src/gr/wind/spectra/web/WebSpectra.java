@@ -535,10 +535,20 @@ public class WebSpectra implements InterfaceWebSpectra
 			int incidentDataCustomersAffected = 0;
 			int incidentVoiceCustomersAffected = 0;
 			int incidentIPTVCustomersAffected = 0;
+
+			// Backup Eligible - Addition of 23 Apr 2021
+			String backupEligible = "No";
+
 			for (String service : servicesAffected)
 			{
 				for (int i = 0; i < myHier.size(); i++)
 				{
+					// Backup Eligible - Addition of 23 Apr 2021
+					if (Impact.equals("LoS") && (service.equals("Voice") || service.equals("Data")))
+					{
+						backupEligible = "Yes";
+					}
+
 					// If the sumbission contains only root hierarchy then STOP submission
 					if (!myHier.get(i).contains("="))
 					{
@@ -915,24 +925,24 @@ public class WebSpectra implements InterfaceWebSpectra
 					try
 					{
 						s_dbs.insertValuesInTable("SubmittedIncidents",
-								new String[] { "OpenReqID", "DateTime", "WillBePublished", "OutageID", "IncidentStatus",
-										"RequestTimestamp", "SystemID", "UserID", "IncidentID", "Scheduled",
-										"StartTime", "EndTime", "Duration", "AffectedServices", "Impact", "Priority",
-										"HierarchySelected", "Locations", "AffectedVoiceCustomers",
+								new String[] { "OpenReqID", "DateTime", "WillBePublished", "BackupEligible", "OutageID",
+										"IncidentStatus", "RequestTimestamp", "SystemID", "UserID", "IncidentID",
+										"Scheduled", "StartTime", "EndTime", "Duration", "AffectedServices", "Impact",
+										"Priority", "HierarchySelected", "Locations", "AffectedVoiceCustomers",
 										"AffectedDataCustomers", "AffectedCLICustomers", "ActiveDataCustomersAffected",
 										"TVCustomersAffected", "IncidentAffectedVoiceCustomers",
 										"IncidentAffectedDataCustomers", "IncidentAffectedIPTVCustomers" },
-								new String[] { RequestID, hf.now(), "Yes", OutageID_String, "OPEN", RequestTimestamp,
-										SystemID, UserID, IncidentID, Scheduled, StartTime, EndTime, Duration, service,
-										Impact, Priority, myHier.get(i).toString(), locationsAffected,
-										voiceCustomersAffected, dataCustomersAffected, CLIsAffected, "0",
-										IPTVCustomersAffected, Integer.toString(totalVoiceIncidentAffected),
+								new String[] { RequestID, hf.now(), "Yes", backupEligible, OutageID_String, "OPEN",
+										RequestTimestamp, SystemID, UserID, IncidentID, Scheduled, StartTime, EndTime,
+										Duration, service, Impact, Priority, myHier.get(i).toString(),
+										locationsAffected, voiceCustomersAffected, dataCustomersAffected, CLIsAffected,
+										"0", IPTVCustomersAffected, Integer.toString(totalVoiceIncidentAffected),
 										Integer.toString(totalDataIncidentAffected),
 										Integer.toString(totalIPTVIncidentAffected) },
-								new String[] { "String", "DateTime", "String", "Integer", "String", "DateTime",
-										"String", "String", "String", "String", "DateTime", "DateTime", "String",
-										"String", "String", "String", "String", "String", "Integer", "Integer",
-										"Integer", "Integer", "Integer", "Integer", "Integer", "Integer" });
+								new String[] { "String", "DateTime", "String", "String", "Integer", "String",
+										"DateTime", "String", "String", "String", "String", "DateTime", "DateTime",
+										"String", "String", "String", "String", "String", "String", "Integer",
+										"Integer", "Integer", "Integer", "Integer", "Integer", "Integer", "Integer" });
 					} catch (SQLException e)
 					{
 						throw new InvalidInputException("An Error occured during submission of data!", "Error 1500");
