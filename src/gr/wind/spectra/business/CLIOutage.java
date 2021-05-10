@@ -23,6 +23,7 @@ public class CLIOutage
 	private DB_Operations dbs;
 	private s_DB_Operations s_dbs;
 	private String requestID;
+	private String systemID;
 
 	Help_Func hf = new Help_Func();
 
@@ -31,11 +32,12 @@ public class CLIOutage
 	// Logger instance
 	Logger logger = LogManager.getLogger(gr.wind.spectra.business.CLIOutage.class.getName());
 
-	public CLIOutage(DB_Operations dbs, s_DB_Operations s_dbs, String requestID) throws Exception
+	public CLIOutage(DB_Operations dbs, s_DB_Operations s_dbs, String requestID, String systemID) throws Exception
 	{
 		this.dbs = dbs;
 		this.s_dbs = s_dbs;
 		this.requestID = requestID;
+		this.systemID = systemID;
 	}
 
 	public String replaceHierarchyColumns(String hierarchyProvided, String technology)
@@ -132,7 +134,8 @@ public class CLIOutage
 			ServiceType = "Voice|Data|IPTV";
 		}
 
-		logger.info("ReqID: " + RequestID + " - Checking CLI Outage CLI: " + CLIProvided + " | " + ServiceType);
+		logger.info("SysID: " + systemID + " ReqID: " + RequestID + " - Checking CLI Outage CLI: " + CLIProvided + " | "
+				+ ServiceType);
 
 		// Split ServiceType
 		String delimiterCharacter = "\\|";
@@ -227,7 +230,7 @@ public class CLIOutage
 									new String[] { "String" }, new String[] { "IncidentID", "OutageID" },
 									new String[] { IncidentID, String.valueOf(OutageID) },
 									new String[] { "String", "Integer" });
-						
+
 							if (numOfRowsUpdated > 0)
 							{
 								logger.debug("ReqID: " + RequestID + " - Scheduled Incident: " + IncidentID
@@ -280,7 +283,8 @@ public class CLIOutage
 								voiceAffected = true;
 								logger.info("ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided + " | "
 										+ ServiceType + " from Non-scheduled INC: " + IncidentID + " | OutageID: "
-										+ OutageID + " | " + outageAffectedService);
+										+ OutageID + " | " + outageAffectedService + " | " + foundOutageMsg + " | "
+										+ BackupEligible);
 								break;
 
 							} else if (Integer.parseInt(numOfRowsFound) > 0 && Scheduled.equals("Yes")
@@ -404,6 +408,7 @@ public class CLIOutage
 								foundEndTime = EndTime;
 								foundImpact = Impact;
 								foundOutageMsg = OutageMsg;
+								foundFlag2_BackupEligible = BackupEligible;
 
 								foundAtLeastOneCLIAffected = true;
 								iptvAffected = true;
@@ -424,6 +429,7 @@ public class CLIOutage
 								foundEndTime = EndTime;
 								foundImpact = Impact;
 								foundOutageMsg = OutageMsg;
+								foundFlag2_BackupEligible = BackupEligible;
 
 								foundAtLeastOneCLIAffected = true;
 								iptvAffected = true;
