@@ -230,7 +230,7 @@ public class CLIOutage
 									new String[] { "String" }, new String[] { "IncidentID", "OutageID" },
 									new String[] { IncidentID, String.valueOf(OutageID) },
 									new String[] { "String", "Integer" });
-
+						
 							if (numOfRowsUpdated > 0)
 							{
 								logger.debug("ReqID: " + RequestID + " - Scheduled Incident: " + IncidentID
@@ -281,10 +281,10 @@ public class CLIOutage
 
 								foundAtLeastOneCLIAffected = true;
 								voiceAffected = true;
-								logger.info("ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided + " | "
-										+ ServiceType + " from Non-scheduled INC: " + IncidentID + " | OutageID: "
-										+ OutageID + " | " + outageAffectedService + " | " + foundOutageMsg + " | "
-										+ BackupEligible);
+								logger.info("SysID: " + systemID + " ReqID: " + RequestID + " - Found Affected CLI: "
+										+ CLIProvided + " | " + ServiceType + " from Non-scheduled INC: " + IncidentID
+										+ " | OutageID: " + OutageID + " | " + outageAffectedService + " | "
+										+ foundOutageMsg + " | " + BackupEligible);
 								break;
 
 							} else if (Integer.parseInt(numOfRowsFound) > 0 && Scheduled.equals("Yes")
@@ -302,10 +302,10 @@ public class CLIOutage
 
 								foundAtLeastOneCLIAffected = true;
 								voiceAffected = true;
-								logger.info("ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided + " | "
-										+ ServiceType + " from Scheduled INC: " + IncidentID + " | OutageID: "
-										+ OutageID + " | " + outageAffectedService + " | " + foundOutageMsg + " | "
-										+ BackupEligible);
+								logger.info("SysID: " + systemID + " ReqID: " + RequestID + " - Found Affected CLI: "
+										+ CLIProvided + " | " + ServiceType + " from Scheduled INC: " + IncidentID
+										+ " | OutageID: " + OutageID + " | " + outageAffectedService + " | "
+										+ foundOutageMsg + " | " + BackupEligible);
 								break;
 							}
 						}
@@ -347,10 +347,10 @@ public class CLIOutage
 
 								foundAtLeastOneCLIAffected = true;
 								dataAffected = true;
-								logger.info("ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided + " | "
-										+ ServiceType + " from Non-scheduled INC: " + IncidentID + " | OutageID: "
-										+ OutageID + " | " + outageAffectedService + " | " + foundOutageMsg + " | "
-										+ BackupEligible);
+								logger.info("SysID: " + systemID + " ReqID: " + RequestID + " - Found Affected CLI: "
+										+ CLIProvided + " | " + ServiceType + " from Non-scheduled INC: " + IncidentID
+										+ " | OutageID: " + OutageID + " | " + outageAffectedService + " | "
+										+ foundOutageMsg + " | " + BackupEligible);
 								break;
 								// Scheduled Yes & Rows Found & Outage Within Scheduled Range
 							} else if (WillBePublished.equals("Yes") && Integer.parseInt(numOfRowsFound) > 0
@@ -368,10 +368,10 @@ public class CLIOutage
 
 								foundAtLeastOneCLIAffected = true;
 								dataAffected = true;
-								logger.info("ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided + " | "
-										+ ServiceType + " from Scheduled INC: " + IncidentID + " | OutageID: "
-										+ OutageID + " | " + outageAffectedService + " | " + foundOutageMsg + " | "
-										+ BackupEligible);
+								logger.info("SysID: " + systemID + " ReqID: " + RequestID + " - Found Affected CLI: "
+										+ CLIProvided + " | " + ServiceType + " from Scheduled INC: " + IncidentID
+										+ " | OutageID: " + OutageID + " | " + outageAffectedService + " | "
+										+ foundOutageMsg + " | " + BackupEligible);
 								break;
 							}
 						}
@@ -412,10 +412,10 @@ public class CLIOutage
 
 								foundAtLeastOneCLIAffected = true;
 								iptvAffected = true;
-								logger.info("ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided + " | "
-										+ ServiceType + " from Non-scheduled INC: " + IncidentID + " | OutageID: "
-										+ OutageID + " | " + outageAffectedService + " | " + foundOutageMsg + " | "
-										+ BackupEligible);
+								logger.info("SysID: " + systemID + " ReqID: " + RequestID + " - Found Affected CLI: "
+										+ CLIProvided + " | " + ServiceType + " from Non-scheduled INC: " + IncidentID
+										+ " | OutageID: " + OutageID + " | " + outageAffectedService + " | "
+										+ foundOutageMsg + " | " + BackupEligible);
 								break;
 								// Scheduled Yes & Rows Found & Outage Within Scheduled Range
 							} else if (WillBePublished.equals("Yes") && Integer.parseInt(numOfRowsFound) > 0
@@ -433,10 +433,10 @@ public class CLIOutage
 
 								foundAtLeastOneCLIAffected = true;
 								iptvAffected = true;
-								logger.info("ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided + " | "
-										+ ServiceType + " from Scheduled INC: " + IncidentID + " | OutageID: "
-										+ OutageID + " | " + outageAffectedService + " | " + foundOutageMsg + " | "
-										+ BackupEligible);
+								logger.info("SysID: " + systemID + " ReqID: " + RequestID + " - Found Affected CLI: "
+										+ CLIProvided + " | " + ServiceType + " from Scheduled INC: " + IncidentID
+										+ " | OutageID: " + OutageID + " | " + outageAffectedService + " | "
+										+ foundOutageMsg + " | " + BackupEligible);
 								break;
 							}
 						}
@@ -456,8 +456,8 @@ public class CLIOutage
 				// Update Statistics
 				s_dbs.updateUsageStatisticsForMethod("NLU_Active_Neg");
 
-				logger.info("ReqID: " + RequestID + " - No Service affection for CLI: " + CLIProvided + " | "
-						+ ServiceType);
+				logger.info("SysID: " + systemID + " ReqID: " + RequestID + " - No Service affection for CLI: "
+						+ CLIProvided + " | " + ServiceType);
 
 				// Update asynchronously - Add Caller to Caller data table (Caller_Data) with empty values for IncidentID, Affected Services & Scheduling
 				Update_CallerDataTable ucdt = new Update_CallerDataTable(dbs, s_dbs, CLIProvided, "", "", "", "", "");
@@ -591,8 +591,8 @@ public class CLIOutage
 			Update_CallerDataTable ucdt = new Update_CallerDataTable(dbs, s_dbs, CLIProvided, "", "", "", "", "");
 			ucdt.run();
 
-			logger.info(
-					"ReqID: " + RequestID + " - No Service affection for CLI: " + CLIProvided + " | " + ServiceType);
+			logger.info("SysID: " + systemID + " ReqID: " + RequestID + " - No Service affection for CLI: "
+					+ CLIProvided + " | " + ServiceType);
 			//throw new InvalidInputException("No service affection", "Info 425");
 			ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "No", "none", "none", "none", "none", "none",
 					"none", "none", "NULL", "NULL", "NULL");
