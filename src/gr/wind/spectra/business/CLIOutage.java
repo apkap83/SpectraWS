@@ -233,7 +233,7 @@ public class CLIOutage
 									new String[] { "String" }, new String[] { "IncidentID", "OutageID" },
 									new String[] { IncidentID, String.valueOf(OutageID) },
 									new String[] { "String", "Integer" });
-						
+
 							if (numOfRowsUpdated > 0)
 							{
 								logger.debug("ReqID: " + RequestID + " - Scheduled Incident: " + IncidentID
@@ -481,11 +481,6 @@ public class CLIOutage
 								" A.PASPORT_COID" },
 						CLIProvided);
 
-				//				fields.put("CliValue", null);
-				//				fields.put("Username", null);
-				//				fields.put("AAA DLSAM Name", null);
-				//				fields.put("PASPORT_COID", null);
-
 				ho.setAAAUsername(fields.get("Username"));
 				ho.setRequestID(RequestID);
 				ho.setCli(CLIProvided);
@@ -493,23 +488,23 @@ public class CLIOutage
 				ho.setCOID(fields.get("PASPORT_COID"));
 				ho.setApiProcess(systemID);
 
-				System.out.println("3******* fields --> " + fields.toString());
-
 				try
 				{
 					gr.wind.spectra.cdrdbconsumer.HasOutageResponse hor = iws.hasOutage(ho, "spectra",
 							"YtfLwvEuCAly9fJS6R46");
-
-					System.out.println("**** --> Outage Response " + hor.getResult().getHasOutage());
 
 					String cdrDBResponse = hor.getResult().getHasOutage(); // "y" or "n"
 
 					if (cdrDBResponse.equals("y"))
 					{
 						logger.info("SysID: CDR_DB ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided
-								+ " | " + ServiceType + " from DSLAM: " + ho.getDSLAMName());
+								+ " for DSLAM: " + ho.getDSLAMName());
 						//ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "Yes", "CDR-DB", "Critical",
 						//		"Data|IPTV", "No", "none", "none", "LoS", "NULL", "N", "NULL");
+					} else
+					{
+						logger.info("SysID: CDR_DB ReqID: " + RequestID + " - No Service affection for CLI: "
+								+ CLIProvided + " for DSLAM: " + ho.getDSLAMName());
 					}
 
 				} catch (Exception e)
@@ -661,11 +656,6 @@ public class CLIOutage
 							" A.PASPORT_COID" },
 					CLIProvided);
 
-			//				fields.put("CliValue", null);
-			//				fields.put("Username", null);
-			//				fields.put("AAA DLSAM Name", null);
-			//				fields.put("PASPORT_COID", null);
-
 			ho.setAAAUsername(fields.get("Username"));
 			ho.setRequestID(RequestID);
 			ho.setCli(CLIProvided);
@@ -673,23 +663,23 @@ public class CLIOutage
 			ho.setCOID(fields.get("PASPORT_COID"));
 			ho.setApiProcess(systemID);
 
-			System.out.println("3******* fields --> " + fields.toString());
-
 			try
 			{
 				gr.wind.spectra.cdrdbconsumer.HasOutageResponse hor = iws.hasOutage(ho, "spectra",
 						"YtfLwvEuCAly9fJS6R46");
 
-				System.out.println("**** --> Outage Response " + hor.getResult().getHasOutage());
-
 				String cdrDBResponse = hor.getResult().getHasOutage(); // "y" or "n"
 
 				if (cdrDBResponse.equals("y"))
 				{
-					logger.info("SysID: CDR_DB ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided + " | "
-							+ ServiceType + " from DSLAM: " + ho.getDSLAMName());
+					logger.info("SysID: CDR_DB ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided
+							+ " for DSLAM: " + ho.getDSLAMName());
 					//ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "Yes", "CDR-DB", "Critical",
 					//		"Data|IPTV", "No", "none", "none", "LoS", "NULL", "N", "NULL");
+				} else
+				{
+					logger.info("SysID: CDR_DB ReqID: " + RequestID + " - No Service affection for CLI: " + CLIProvided
+							+ " for DSLAM: " + ho.getDSLAMName());
 				}
 
 			} catch (Exception e)
