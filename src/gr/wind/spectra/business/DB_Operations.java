@@ -11,7 +11,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 //Import log4j classes.
 import org.apache.logging.log4j.LogManager;
@@ -124,6 +126,58 @@ public class DB_Operations
 		}
 
 		return returnValue;
+	}
+
+	public Map<String, String> getCDRDB_Parameters(String table1, String table2, String[] columnNames, String cliValue)
+			throws SQLException
+	{
+		// Get Lines with IncidentStatus = "OPEN"
+		/*
+		 * SELECT
+			A.CliValue,
+			A.Username,
+			B.Active_Element as "AAA DLSAM Name",
+			A.PASPORT_COID
+			FROM SmartOutageDB_15Jun2021.Prov_Internet_Resource_Path as A
+			left join SmartOutageDB_15Jun2021.AAA21_NMAP as B
+			on A.Username=B.Username
+			where A.CliValue ='2114045866';
+		 *
+		 *
+		 */
+
+		Map<String, String> fields = new LinkedHashMap<String, String>();
+
+		String sqlString = "SELECT " + String.join(", ", columnNames) + " FROM " + table1 + " as A " + "LEFT JOIN "
+				+ table2 + " as B on A.Username=B.Username WHERE A.CliValue = ?";
+
+		System.out.println("Get Correct DSLAM Query " + sqlString);
+
+		PreparedStatement pst = conn.prepareStatement(sqlString);
+		pst.setString(1, cliValue);
+		pst.execute();
+		ResultSet rs = pst.executeQuery();
+
+		if (!rs.next())
+		{
+			fields.put("CliValue", null);
+			fields.put("Username", null);
+			fields.put("AAA DLSAM Name", null);
+			fields.put("PASPORT_COID", null);
+
+			System.out.println("1******* fields --> " + fields.toString());
+
+		} else
+		{
+			fields.put("CliValue", rs.getString("CliValue"));
+			fields.put("Username", rs.getString("Username"));
+			fields.put("AAA DLSAM Name", rs.getString("AAA DLSAM Name"));
+			fields.put("PASPORT_COID", rs.getString("PASPORT_COID"));
+
+			System.out.println("2******* fields --> " + fields.toString());
+		}
+
+		return fields;
 	}
 
 	public boolean checkIfCriteriaExists(String table, String[] predicateKeys, String[] predicateValues,
@@ -402,10 +456,10 @@ public class DB_Operations
 		Pattern.compile("^Cabinet_Code");
 		Pattern.compile("Wind_FTTX");
 		Pattern.compile("^FTTC_Location_Element");
-		
+
 		boolean b1, b2, b3;
 		b1 = b2 = b3 = false;
-		
+
 		if (hierarchyGiven.startsWith("Cabinet_Code"))
 		{
 		    b1 = true;
@@ -418,7 +472,7 @@ public class DB_Operations
 		{
 		    b3 = true;
 		}
-		
+
 		if (b1 || b2 || b3)
 		{
 		    output = "Yes";
@@ -426,7 +480,7 @@ public class DB_Operations
 		{
 		    output = "No";
 		}
-		
+
 		return output;
 		*/
 
@@ -452,17 +506,17 @@ public class DB_Operations
 		    SELECT COUNT(DISTINCT PASPORT_COID) AS Result FROM
 		    (
 		            SELECT DISTINCT (PASPORT_COID) from Prov_Voice_Resource_Path WHERE `OltElementName` = ? AND `OltRackNo` = ? AND `NGA_TYPE` IN ('WIND_FTTH','WIND_FTTC')
-
+		
 		        UNION ALL
-
+		
 		        SELECT DISTINCT (PASPORT_COID) from Prov_Internet_Resource_Path WHERE `OltElementName` = ? AND `OltRackNo` = ? AND `NGA_TYPE` IN ('WIND_FTTH','WIND_FTTC')
-
+		
 		        UNION ALL
-
+		
 		        SELECT DISTINCT (PASPORT_COID) from Prov_IPTV_Resource_Path WHERE `OltElementName` = ? AND `OltRackNo` = ? AND `NGA_TYPE` IN ('WIND_FTTH','WIND_FTTC')
-
+		
 		    ) as AK;
-
+		
 		 */
 		Help_Func hf = new Help_Func();
 

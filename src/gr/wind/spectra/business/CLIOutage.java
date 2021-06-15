@@ -10,11 +10,14 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 
 //Import log4j classes.
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import gr.wind.spectra.cdrdbconsumer.HasOutage;
+import gr.wind.spectra.cdrdbconsumer.WebCDRDBService;
 import gr.wind.spectra.model.ProductOfNLUActive;
 import gr.wind.spectra.web.InvalidInputException;
 
@@ -466,6 +469,55 @@ public class CLIOutage
 				ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "No", "none", "none", "none", "none",
 						"none", "none", "none", "NULL", "NULL", "NULL");
 
+				// **************************************
+				// Send request and ask CDR DB for Outage
+				// **************************************
+				WebCDRDBService myWebService = new WebCDRDBService();
+				gr.wind.spectra.cdrdbconsumer.InterfaceWebCDRDB iws = myWebService.getWebCDRDBPort();
+
+				HasOutage ho = new HasOutage();
+				Map<String, String> fields = dbs.getCDRDB_Parameters("Prov_Internet_Resource_Path", "AAA21_NMAP",
+						new String[] { "A.CliValue", "A.Username", "B.Active_Element as \"AAA DLSAM Name\"",
+								" A.PASPORT_COID" },
+						CLIProvided);
+
+				//				fields.put("CliValue", null);
+				//				fields.put("Username", null);
+				//				fields.put("AAA DLSAM Name", null);
+				//				fields.put("PASPORT_COID", null);
+
+				ho.setAAAUsername(fields.get("Username"));
+				ho.setRequestID(RequestID);
+				ho.setCli(CLIProvided);
+				ho.setDSLAMName(fields.get("AAA DLSAM Name"));
+				ho.setCOID(fields.get("PASPORT_COID"));
+				ho.setApiProcess(systemID);
+
+				System.out.println("3******* fields --> " + fields.toString());
+
+				try
+				{
+					gr.wind.spectra.cdrdbconsumer.HasOutageResponse hor = iws.hasOutage(ho, "spectra",
+							"YtfLwvEuCAly9fJS6R46");
+
+					System.out.println("**** --> Outage Response " + hor.getResult().getHasOutage());
+
+					String cdrDBResponse = hor.getResult().getHasOutage(); // "y" or "n"
+
+					if (cdrDBResponse.equals("y"))
+					{
+						logger.info("SysID: CDR_DB ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided
+								+ " | " + ServiceType + " from DSLAM: " + ho.getDSLAMName());
+						//ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "Yes", "CDR-DB", "Critical",
+						//		"Data|IPTV", "No", "none", "none", "LoS", "NULL", "N", "NULL");
+					}
+
+				} catch (Exception e)
+				{
+
+					e.printStackTrace();
+				}
+
 			} else
 			{
 				// Indicate Voice, Data or Voice|Data service affection
@@ -596,6 +648,56 @@ public class CLIOutage
 			//throw new InvalidInputException("No service affection", "Info 425");
 			ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "No", "none", "none", "none", "none", "none",
 					"none", "none", "NULL", "NULL", "NULL");
+
+			// **************************************
+			// Send request and ask CDR DB for Outage
+			// **************************************
+			WebCDRDBService myWebService = new WebCDRDBService();
+			gr.wind.spectra.cdrdbconsumer.InterfaceWebCDRDB iws = myWebService.getWebCDRDBPort();
+
+			HasOutage ho = new HasOutage();
+			Map<String, String> fields = dbs.getCDRDB_Parameters("Prov_Internet_Resource_Path", "AAA21_NMAP",
+					new String[] { "A.CliValue", "A.Username", "B.Active_Element as \"AAA DLSAM Name\"",
+							" A.PASPORT_COID" },
+					CLIProvided);
+
+			//				fields.put("CliValue", null);
+			//				fields.put("Username", null);
+			//				fields.put("AAA DLSAM Name", null);
+			//				fields.put("PASPORT_COID", null);
+
+			ho.setAAAUsername(fields.get("Username"));
+			ho.setRequestID(RequestID);
+			ho.setCli(CLIProvided);
+			ho.setDSLAMName(fields.get("AAA DLSAM Name"));
+			ho.setCOID(fields.get("PASPORT_COID"));
+			ho.setApiProcess(systemID);
+
+			System.out.println("3******* fields --> " + fields.toString());
+
+			try
+			{
+				gr.wind.spectra.cdrdbconsumer.HasOutageResponse hor = iws.hasOutage(ho, "spectra",
+						"YtfLwvEuCAly9fJS6R46");
+
+				System.out.println("**** --> Outage Response " + hor.getResult().getHasOutage());
+
+				String cdrDBResponse = hor.getResult().getHasOutage(); // "y" or "n"
+
+				if (cdrDBResponse.equals("y"))
+				{
+					logger.info("SysID: CDR_DB ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided + " | "
+							+ ServiceType + " from DSLAM: " + ho.getDSLAMName());
+					//ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "Yes", "CDR-DB", "Critical",
+					//		"Data|IPTV", "No", "none", "none", "LoS", "NULL", "N", "NULL");
+				}
+
+			} catch (Exception e)
+			{
+
+				e.printStackTrace();
+			}
+
 		}
 
 		dbs = null;
