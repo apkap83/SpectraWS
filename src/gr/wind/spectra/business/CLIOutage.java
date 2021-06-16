@@ -477,14 +477,31 @@ public class CLIOutage
 
 				HasOutage ho = new HasOutage();
 				Map<String, String> fields = dbs.getCDRDB_Parameters("Prov_Internet_Resource_Path", "AAA21_NMAP",
-						new String[] { "A.CliValue", "A.Username", "B.Active_Element as \"AAA DLSAM Name\"",
+						new String[] { "A.CliValue", "A.Username",
+								"B.Active_Element as \"AAA DLSAM Name\", A.ActiveElement as \"WindOwnedElement\"",
 								" A.PASPORT_COID" },
 						CLIProvided);
 
 				ho.setAAAUsername(fields.get("Username"));
 				ho.setRequestID(RequestID);
 				ho.setCli(CLIProvided);
-				ho.setDSLAMName(fields.get("AAA DLSAM Name"));
+
+				// Check if AAA DSLAM exist, if not pick up WindOwnedElement
+				if (fields.get("AAA DLSAM Name") == null)
+				{
+					if (fields.get("WindOwnedElement") != null)
+					{
+						ho.setDSLAMName(fields.get("WindOwnedElement"));
+					} else
+					{
+						ho.setDSLAMName(null);
+					}
+
+				} else
+				{
+					ho.setDSLAMName(fields.get("AAA DLSAM Name"));
+				}
+
 				ho.setCOID(fields.get("PASPORT_COID"));
 				ho.setApiProcess(systemID);
 
@@ -653,13 +670,29 @@ public class CLIOutage
 			HasOutage ho = new HasOutage();
 			Map<String, String> fields = dbs.getCDRDB_Parameters("Prov_Internet_Resource_Path", "AAA21_NMAP",
 					new String[] { "A.CliValue", "A.Username", "B.Active_Element as \"AAA DLSAM Name\"",
-							" A.PASPORT_COID" },
+							"A.ActiveElement as \"WindOwnedElement\"", " A.PASPORT_COID" },
 					CLIProvided);
 
 			ho.setAAAUsername(fields.get("Username"));
 			ho.setRequestID(RequestID);
 			ho.setCli(CLIProvided);
-			ho.setDSLAMName(fields.get("AAA DLSAM Name"));
+
+			// Check if AAA DSLAM exist, if not pick up WindOwnedElement
+			if (fields.get("AAA DLSAM Name") == null)
+			{
+				if (fields.get("WindOwnedElement") != null)
+				{
+					ho.setDSLAMName(fields.get("WindOwnedElement"));
+				} else
+				{
+					ho.setDSLAMName(null);
+				}
+
+			} else
+			{
+				ho.setDSLAMName(fields.get("AAA DLSAM Name"));
+			}
+
 			ho.setCOID(fields.get("PASPORT_COID"));
 			ho.setApiProcess(systemID);
 

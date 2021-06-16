@@ -137,6 +137,7 @@ public class DB_Operations
 			A.CliValue,
 			A.Username,
 			B.Active_Element as "AAA DLSAM Name",
+			A.ActiveElement as "WindOwnedElement",
 			A.PASPORT_COID
 			FROM SmartOutageDB_15Jun2021.Prov_Internet_Resource_Path as A
 			left join SmartOutageDB_15Jun2021.AAA21_NMAP as B
@@ -163,6 +164,7 @@ public class DB_Operations
 			fields.put("CliValue", null);
 			fields.put("Username", null);
 			fields.put("AAA DLSAM Name", null);
+			fields.put("WindOwnedElement", null);
 			fields.put("PASPORT_COID", null);
 
 		} else
@@ -170,6 +172,7 @@ public class DB_Operations
 			fields.put("CliValue", rs.getString("CliValue"));
 			fields.put("Username", rs.getString("Username"));
 			fields.put("AAA DLSAM Name", rs.getString("AAA DLSAM Name"));
+			fields.put("WindOwnedElement", rs.getString("WindOwnedElement"));
 			fields.put("PASPORT_COID", rs.getString("PASPORT_COID"));
 		}
 
