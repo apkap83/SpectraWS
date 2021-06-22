@@ -233,7 +233,7 @@ public class CLIOutage
 									new String[] { "String" }, new String[] { "IncidentID", "OutageID" },
 									new String[] { IncidentID, String.valueOf(OutageID) },
 									new String[] { "String", "Integer" });
-
+						
 							if (numOfRowsUpdated > 0)
 							{
 								logger.debug("ReqID: " + RequestID + " - Scheduled Incident: " + IncidentID
@@ -507,6 +507,7 @@ public class CLIOutage
 
 				try
 				{
+					String specificOutageMessage = "msg1";
 					gr.wind.spectra.cdrdbconsumer.HasOutageResponse hor = iws.hasOutage(ho, "spectra",
 							"YtfLwvEuCAly9fJS6R46");
 
@@ -515,9 +516,9 @@ public class CLIOutage
 					if (cdrDBResponse.equals("y"))
 					{
 						logger.info("SysID: CDR_DB ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided
-								+ " for DSLAM: " + ho.getDSLAMName());
-						//ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "Yes", "CDR-DB", "Critical",
-						//		"Data|IPTV", "No", "none", "none", "LoS", "NULL", "N", "NULL");
+								+ " for DSLAM: " + ho.getDSLAMName() + " | msg: " + specificOutageMessage);
+						ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "Yes", "CDR-DB", "Critical",
+								"Data|IPTV", "No", "none", "none", "LoS", "msg1", "N", "NULL");
 					} else
 					{
 						logger.info("SysID: CDR_DB ReqID: " + RequestID + " - No Service affection for CLI: "
@@ -698,6 +699,7 @@ public class CLIOutage
 
 			try
 			{
+				String specificOutageMessage = "msg1";
 				gr.wind.spectra.cdrdbconsumer.HasOutageResponse hor = iws.hasOutage(ho, "spectra",
 						"YtfLwvEuCAly9fJS6R46");
 
@@ -706,9 +708,9 @@ public class CLIOutage
 				if (cdrDBResponse.equals("y"))
 				{
 					logger.info("SysID: CDR_DB ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided
-							+ " for DSLAM: " + ho.getDSLAMName());
-					//ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "Yes", "CDR-DB", "Critical",
-					//		"Data|IPTV", "No", "none", "none", "LoS", "NULL", "N", "NULL");
+							+ " for DSLAM: " + ho.getDSLAMName() + " | msg: " + specificOutageMessage);
+					ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "Yes", "CDR-DB", "Critical",
+							"Data|IPTV", "No", "none", "none", "LoS", "msg1", "N", "NULL");
 				} else
 				{
 					logger.info("SysID: CDR_DB ReqID: " + RequestID + " - No Service affection for CLI: " + CLIProvided
