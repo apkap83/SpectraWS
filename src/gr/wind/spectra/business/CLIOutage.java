@@ -47,6 +47,7 @@ public class CLIOutage
 			throws SQLException, InvalidInputException
 	{
 		Help_Func hf = new Help_Func();
+
 		String newHierarchyValue = "";
 
 		if (technology.equals("Voice"))
@@ -233,7 +234,7 @@ public class CLIOutage
 									new String[] { "String" }, new String[] { "IncidentID", "OutageID" },
 									new String[] { IncidentID, String.valueOf(OutageID) },
 									new String[] { "String", "Integer" });
-						
+
 							if (numOfRowsUpdated > 0)
 							{
 								logger.debug("ReqID: " + RequestID + " - Scheduled Incident: " + IncidentID
@@ -265,6 +266,7 @@ public class CLIOutage
 								hf.hierarchyValues(HierarchySelected), hf.hierarchyStringTypes(HierarchySelected));
 
 						// If matched Hierarchy + CLI matches lines (then those CLIs have actually Outage)
+
 						if (WillBePublished.equals("Yes"))
 
 						{
@@ -517,12 +519,21 @@ public class CLIOutage
 					{
 						logger.info("SysID: CDR_DB ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided
 								+ " for DSLAM: " + ho.getDSLAMName() + " | msg: " + specificOutageMessage);
+
 						ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "Yes", "CDR-DB", "Critical",
-								"Data|IPTV", "No", "none", "none", "LoS", "msg1", "N", "NULL");
+								"Data|IPTV", "No", "none", "none", "LoS", specificOutageMessage, "N", "NULL");
+
+						// Update stats
+						s_dbs.updateUsageStatisticsForMethod("CDR_DB_Pos");
+
 					} else
 					{
 						logger.info("SysID: CDR_DB ReqID: " + RequestID + " - No Service affection for CLI: "
 								+ CLIProvided + " for DSLAM: " + ho.getDSLAMName());
+
+						// Update stats
+						s_dbs.updateUsageStatisticsForMethod("CDR_DB_Neg");
+
 					}
 
 				} catch (Exception e)
@@ -591,6 +602,7 @@ public class CLIOutage
 
 					// Update Statistics
 					s_dbs.updateUsageStatisticsForMethod("NLU_Active_Pos_IPTV");
+
 				}
 
 				// Get String representation of EndTime Date object
@@ -672,6 +684,7 @@ public class CLIOutage
 			Map<String, String> fields = dbs.getCDRDB_Parameters("Prov_Internet_Resource_Path", "AAA21_NMAP",
 					new String[] { "A.CliValue", "A.Username", "B.Active_Element as \"AAA DLSAM Name\"",
 							"A.ActiveElement as \"WindOwnedElement\"", " A.PASPORT_COID" },
+
 					CLIProvided);
 
 			ho.setAAAUsername(fields.get("Username"));
@@ -709,12 +722,19 @@ public class CLIOutage
 				{
 					logger.info("SysID: CDR_DB ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided
 							+ " for DSLAM: " + ho.getDSLAMName() + " | msg: " + specificOutageMessage);
+
+					// Update stats
+					s_dbs.updateUsageStatisticsForMethod("CDR_DB_Pos");
+
 					ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "Yes", "CDR-DB", "Critical",
-							"Data|IPTV", "No", "none", "none", "LoS", "msg1", "N", "NULL");
+							"Data|IPTV", "No", "none", "none", "LoS", specificOutageMessage, "N", "NULL");
 				} else
 				{
 					logger.info("SysID: CDR_DB ReqID: " + RequestID + " - No Service affection for CLI: " + CLIProvided
 							+ " for DSLAM: " + ho.getDSLAMName());
+
+					// Update stats
+					s_dbs.updateUsageStatisticsForMethod("CDR_DB_Neg");
 				}
 
 			} catch (Exception e)
