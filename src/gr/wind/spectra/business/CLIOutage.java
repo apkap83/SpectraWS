@@ -234,7 +234,7 @@ public class CLIOutage
 									new String[] { "String" }, new String[] { "IncidentID", "OutageID" },
 									new String[] { IncidentID, String.valueOf(OutageID) },
 									new String[] { "String", "Integer" });
-
+						
 							if (numOfRowsUpdated > 0)
 							{
 								logger.debug("ReqID: " + RequestID + " - Scheduled Incident: " + IncidentID
@@ -517,11 +517,23 @@ public class CLIOutage
 
 					if (cdrDBResponse.equals("y"))
 					{
+						String ActualServicesAffected = "Data|IPTV";
+
+						// Check if Customer has VOIP Telephony - Addition 24 Jan 2022
+						String ActualUserServiceType = dbs.getOneValue("Prov_Voice_Resource_Path", "ServiceType",
+								new String[] { "CliValue" }, new String[] { CLIProvided }, new String[] { "String" });
+
+						if (ActualUserServiceType.equals("SIP_VOIP"))
+						{
+							ActualServicesAffected = "Voice|Data|IPTV";
+						}
+
 						logger.info("SysID: CDR_DB ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided
 								+ " for DSLAM: " + ho.getDSLAMName() + " | msg: " + specificOutageMessage);
 
 						ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "Yes", "CDR-DB", "Critical",
-								"Data|IPTV", "No", "none", "none", "LoS", specificOutageMessage, "N", "NULL");
+								ActualServicesAffected, "No", "none", "none", "LoS", specificOutageMessage, "N",
+								"NULL");
 
 						// Update stats
 						s_dbs.updateUsageStatisticsForMethod("CDR_DB_Pos");
@@ -720,6 +732,17 @@ public class CLIOutage
 
 				if (cdrDBResponse.equals("y"))
 				{
+					String ActualServicesAffected = "Data|IPTV";
+
+					// Check if Customer has VOIP Telephony - Addition 24 Jan 2022
+					String ActualUserServiceType = dbs.getOneValue("Prov_Voice_Resource_Path", "ServiceType",
+							new String[] { "CliValue" }, new String[] { CLIProvided }, new String[] { "String" });
+
+					if (ActualUserServiceType.equals("SIP_VOIP"))
+					{
+						ActualServicesAffected = "Voice|Data|IPTV";
+					}
+
 					logger.info("SysID: CDR_DB ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided
 							+ " for DSLAM: " + ho.getDSLAMName() + " | msg: " + specificOutageMessage);
 
@@ -727,7 +750,7 @@ public class CLIOutage
 					s_dbs.updateUsageStatisticsForMethod("CDR_DB_Pos");
 
 					ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "Yes", "CDR-DB", "Critical",
-							"Data|IPTV", "No", "none", "none", "LoS", specificOutageMessage, "N", "NULL");
+							ActualServicesAffected, "No", "none", "none", "LoS", specificOutageMessage, "N", "NULL");
 				} else
 				{
 					logger.info("SysID: CDR_DB ReqID: " + RequestID + " - No Service affection for CLI: " + CLIProvided
