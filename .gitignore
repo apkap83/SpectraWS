@@ -1,0 +1,4 @@
+logs
+logs/DB_Operations.txt
+build/
+*.class
