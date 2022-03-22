@@ -234,7 +234,7 @@ public class CLIOutage
 									new String[] { "String" }, new String[] { "IncidentID", "OutageID" },
 									new String[] { IncidentID, String.valueOf(OutageID) },
 									new String[] { "String", "Integer" });
-						
+
 							if (numOfRowsUpdated > 0)
 							{
 								logger.debug("ReqID: " + RequestID + " - Scheduled Incident: " + IncidentID
@@ -465,7 +465,8 @@ public class CLIOutage
 						+ CLIProvided + " | " + ServiceType);
 
 				// Update asynchronously - Add Caller to Caller data table (Caller_Data) with empty values for IncidentID, Affected Services & Scheduling
-				Update_CallerDataTable ucdt = new Update_CallerDataTable(dbs, s_dbs, CLIProvided, "", "", "", "", "");
+				Update_CallerDataTable ucdt = new Update_CallerDataTable(dbs, s_dbs, CLIProvided, "", "", "", "", "",
+						RequestID, systemID);
 				ucdt.run();
 
 				ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "No", "none", "none", "none", "none",
@@ -663,7 +664,7 @@ public class CLIOutage
 
 				// Update asynchronously - Add Caller to Caller data table (Caller_Data) with empty values for IncidentID, Affected Services & Scheduling
 				Update_CallerDataTable ucdt = new Update_CallerDataTable(dbs, s_dbs, CLIProvided, foundIncidentID,
-						allAffectedServices, foundScheduled, foundOutageMsg, backupEligible);
+						allAffectedServices, foundScheduled, foundOutageMsg, backupEligible, RequestID, systemID);
 				ucdt.run();
 
 				ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "Yes", foundIncidentID, foundPriority,
@@ -677,7 +678,8 @@ public class CLIOutage
 			s_dbs.updateUsageStatisticsForMethod("NLU_Active_Neg");
 
 			// Update asynchronously - Add Caller to Caller data table (Caller_Data) with empty values for IncidentID, Affected Services & Scheduling
-			Update_CallerDataTable ucdt = new Update_CallerDataTable(dbs, s_dbs, CLIProvided, "", "", "", "", "");
+			Update_CallerDataTable ucdt = new Update_CallerDataTable(dbs, s_dbs, CLIProvided, "", "", "", "", "",
+					RequestID, systemID);
 			ucdt.run();
 
 			logger.info("SysID: " + systemID + " ReqID: " + RequestID + " - No Service affection for CLI: "

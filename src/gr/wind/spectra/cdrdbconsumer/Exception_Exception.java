@@ -1,3 +1,4 @@
+
 package gr.wind.spectra.cdrdbconsumer;
 
 import javax.xml.ws.WebFault;
@@ -14,12 +15,12 @@ public class Exception_Exception extends java.lang.Exception
 
 	/**
 	 * Java type that goes as soapenv:Fault detail element.
-	 *
+	 * 
 	 */
 	private gr.wind.spectra.cdrdbconsumer.Exception faultInfo;
 
 	/**
-	 *
+	 * 
 	 * @param faultInfo
 	 * @param message
 	 */
@@ -30,7 +31,7 @@ public class Exception_Exception extends java.lang.Exception
 	}
 
 	/**
-	 *
+	 * 
 	 * @param faultInfo
 	 * @param cause
 	 * @param message
@@ -42,7 +43,7 @@ public class Exception_Exception extends java.lang.Exception
 	}
 
 	/**
-	 *
+	 * 
 	 * @return
 	 *     returns fault bean: gr.wind.cdrdb.web.Exception
 	 */

@@ -3,6 +3,9 @@ package gr.wind.spectra.business;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import gr.wind.spectra.cdrdbconsumer.InsertCallerData;
+import gr.wind.spectra.cdrdbconsumer.WebCDRDBService;
+
 public class Update_CallerDataTable extends Thread
 {
 	DB_Operations dbs;
@@ -13,9 +16,12 @@ public class Update_CallerDataTable extends Thread
 	String foundScheduled;
 	String message;
 	String backupEligible;
+	String requestID;
+	String systemID;
 
 	public Update_CallerDataTable(DB_Operations dbs, s_DB_Operations s_dbs, String CLIProvided, String IncidentID,
-			String allAffectedServices, String foundScheduled, String message, String backupEligible)
+			String allAffectedServices, String foundScheduled, String message, String backupEligible, String requestID,
+			String systemID)
 	{
 		this.dbs = dbs;
 		this.s_dbs = s_dbs;
@@ -25,6 +31,8 @@ public class Update_CallerDataTable extends Thread
 		this.foundScheduled = foundScheduled;
 		this.message = message;
 		this.backupEligible = backupEligible;
+		this.requestID = requestID;
+		this.systemID = systemID;
 	}
 
 	@Override
@@ -271,6 +279,44 @@ public class Update_CallerDataTable extends Thread
 									"String", "String", "String", "String", "String", "String", "String", "String",
 									"String" });
 
+					// ****************************************************
+					// Send request CDR DB for Archiving the Caller request
+					// *****************************************************
+					try
+					{
+						WebCDRDBService myWebService = new WebCDRDBService();
+						gr.wind.spectra.cdrdbconsumer.InterfaceWebCDRDB iws = myWebService.getWebCDRDBPort();
+
+						InsertCallerData icd = new InsertCallerData();
+
+						icd.setRequestID(requestID);
+						icd.setUsername(Username);
+						icd.setCli(CLIProvided);
+						icd.setIncidentNumber(IncidentID);
+						icd.setAffectedServices(allAffectedServices);
+						icd.setPayTVServices(PAYTVSERVICES);
+						icd.setIsScheduled(foundScheduled);
+						icd.setBackupElegible(backupEligible);
+						icd.setCSSCollectionName(CSSCOLLECTIONNAME);
+						icd.setAccessService(AccessService);
+						icd.setCLID(CLID);
+						icd.setActiveElement(ActiveElement);
+						icd.setBRASName(BRASNAME);
+						icd.setCOID(PASPORT_COID);
+						icd.setAPIUser("DIOAN");
+						icd.setAPIProcess(systemID);
+
+						iws.insertCallerData(icd, "spectra", "YtfLwvEuCAly9fJS6R46");
+
+						// gr.wind.spectra.cdrdbconsumer.HasOutageResponse hor = iws.hasOutage(ho, "spectra",
+						// "YtfLwvEuCAly9fJS6R46");
+
+					} catch (Exception e)
+					{
+
+						e.printStackTrace();
+					}
+
 				}
 
 			} else /// CLI was not found in Internet_Resource_Path
@@ -291,6 +337,41 @@ public class Update_CallerDataTable extends Thread
 								"String", "String", "String", "String", "String", "String", "String", "String",
 								"String", "String", "String", "String", "String", "String", "String", "String",
 								"String", "String", "String", "String", "String", "String", "String", "String" });
+
+				// ****************************************************
+				// Send request CDR DB for Archiving the Caller request
+				// *****************************************************
+				try
+				{
+					WebCDRDBService myWebService = new WebCDRDBService();
+					gr.wind.spectra.cdrdbconsumer.InterfaceWebCDRDB iws = myWebService.getWebCDRDBPort();
+
+					InsertCallerData icd = new InsertCallerData();
+
+					icd.setRequestID(requestID);
+					icd.setUsername("");
+					icd.setCli(CLIProvided);
+					icd.setIncidentNumber(IncidentID);
+					icd.setAffectedServices(allAffectedServices);
+					icd.setPayTVServices("");
+					icd.setIsScheduled(foundScheduled);
+					icd.setBackupElegible(backupEligible);
+					icd.setCSSCollectionName("");
+					icd.setAccessService("");
+					icd.setCLID("");
+					icd.setActiveElement("");
+					icd.setBRASName("");
+					icd.setCOID("");
+					icd.setAPIUser("spectra");
+					icd.setAPIProcess(systemID);
+
+					iws.insertCallerData(icd, "spectra", "YtfLwvEuCAly9fJS6R46");
+
+				} catch (Exception e)
+				{
+
+					e.printStackTrace();
+				}
 			}
 
 		} catch (SQLException e)

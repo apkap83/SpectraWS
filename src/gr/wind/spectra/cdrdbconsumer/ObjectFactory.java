@@ -1,3 +1,4 @@
+
 package gr.wind.spectra.cdrdbconsumer;
 
 import javax.xml.bind.JAXBElement;
@@ -24,6 +25,9 @@ public class ObjectFactory
 {
 
 	private final static QName _HasOutage_QNAME = new QName("http://web.cdrdb.wind.gr/", "hasOutage");
+	private final static QName _InsertCallerData_QNAME = new QName("http://web.cdrdb.wind.gr/", "InsertCallerData");
+	private final static QName _InsertCallerDataResponse_QNAME = new QName("http://web.cdrdb.wind.gr/",
+			"InsertCallerDataResponse");
 	private final static QName _Password_QNAME = new QName("http://web.cdrdb.wind.gr/", "Password");
 	private final static QName _Exception_QNAME = new QName("http://web.cdrdb.wind.gr/", "Exception");
 	private final static QName _UserName_QNAME = new QName("http://web.cdrdb.wind.gr/", "UserName");
@@ -57,6 +61,15 @@ public class ObjectFactory
 	}
 
 	/**
+	 * Create an instance of {@link InsertCallerData }
+	 * 
+	 */
+	public InsertCallerData createInsertCallerData()
+	{
+		return new InsertCallerData();
+	}
+
+	/**
 	 * Create an instance of {@link HasOutage }
 	 * 
 	 */
@@ -75,6 +88,15 @@ public class ObjectFactory
 	}
 
 	/**
+	 * Create an instance of {@link InsertCallerDataResponse }
+	 * 
+	 */
+	public InsertCallerDataResponse createInsertCallerDataResponse()
+	{
+		return new InsertCallerDataResponse();
+	}
+
+	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link HasOutage }{@code >}}
 	 * 
 	 */
@@ -82,6 +104,27 @@ public class ObjectFactory
 	public JAXBElement<HasOutage> createHasOutage(HasOutage value)
 	{
 		return new JAXBElement<HasOutage>(_HasOutage_QNAME, HasOutage.class, null, value);
+	}
+
+	/**
+	 * Create an instance of {@link JAXBElement }{@code <}{@link InsertCallerData }{@code >}}
+	 * 
+	 */
+	@XmlElementDecl(namespace = "http://web.cdrdb.wind.gr/", name = "InsertCallerData")
+	public JAXBElement<InsertCallerData> createInsertCallerData(InsertCallerData value)
+	{
+		return new JAXBElement<InsertCallerData>(_InsertCallerData_QNAME, InsertCallerData.class, null, value);
+	}
+
+	/**
+	 * Create an instance of {@link JAXBElement }{@code <}{@link InsertCallerDataResponse }{@code >}}
+	 * 
+	 */
+	@XmlElementDecl(namespace = "http://web.cdrdb.wind.gr/", name = "InsertCallerDataResponse")
+	public JAXBElement<InsertCallerDataResponse> createInsertCallerDataResponse(InsertCallerDataResponse value)
+	{
+		return new JAXBElement<InsertCallerDataResponse>(_InsertCallerDataResponse_QNAME,
+				InsertCallerDataResponse.class, null, value);
 	}
 
 	/**
