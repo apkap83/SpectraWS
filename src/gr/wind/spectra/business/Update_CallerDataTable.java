@@ -303,7 +303,7 @@ public class Update_CallerDataTable extends Thread
 						icd.setActiveElement(ActiveElement);
 						icd.setBRASName(BRASNAME);
 						icd.setCOID(PASPORT_COID);
-						icd.setAPIUser("DIOAN");
+						icd.setAPIUser("spectra");
 						icd.setAPIProcess(systemID);
 
 						iws.insertCallerData(icd, "spectra", "YtfLwvEuCAly9fJS6R46");
