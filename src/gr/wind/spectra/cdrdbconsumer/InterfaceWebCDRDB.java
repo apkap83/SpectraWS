@@ -1,3 +1,4 @@
+
 package gr.wind.spectra.cdrdbconsumer;
 
 import javax.jws.WebMethod;
@@ -20,6 +21,25 @@ import javax.xml.ws.FaultAction;
 @XmlSeeAlso({ ObjectFactory.class })
 public interface InterfaceWebCDRDB
 {
+
+	/**
+	 * 
+	 * @param password
+	 * @param userName
+	 * @param parameters
+	 * @return
+	 *     returns gr.wind.cdrdb.web.InsertCallerDataResponse
+	 * @throws Exception_Exception
+	 */
+	@WebMethod(operationName = "InsertCallerData")
+	@WebResult(name = "InsertCallerDataResponse", targetNamespace = "http://web.cdrdb.wind.gr/", partName = "result")
+	@Action(input = "http://web.cdrdb.wind.gr/InterfaceWebCDRDB/InsertCallerDataRequest", output = "http://web.cdrdb.wind.gr/InterfaceWebCDRDB/InsertCallerDataResponse", fault = {
+			@FaultAction(className = Exception_Exception.class, value = "http://web.cdrdb.wind.gr/InterfaceWebCDRDB/InsertCallerData/Fault/Exception") })
+	public InsertCallerDataResponse insertCallerData(
+			@WebParam(name = "InsertCallerData", targetNamespace = "http://web.cdrdb.wind.gr/", partName = "parameters") InsertCallerData parameters,
+			@WebParam(name = "UserName", targetNamespace = "http://web.cdrdb.wind.gr/", header = true, partName = "UserName") String userName,
+			@WebParam(name = "Password", targetNamespace = "http://web.cdrdb.wind.gr/", header = true, partName = "Password") String password)
+			throws Exception_Exception;
 
 	/**
 	 * 

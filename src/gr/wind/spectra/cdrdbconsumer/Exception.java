@@ -1,3 +1,4 @@
+
 package gr.wind.spectra.cdrdbconsumer;
 
 import javax.xml.bind.annotation.XmlAccessType;

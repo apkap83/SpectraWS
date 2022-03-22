@@ -1,3 +1,4 @@
+
 package gr.wind.spectra.cdrdbconsumer;
 
 import java.net.MalformedURLException;
@@ -16,7 +17,7 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.2
  *
  */
-@WebServiceClient(name = "WebCDRDBService", targetNamespace = "http://web.cdrdb.wind.gr/", wsdlLocation = "http://10.10.18.120:8080/CDR_DB_WS/WebCDRDBService?wsdl")
+@WebServiceClient(name = "WebCDRDBService", targetNamespace = "http://web.cdrdb.wind.gr/", wsdlLocation = "http://spectra.wind.gr:8080/CDR_DB_WS/WebCDRDBService?wsdl")
 public class WebCDRDBService extends Service
 {
 
@@ -30,7 +31,7 @@ public class WebCDRDBService extends Service
 		WebServiceException e = null;
 		try
 		{
-			url = new URL("http://10.10.18.120:8080/CDR_DB_WS/WebCDRDBService?wsdl");
+			url = new URL("http://spectra.wind.gr:8080/CDR_DB_WS/WebCDRDBService?wsdl");
 		} catch (MalformedURLException ex)
 		{
 			e = new WebServiceException(ex);
