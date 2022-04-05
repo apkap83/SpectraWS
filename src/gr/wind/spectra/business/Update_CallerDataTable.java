@@ -71,8 +71,14 @@ public class Update_CallerDataTable extends Thread
 								"PASPORT_COID", "LOOP_NUMBER", "CLI_TYPE", "Domain", "ServiceType", "BRASNAME" },
 						new String[] { "CliValue" }, new String[] { CLIProvided }, new String[] { "String" });
 
+				int timesFound = 0;
 				while (rs.next())
 				{
+					timesFound += 1;
+					if (timesFound > 1)
+					{
+						break; // Only 1 entry will be logged (even if subscriber belongs to 2 BRAS)
+					}
 
 					String NGA_TYPE = rs.getString("NGA_TYPE");
 					String GeneralArea = rs.getString("GeneralArea");
@@ -309,9 +315,6 @@ public class Update_CallerDataTable extends Thread
 								"String", "String", "String", "String", "String", "String", "String", "String",
 								"String", "String", "String", "String", "String", "String", "String", "String",
 								"String", "String", "String", "String", "String", "String", "String", "String" });
-
-				SendRequestToCDRDBNOTFoundCLI();
-
 			}
 
 		} catch (SQLException e)
@@ -324,6 +327,9 @@ public class Update_CallerDataTable extends Thread
 	private void SendRequestToCDRDBFoundCLI(String Username, String PAYTVSERVICES, String CSSCOLLECTIONNAME,
 			String AccessService, String CLID, String ActiveElement, String BRASNAME, String PASPORT_COID)
 	{
+		// How do I call some blocking method with a timeout in Java?
+		// https://stackoverflow.com/questions/1164301/how-do-i-call-some-blocking-method-with-a-timeout-in-java
+
 		ExecutorService executor = Executors.newCachedThreadPool();
 		Callable<Object> task = new Callable<Object>()
 		{
@@ -391,6 +397,9 @@ public class Update_CallerDataTable extends Thread
 
 	private void SendRequestToCDRDBNOTFoundCLI()
 	{
+		// How do I call some blocking method with a timeout in Java?
+		// https://stackoverflow.com/questions/1164301/how-do-i-call-some-blocking-method-with-a-timeout-in-java
+
 		ExecutorService executor = Executors.newCachedThreadPool();
 		Callable<Object> task = new Callable<Object>()
 		{

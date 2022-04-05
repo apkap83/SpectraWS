@@ -672,7 +672,7 @@ public class CLIOutage
 						backupEligible, "NULL");
 			}
 
-		} else
+		} else // We don't have open incident
 		{
 			// Update Statistics
 			s_dbs.updateUsageStatisticsForMethod("NLU_Active_Neg");
