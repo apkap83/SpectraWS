@@ -2,6 +2,13 @@ package gr.wind.spectra.business;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import gr.wind.spectra.cdrdbconsumer.InsertCallerData;
 import gr.wind.spectra.cdrdbconsumer.WebCDRDBService;
@@ -279,43 +286,8 @@ public class Update_CallerDataTable extends Thread
 									"String", "String", "String", "String", "String", "String", "String", "String",
 									"String" });
 
-					// ****************************************************
-					// Send request CDR DB for Archiving the Caller request
-					// *****************************************************
-					try
-					{
-						WebCDRDBService myWebService = new WebCDRDBService();
-						gr.wind.spectra.cdrdbconsumer.InterfaceWebCDRDB iws = myWebService.getWebCDRDBPort();
-
-						InsertCallerData icd = new InsertCallerData();
-
-						icd.setRequestID(requestID);
-						icd.setUsername(Username);
-						icd.setCli(CLIProvided);
-						icd.setIncidentNumber(IncidentID);
-						icd.setAffectedServices(allAffectedServices);
-						icd.setPayTVServices(PAYTVSERVICES);
-						icd.setIsScheduled(foundScheduled);
-						icd.setBackupElegible(backupEligible);
-						icd.setCSSCollectionName(CSSCOLLECTIONNAME);
-						icd.setAccessService(AccessService);
-						icd.setCLID(CLID);
-						icd.setActiveElement(ActiveElement);
-						icd.setBRASName(BRASNAME);
-						icd.setCOID(PASPORT_COID);
-						icd.setAPIUser("spectra");
-						icd.setAPIProcess(systemID);
-
-						iws.insertCallerData(icd, "spectra", "YtfLwvEuCAly9fJS6R46");
-
-						// gr.wind.spectra.cdrdbconsumer.HasOutageResponse hor = iws.hasOutage(ho, "spectra",
-						// "YtfLwvEuCAly9fJS6R46");
-
-					} catch (Exception e)
-					{
-
-						e.printStackTrace();
-					}
+					SendRequestToCDRDBFoundCLI(Username, PAYTVSERVICES, CSSCOLLECTIONNAME, AccessService, CLID,
+							ActiveElement, BRASNAME, PASPORT_COID);
 
 				}
 
@@ -338,6 +310,93 @@ public class Update_CallerDataTable extends Thread
 								"String", "String", "String", "String", "String", "String", "String", "String",
 								"String", "String", "String", "String", "String", "String", "String", "String" });
 
+				SendRequestToCDRDBNOTFoundCLI();
+
+			}
+
+		} catch (SQLException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void SendRequestToCDRDBFoundCLI(String Username, String PAYTVSERVICES, String CSSCOLLECTIONNAME,
+			String AccessService, String CLID, String ActiveElement, String BRASNAME, String PASPORT_COID)
+	{
+		ExecutorService executor = Executors.newCachedThreadPool();
+		Callable<Object> task = new Callable<Object>()
+		{
+			@Override
+			public Object call() throws Exception
+			{
+				// ****************************************************
+				// Send request CDR DB for Archiving the Caller request
+				// *****************************************************
+				try
+				{
+					WebCDRDBService myWebService = new WebCDRDBService();
+					gr.wind.spectra.cdrdbconsumer.InterfaceWebCDRDB iws = myWebService.getWebCDRDBPort();
+
+					InsertCallerData icd = new InsertCallerData();
+
+					icd.setRequestID(requestID);
+					icd.setUsername(Username);
+					icd.setCli(CLIProvided);
+					icd.setIncidentNumber(IncidentID);
+					icd.setAffectedServices(allAffectedServices);
+					icd.setPayTVServices(PAYTVSERVICES);
+					icd.setIsScheduled(foundScheduled);
+					icd.setBackupElegible(backupEligible);
+					icd.setCSSCollectionName(CSSCOLLECTIONNAME);
+					icd.setAccessService(AccessService);
+					icd.setCLID(CLID);
+					icd.setActiveElement(ActiveElement);
+					icd.setBRASName(BRASNAME);
+					icd.setCOID(PASPORT_COID);
+					icd.setAPIUser("spectra");
+					icd.setAPIProcess(systemID);
+
+					iws.insertCallerData(icd, "spectra", "YtfLwvEuCAly9fJS6R46");
+
+				} catch (Exception e)
+				{
+
+					e.printStackTrace();
+				}
+				return null;
+
+			};
+
+		};
+
+		Future<Object> future = executor.submit(task);
+		try
+		{
+			Object result = future.get(700, TimeUnit.MILLISECONDS);
+		} catch (TimeoutException ex)
+		{
+			// handle the timeout
+		} catch (InterruptedException e)
+		{
+			// handle the interrupts
+		} catch (ExecutionException e)
+		{
+			// handle other exceptions
+		} finally
+		{
+			future.cancel(true); // may or may not desire this
+		}
+	}
+
+	private void SendRequestToCDRDBNOTFoundCLI()
+	{
+		ExecutorService executor = Executors.newCachedThreadPool();
+		Callable<Object> task = new Callable<Object>()
+		{
+			@Override
+			public Object call() throws Exception
+			{
 				// ****************************************************
 				// Send request CDR DB for Archiving the Caller request
 				// *****************************************************
@@ -372,12 +431,28 @@ public class Update_CallerDataTable extends Thread
 
 					e.printStackTrace();
 				}
-			}
+				return null;
 
-		} catch (SQLException e)
+			};
+
+		};
+
+		Future<Object> future = executor.submit(task);
+		try
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Object result = future.get(700, TimeUnit.MILLISECONDS);
+		} catch (TimeoutException ex)
+		{
+			// handle the timeout
+		} catch (InterruptedException e)
+		{
+			// handle the interrupts
+		} catch (ExecutionException e)
+		{
+			// handle other exceptions
+		} finally
+		{
+			future.cancel(true); // may or may not desire this
 		}
 	}
 
