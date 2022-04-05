@@ -11,6 +11,13 @@ import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 //Import log4j classes.
 import org.apache.logging.log4j.LogManager;
@@ -514,7 +521,7 @@ public class CLIOutage
 					gr.wind.spectra.cdrdbconsumer.HasOutageResponse hor = iws.hasOutage(ho, "spectra",
 							"YtfLwvEuCAly9fJS6R46");
 
-					String cdrDBResponse = hor.getResult().getHasOutage(); // "y" or "n"
+					String cdrDBResponse = askCDRDBForOutage(hor); // "y" or "n" - 300msec Max Response Time
 
 					if (cdrDBResponse.equals("y"))
 					{
@@ -730,7 +737,7 @@ public class CLIOutage
 				gr.wind.spectra.cdrdbconsumer.HasOutageResponse hor = iws.hasOutage(ho, "spectra",
 						"YtfLwvEuCAly9fJS6R46");
 
-				String cdrDBResponse = hor.getResult().getHasOutage(); // "y" or "n"
+				String cdrDBResponse = askCDRDBForOutage(hor); // "y" or "n" - 300msec Max Response Time
 
 				if (cdrDBResponse.equals("y"))
 				{
@@ -775,6 +782,55 @@ public class CLIOutage
 		requestID = null;
 
 		return ponla;
+	}
+
+	private String askCDRDBForOutage(gr.wind.spectra.cdrdbconsumer.HasOutageResponse hor)
+	{
+		// How do I call some blocking method with a timeout in Java?
+		// https://stackoverflow.com/questions/1164301/how-do-i-call-some-blocking-method-with-a-timeout-in-java
+
+		String defaultCDRDBAnswer = "n";
+		ExecutorService executor = Executors.newCachedThreadPool();
+		Callable<Object> task = new Callable<Object>()
+		{
+			@Override
+			public Object call() throws Exception
+			{
+				try
+				{
+					return hor.getResult().getHasOutage(); // "y" or "n"
+
+				} catch (Exception e)
+				{
+					e.printStackTrace();
+					return defaultCDRDBAnswer;
+				}
+
+			};
+
+		};
+
+		Future<Object> future = executor.submit(task);
+		try
+		{
+			Object result = future.get(300, TimeUnit.MILLISECONDS);
+			return (String) result;
+		} catch (TimeoutException ex)
+		{
+			return defaultCDRDBAnswer;
+		} catch (InterruptedException e)
+		{
+			// handle the interrupts
+			return defaultCDRDBAnswer;
+		} catch (ExecutionException e)
+		{
+			// handle other exceptions
+			return defaultCDRDBAnswer;
+		} finally
+		{
+			future.cancel(true); // may or may not desire this
+		}
+
 	}
 
 }

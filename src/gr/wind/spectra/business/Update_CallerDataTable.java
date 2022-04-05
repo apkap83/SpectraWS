@@ -449,7 +449,7 @@ public class Update_CallerDataTable extends Thread
 		Future<Object> future = executor.submit(task);
 		try
 		{
-			Object result = future.get(700, TimeUnit.MILLISECONDS);
+			Object result = future.get(300, TimeUnit.MILLISECONDS);
 		} catch (TimeoutException ex)
 		{
 			// handle the timeout
