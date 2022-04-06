@@ -817,14 +817,17 @@ public class CLIOutage
 			return (String) result;
 		} catch (TimeoutException ex)
 		{
+			System.out.println("CLIOutage TimeoutException for CDRDB Query Statement: " + requestID);
 			return defaultCDRDBAnswer;
 		} catch (InterruptedException e)
 		{
 			// handle the interrupts
+			System.out.println("CLIOutage InterruptedException for CDRDB Query Statement: " + requestID);
 			return defaultCDRDBAnswer;
 		} catch (ExecutionException e)
 		{
 			// handle other exceptions
+			System.out.println("CLIOutage ExecutionException for CDRDB Query Statement: " + requestID);
 			return defaultCDRDBAnswer;
 		} finally
 		{

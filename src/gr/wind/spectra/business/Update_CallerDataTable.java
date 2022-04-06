@@ -386,12 +386,15 @@ public class Update_CallerDataTable extends Thread
 		} catch (TimeoutException ex)
 		{
 			// handle the timeout
+			System.out.println("Update_CallerDataTable TimeoutException for CDRDB Insert Statement: " + requestID);
 		} catch (InterruptedException e)
 		{
 			// handle the interrupts
+			System.out.println("Update_CallerDataTable InterruptedException for CDRDB Insert Statement: " + requestID);
 		} catch (ExecutionException e)
 		{
 			// handle other exceptions
+			System.out.println("Update_CallerDataTable ExecutionException for CDRDB Insert Statement: " + requestID);
 		} finally
 		{
 			future.cancel(true); // may or may not desire this
@@ -456,12 +459,15 @@ public class Update_CallerDataTable extends Thread
 		} catch (TimeoutException ex)
 		{
 			// handle the timeout
+			System.out.println("Update_CallerDataTable TimeoutException for CDRDB Insert Statement: " + requestID);
 		} catch (InterruptedException e)
 		{
 			// handle the interrupts
+			System.out.println("Update_CallerDataTable InterruptedException for CDRDB Insert Statement: " + requestID);
 		} catch (ExecutionException e)
 		{
 			// handle other exceptions
+			System.out.println("Update_CallerDataTable ExecutionException for CDRDB Insert Statement: " + requestID);
 		} finally
 		{
 			future.cancel(true); // may or may not desire this
