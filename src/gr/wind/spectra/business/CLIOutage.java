@@ -522,7 +522,7 @@ public class CLIOutage
 							"YtfLwvEuCAly9fJS6R46");
 
 					String cdrDBResponse = askCDRDBForOutage(hor); // "y" or "n" - 300msec Max Response Time
-
+					// System.out.println("Line 525: " + cdrDBResponse);
 					if (cdrDBResponse.equals("y"))
 					{
 						String ActualServicesAffected = "Data|IPTV";
