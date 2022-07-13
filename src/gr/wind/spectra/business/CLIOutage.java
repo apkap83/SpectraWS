@@ -144,6 +144,15 @@ public class CLIOutage
 				adHocMessage = "msg2";
 			}
 
+			// Backup Eligible response should be "Y" or "N"
+			if (BackupEligible == "Yes")
+			{
+				BackupEligible = "Y";
+			} else
+			{
+				BackupEligible = "N";
+			}
+
 			// Get current date
 			LocalDateTime now = LocalDateTime.now();
 
@@ -169,6 +178,9 @@ public class CLIOutage
 				ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "Yes", "AdHoc_Outage", "Critical",
 						"Voice|Data|IPTV", "Yes", null, AdHoc_EndTimeString, "LoS", adHocMessage, BackupEligible,
 						"NULL");
+
+				logger.info("SysID: " + systemID + " ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided
+						+ " from AdHoc Outage - Message: " + adHocMessage + " | Backup: " + BackupEligible);
 
 				// Update Statistics
 				s_dbs.updateUsageStatisticsForMethod("AdHoc_Pos");
