@@ -121,7 +121,6 @@ public class CLIOutage
 	public ProductOfNLUActive checkAdHocOutage(String RequestID, String CLIProvided) throws SQLException, ParseException
 	{
 		ProductOfNLUActive ponla = new ProductOfNLUActive();
-		Help_Func hf = new Help_Func();
 
 		// Check if CLI is affected by AdHoc Outage
 		// Get Lines with CliValue = CLIProvided
@@ -145,7 +144,7 @@ public class CLIOutage
 			}
 
 			// Backup Eligible response should be "Y" or "N"
-			if (BackupEligible == "Yes")
+			if (BackupEligible.equals("Yes"))
 			{
 				BackupEligible = "Y";
 			} else
